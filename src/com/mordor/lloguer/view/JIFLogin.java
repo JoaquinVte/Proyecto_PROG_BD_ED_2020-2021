@@ -14,6 +14,7 @@ import java.awt.Color;
 public class JIFLogin extends JInternalFrame {
 	private JTextField txtFieldLogin;
 	private JPasswordField passwordField;
+	private JButton btnLogin;
 
 	/**
 	 * Create the frame.
@@ -37,11 +38,24 @@ public class JIFLogin extends JInternalFrame {
 		passwordField.setHorizontalAlignment(JPasswordField.CENTER);
 		getContentPane().add(passwordField, "cell 1 3,growx");
 		
-		JButton btnLogin = new JButton("Login");
+		btnLogin = new JButton("Login");
 		btnLogin.setBackground(Color.GRAY);
 		btnLogin.setFont(new Font("DejaVu Sans", Font.PLAIN, 24));
 		getContentPane().add(btnLogin, "cell 1 5,grow");
 
 	}
+
+	public JTextField getTxtFieldLogin() {
+		return txtFieldLogin;
+	}
+
+	public JPasswordField getPasswordField() {
+		return passwordField;
+	}
+
+	public JButton getBtnLogin() {
+		return btnLogin;
+	}
+	
 
 }
