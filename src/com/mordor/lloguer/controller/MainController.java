@@ -1,13 +1,19 @@
 package com.mordor.lloguer.controller;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
@@ -41,9 +47,11 @@ public class MainController implements ActionListener {
 
 		// Añadimos ActionListener
 		view.getBtnLogin().addActionListener(this);
+		view.getBtnLogout().addActionListener(this);
 
 		// Añadimos ActionCommand
 		view.getBtnLogin().setActionCommand("Open JIFLogin");
+		view.getBtnLogout().setActionCommand("Logout");
 
 	}
 
@@ -58,23 +66,98 @@ public class MainController implements ActionListener {
 
 		if (command.equals("Open JIFLogin")) {
 			openJIFLogin();
-		} else if(command.equals("Login")) {
+		} else if (command.equals("Login")) {
 			login();
+		} else if (command.equals("Logout")) {
+			logout();
+		}
+
+	}
+
+	private void logout() {
+
+		int opcion = JOptionPane.showConfirmDialog(view, "Are you sure to close the session?", "Logout",
+				JOptionPane.YES_NO_OPTION);
+		if (opcion == JOptionPane.YES_OPTION) {
+			// Cerramos todos los JInternalFrames
+			for (Component component : view.getDesktopPane().getComponents()) {
+				if (component instanceof JInternalFrame)
+					((JInternalFrame) component).dispose();
+			}
+
+			// Deshabilitamos todos los botones de la JToolBar
+			for (Component component : view.getToolBar().getComponents()) {
+				if (component instanceof JButton)
+					component.setEnabled(false);
+			}
+
+			view.getBtnLogin().setEnabled(true);
 		}
 
 	}
 
 	private void login() {
-		
+
+		jifLogin.getLblError().setText("");
+
 		String login = jifLogin.getTxtFieldLogin().getText();
 		String password = String.valueOf(jifLogin.getPasswordField().getPassword());
-		
-		if(model.athenticate(login, password)) {
-			JOptionPane.showMessageDialog(jifLogin, "Login Successful", "Login", JOptionPane.INFORMATION_MESSAGE);
-		}else {
-			JOptionPane.showMessageDialog(jifLogin, "Usuario/Password incorrecto", "Error", JOptionPane.ERROR_MESSAGE);
-		}
-		
+
+		SwingWorker<Boolean, Void> taskLogin = new SwingWorker<Boolean, Void>() {
+			/*
+			 * Main task. Executed in background thread.
+			 */
+			@Override
+			public Boolean doInBackground() {
+
+				jifLogin.getLblError().setText("");
+
+				jifLogin.getProgressBar().setVisible(true);
+
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return model.athenticate(login, password);
+			}
+
+			/*
+			 * Executed in event dispatch thread
+			 */
+			public void done() {
+
+				jifLogin.getProgressBar().setVisible(false);
+
+				try {
+
+					Boolean login = get();
+
+					if (login) {
+
+						// Login correcto segun rol se deberia habilitar las opciones pertinentes
+						JDialog.setDefaultLookAndFeelDecorated(true);
+						JOptionPane.showMessageDialog(jifLogin, "Login Successful", "Login",
+								JOptionPane.INFORMATION_MESSAGE);
+						view.getBtnLogin().setEnabled(false);
+						view.getBtnLogout().setEnabled(true);
+						view.getBtnEmployees().setEnabled(true);
+						jifLogin.dispose();
+
+					} else {
+						jifLogin.getLblError().setText("Usuario/Password incorrecto");
+					}
+
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(jifLogin, "Se ha producido un error inesperado", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
+		taskLogin.execute();
+
 	}
 
 	private void openJIFLogin() {
@@ -89,10 +172,10 @@ public class MainController implements ActionListener {
 
 			// Añadimos ActionListeners
 			jifLogin.getBtnLogin().addActionListener(this);
-			
+
 			// Añadimos ActionCommands
 			jifLogin.getBtnLogin().setActionCommand("Login");
-			
+
 			view.getDesktopPane().add(jifLogin);
 			jifLogin.setVisible(true);
 		}

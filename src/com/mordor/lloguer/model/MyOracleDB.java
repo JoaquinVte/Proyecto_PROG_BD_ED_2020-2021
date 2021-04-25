@@ -53,7 +53,7 @@ public class MyOracleDB implements Model {
 		DataSource ds = MyDataSource.getOracleDataSource();
 		boolean authenticated = false;
 		String query = "SELECT COUNT(*) FROM EMPLEADO WHERE DNI='" + dni + "' AND password='"+password+"'";
-		System.out.println(query);
+		//System.out.println(query);
 		try(Connection con = ds.getConnection();
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(query)){

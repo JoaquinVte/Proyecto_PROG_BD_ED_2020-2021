@@ -10,11 +10,16 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.Color;
+import javax.swing.SwingConstants;
+import javax.swing.JProgressBar;
+import javax.swing.ImageIcon;
 
 public class JIFLogin extends JInternalFrame {
 	private JTextField txtFieldLogin;
 	private JPasswordField passwordField;
 	private JButton btnLogin;
+	private JLabel lblError;
+	private JProgressBar progressBar;
 
 	/**
 	 * Create the frame.
@@ -22,11 +27,11 @@ public class JIFLogin extends JInternalFrame {
 	public JIFLogin() {
 		setClosable(true);
 		setBounds(100, 100, 450, 269);
-		getContentPane().setLayout(new MigLayout("", "[][grow][]", "[][50px][][][50px][59.00,grow][30px]"));
+		getContentPane().setLayout(new MigLayout("", "[][grow][]", "[40.00][50px][50px][50px][60px][10px][59.00,grow][30px]"));
 		
 		JLabel lblLogin = new JLabel("Member Login");
 		lblLogin.setFont(new Font("DejaVu Sans", Font.PLAIN, 28));
-		getContentPane().add(lblLogin, "cell 1 0,alignx center");
+		getContentPane().add(lblLogin, "cell 1 0,alignx center,aligny top");
 		
 		txtFieldLogin = new JTextField();
 		txtFieldLogin.setHorizontalAlignment(JTextField.CENTER);
@@ -38,10 +43,20 @@ public class JIFLogin extends JInternalFrame {
 		passwordField.setHorizontalAlignment(JPasswordField.CENTER);
 		getContentPane().add(passwordField, "cell 1 3,growx");
 		
+		lblError = new JLabel("");
+		lblError.setForeground(Color.RED);
+		lblError.setHorizontalAlignment(JLabel.CENTER);
+		getContentPane().add(lblError, "cell 1 4,growx");
+				
+		progressBar = new JProgressBar();
+		progressBar.setVisible(false);
+		progressBar.setIndeterminate(true);
+		getContentPane().add(progressBar, "cell 1 5,growx");
+		
 		btnLogin = new JButton("Login");
 		btnLogin.setBackground(Color.GRAY);
 		btnLogin.setFont(new Font("DejaVu Sans", Font.PLAIN, 24));
-		getContentPane().add(btnLogin, "cell 1 5,grow");
+		getContentPane().add(btnLogin, "cell 1 6,grow");
 
 	}
 
@@ -56,6 +71,13 @@ public class JIFLogin extends JInternalFrame {
 	public JButton getBtnLogin() {
 		return btnLogin;
 	}
-	
 
+	public JLabel getLblError() {
+		return lblError;
+	}
+
+	public JProgressBar getProgressBar() {
+		return progressBar;
+	}
+	
 }
