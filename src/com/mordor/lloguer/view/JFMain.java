@@ -1,6 +1,7 @@
 package com.mordor.lloguer.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -21,10 +22,13 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
-import javax.swing.JSeparator;
 
 public class JFMain extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JButton btnLogin;
 	private JDesktopPane desktopPane;
@@ -73,11 +77,12 @@ public class JFMain extends JFrame {
 		setContentPane(contentPane);
 		
 		desktopPane = new JDesktopPane();
+		//desktopPane.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.desktoppaneTransparent );
 		contentPane.add(desktopPane, BorderLayout.CENTER);
 		
 		toolBar = new JToolBar(SwingConstants.HORIZONTAL);		
 		toolBar.setEnabled(false);
-        toolBar.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.toolbarUndecorated);
+        toolBar.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.toolbarAttachedNorth);
 		
 		contentPane.add(toolBar, BorderLayout.NORTH);
 		
@@ -89,6 +94,8 @@ public class JFMain extends JFrame {
 		btnLogout.setEnabled(false);
 		btnLogout.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/logout.png")));
 		toolBar.add(btnLogout);
+		
+		toolBar.addSeparator ( new Dimension ( 20, 10 ) );
 		
 		btnEmployees = new JButton("");
 		btnEmployees.setEnabled(false);

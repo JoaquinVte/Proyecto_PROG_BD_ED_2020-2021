@@ -1,7 +1,5 @@
 package com.mordor.lloguer.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
@@ -10,11 +8,13 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.Color;
-import javax.swing.SwingConstants;
 import javax.swing.JProgressBar;
-import javax.swing.ImageIcon;
 
 public class JIFLogin extends JInternalFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField txtFieldLogin;
 	private JPasswordField passwordField;
 	private JButton btnLogin;
