@@ -15,8 +15,10 @@ public class App {
 			try {
 				
                 // Install WebLaF as application LaF
-                WebLookAndFeel.install ();
-				
+                WebLookAndFeel.install();
+                
+                //StyleManager.setSkin(WebDarkSkin.class);
+                
 				JFMain view = new JFMain();
 				Model model = new MyOracleDB();
 

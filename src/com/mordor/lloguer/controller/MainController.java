@@ -14,6 +14,7 @@ import javax.swing.SwingWorker;
 
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
+import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
 
 public class MainController implements ActionListener {
@@ -23,6 +24,10 @@ public class MainController implements ActionListener {
 
 	// JIFrames
 	private JIFLogin jifLogin;
+	private JIFEmployees jifEmployees;
+	
+	// Controllers
+	private EmployeesController employeesController;
 
 	public MainController(JFMain view, Model model) {
 		super();
@@ -45,10 +50,12 @@ public class MainController implements ActionListener {
 		// Añadimos ActionListener
 		view.getBtnLogin().addActionListener(this);
 		view.getBtnLogout().addActionListener(this);
+		view.getBtnEmployees().addActionListener(this);
 
 		// Añadimos ActionCommand
 		view.getBtnLogin().setActionCommand("Open JIFLogin");
 		view.getBtnLogout().setActionCommand("Logout");
+		view.getBtnEmployees().setActionCommand("Open JIFEmployees");
 
 	}
 
@@ -67,8 +74,19 @@ public class MainController implements ActionListener {
 			login();
 		} else if (command.equals("Logout")) {
 			logout();
+		} else if (command.equals("Open JIFEmployees")) {
+			openJIFEmployees();
 		}
 
+	}
+	
+	private void openJIFEmployees() {
+		if(!isOpen(jifEmployees)) {
+			jifEmployees = new JIFEmployees();
+			view.getDesktopPane().add(jifEmployees);
+			employeesController = new EmployeesController(jifEmployees,model);
+			employeesController.go();
+		}
 	}
 
 	private void logout() {
@@ -111,12 +129,12 @@ public class MainController implements ActionListener {
 
 				jifLogin.getProgressBar().setVisible(true);
 
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 
 				return model.athenticate(login, password);
 			}
@@ -159,7 +177,7 @@ public class MainController implements ActionListener {
 
 	private void openJIFLogin() {
 
-		if (!estaAbierto(jifLogin)) {
+		if (!isOpen(jifLogin)) {
 			jifLogin = new JIFLogin();
 
 			// Centramos el iframe
@@ -179,7 +197,7 @@ public class MainController implements ActionListener {
 
 	}
 
-	private boolean estaAbierto(JInternalFrame jif) {
+	private boolean isOpen(JInternalFrame jif) {
 		boolean existe = false;
 		JInternalFrame[] frames = view.getDesktopPane().getAllFrames();
 		for (JInternalFrame frame : frames)
