@@ -13,6 +13,8 @@ import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+
+import com.alee.extended.date.WebDateField;
 import com.alee.laf.table.WebTable;
 import com.mordor.lloguer.model.Employee;
 import com.mordor.lloguer.model.Model;
@@ -230,7 +232,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				data.get(rowIndex).setEmail(aValue.toString());
 				break;
 			case 6:
-				data.get(rowIndex).setFechaNac(Date.valueOf(aValue.toString()));
+				data.get(rowIndex).setFechaNac(Date.valueOf(aValue.toString()));				
 				break;
 			case 7:
 				data.get(rowIndex).setCargo(aValue.toString());
