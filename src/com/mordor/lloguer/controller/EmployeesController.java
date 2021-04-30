@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,9 +12,8 @@ import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-
-import com.alee.extended.date.WebDateField;
 import com.alee.laf.table.WebTable;
+import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Employee;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JDProgress;
@@ -69,6 +67,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				webtable.setModel(metm);		
 				
 				metm.addTableModelListener(MainController.employeesController);
+				
+				webtable.setDefaultEditor(Date.class, new WebDateEditor());
 
 				return null;
 			}
@@ -212,7 +212,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		public Class<?>	getColumnClass(int columnIndex){
 			switch(columnIndex) {
 			case 0: case 1: case 2: case 3: case 4: case 5: case 7 : return String.class;
-			case 6: return WebDateField.class;
+			case 6: return Date.class;
 			default : return String.class;
 			}
 		}
@@ -238,8 +238,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			case 5:
 				data.get(rowIndex).setEmail(aValue.toString());
 				break;
-			case 6:
-				data.get(rowIndex).setFechaNac(Date.valueOf(aValue.toString()));				
+			case 6:				
+				data.get(rowIndex).setFechaNac(new Date(((java.util.Date)aValue).getTime()));					
 				break;
 			case 7:
 				data.get(rowIndex).setCargo(aValue.toString());

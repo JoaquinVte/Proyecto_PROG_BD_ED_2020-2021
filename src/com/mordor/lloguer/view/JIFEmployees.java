@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
+
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.table.WebTable;
 import com.alee.managers.style.StyleId;
@@ -15,8 +16,6 @@ import javax.swing.JSeparator;
 import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class JIFEmployees extends JInternalFrame {
 	
@@ -34,14 +33,16 @@ public class JIFEmployees extends JInternalFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "unchecked" })
 	public JIFEmployees() {
+		setTitle("Employees");
 		setFrameIcon(new ImageIcon(JIFEmployees.class.getResource("/com/mordor/lloguer/assets/employee.png")));
 		setMaximumSize(new Dimension(1000, 500));
 		setResizable(true);
 		setClosable(true);
 		setBounds(100, 100, 1000, 454);
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[fill][51.00,grow][33.00]"));
-		
+				
 		JPanel panelSuperior = new JPanel();
 		getContentPane().add(panelSuperior, "cell 0 0,grow");
 		panelSuperior.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -62,7 +63,7 @@ public class JIFEmployees extends JInternalFrame {
 		panelSuperior.add(lblDirection);
 				
 		cbDirection = new WebComboBox(StyleId.comboboxUndecorated);		
-		cbDirection.setModel(new DefaultComboBoxModel(new String[] {"Ascending", "Descending"}));
+		cbDirection.setModel(new DefaultComboBoxModel<String>(new String[] {"Ascending", "Descending"}));
 		panelSuperior.add(cbDirection);
 		
 		JPanel panelCentral = new JPanel();
