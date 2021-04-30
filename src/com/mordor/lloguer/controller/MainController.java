@@ -27,7 +27,7 @@ public class MainController implements ActionListener {
 	private JIFEmployees jifEmployees;
 	
 	// Controllers
-	private EmployeesController employeesController;
+	public static EmployeesController employeesController;
 
 	public MainController(JFMain view, Model model) {
 		super();

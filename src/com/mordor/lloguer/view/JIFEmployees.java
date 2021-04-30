@@ -15,6 +15,8 @@ import javax.swing.JSeparator;
 import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class JIFEmployees extends JInternalFrame {
 	

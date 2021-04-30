@@ -5,16 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import com.alee.extended.date.WebDateField;
 import com.alee.laf.table.WebTable;
 import com.mordor.lloguer.model.Employee;
 import com.mordor.lloguer.model.Model;
@@ -41,12 +40,10 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private void initialize() {
 
 		webtable = view.getTable();
-		webtable.setModel(new MyEmployeeTableModel());
-
+	
 		// Add ActionListener
 		view.getCbAttribute().addActionListener(this);
 		view.getCbDirection().addActionListener(this);
-		webtable.getModel().addTableModelListener(this);
 
 		// Add ActionCommand
 		view.getCbAttribute().setActionCommand("Change search");
@@ -58,9 +55,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		showProgressDialog();
 
-		//DefaultTableModel dtm = (DefaultTableModel) webtable.getModel();
-		MyEmployeeTableModel dtm = (MyEmployeeTableModel) webtable.getModel();
-
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
 			@Override
@@ -68,8 +62,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
-
-				dtm.setNewContent(employees);
+				
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
+				
+				webtable.setModel(metm);		
+				
+				metm.addTableModelListener(MainController.employeesController);
 
 				return null;
 			}
@@ -80,13 +78,11 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				jdp.dispose();
 
 				view.setVisible(true);
-
+				
 			}
-
 		};
 
 		task.execute();
-
 	}
 
 	private void showProgressDialog() {
@@ -107,7 +103,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		String command = arg0.getActionCommand();
 
 		if (command.equals("Change search")) {
+			webtable.getModel().addTableModelListener(null);
 			changeQuery();
+			webtable.getModel().addTableModelListener(this);
 		}
 
 	}
@@ -115,8 +113,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private void changeQuery() {
 		
 		showProgressDialog();
-		
-		MyEmployeeTableModel dtm = (MyEmployeeTableModel) webtable.getModel();
 		
 		SwingWorker<Void,Void> task = new SwingWorker<Void,Void>(){
 			
@@ -127,8 +123,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				int direction = ((view.getCbDirection().getSelectedItem().toString().compareToIgnoreCase("Ascending")==0))?Model.ASCENDING:Model.DESCENDING;
 				
 				List<Employee> employees = model.getEmployeesByField(field, direction);
-								
-				dtm.setNewContent(employees);		
+				
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
+				
+				webtable.setModel(metm);		
+				
+				metm.addTableModelListener(MainController.employeesController);
 				
 				return null;
 			}
@@ -159,8 +159,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				"Cargo" };
 		List<Employee> data;
 		
-		public MyEmployeeTableModel() {
-			data = new ArrayList<Employee>();
+		
+		public MyEmployeeTableModel(List<Employee> data) {
+			this.data = data;
 		}
 
 		public String getColumnName(int col) {
@@ -269,7 +270,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	public void tableChanged(TableModelEvent arg0) {
 		if(arg0.getType()==TableModelEvent.UPDATE)	{
 			MyEmployeeTableModel dtm = (MyEmployeeTableModel) webtable.getModel();
-			model.updateEmployee(dtm.getRow(arg0.getFirstRow()));
+			if(model.updateEmployee(dtm.getRow(arg0.getFirstRow())))
+				JOptionPane.showMessageDialog(view, "Employee updated", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 }
