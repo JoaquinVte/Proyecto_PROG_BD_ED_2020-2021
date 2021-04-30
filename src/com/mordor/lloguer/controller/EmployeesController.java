@@ -210,6 +210,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				return null;
 			}
 		}
+//		public Class<?>	getColumnClass(int columnIndex){
+//			switch(columnIndex) {
+//			case 0: case 1: case 2: case 3: case 4: case 5: case 7 : return String.class;
+//			case 6: return WebDateField.class;
+//			default : return String.class;
+//			}
+//		}
 
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 
