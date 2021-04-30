@@ -100,7 +100,30 @@ public class MyOracleDB implements Model {
 		return getEmployees(where);
 	}
 	
+	public boolean updateEmployee(Employee employee) {
+		boolean actualizado = false;
+		DataSource ds = MyDataSource.getOracleDataSource();
+						
+		try (Connection con = ds.getConnection();
+			Statement stmt = con.createStatement();) {
 
+			String query = "UPDATE EMPLEADO SET nombre='"+employee.getNombre()+"', "+
+												"apellidos='"+employee.getApellidos()+"',"+
+												"domicilio='"+employee.getDomicilio()+"',"+
+												"CP='"+employee.getCP()+"',"+
+												"email='"+employee.getEmail()+"',"+
+												"fechaNac=TO_DATE('"+employee.getFechaNac()+"','yyyy-mm-dd'), "+
+												"cargo='"+employee.getCargo()+"' "+
+												"WHERE DNI='" + employee.getDNI() +"'";
+						
+			actualizado = (stmt.executeUpdate(query)==1)?true:false;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+					
+		return actualizado;
+	}
 	
 	private ArrayList<Employee> getEmployees(String where){
 		DataSource ds = MyDataSource.getOracleDataSource();

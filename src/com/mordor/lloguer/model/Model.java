@@ -12,5 +12,6 @@ public interface Model {
 	public ArrayList<Employee> getEmployeesByField(String field,int direction);
 	public boolean athenticate(String dni, String password);
 	public List<String> getTableAttributes(String table);
+	public boolean updateEmployee(Employee employee);
 	
 }

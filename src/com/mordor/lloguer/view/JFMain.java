@@ -95,7 +95,7 @@ public class JFMain extends JFrame {
 		btnLogout.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/logout.png")));
 		toolBar.add(btnLogout);
 		
-		toolBar.addSeparator ( new Dimension ( 20, 10 ) );
+		toolBar.addSeparator(new Dimension(20,10));
 		
 		btnEmployees = new JButton("");
 		btnEmployees.setEnabled(false);

@@ -12,6 +12,11 @@ import java.awt.event.ActionEvent;
 public class JDProgress extends JDialog {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Create the dialog.
 	 */
 	public JDProgress() {

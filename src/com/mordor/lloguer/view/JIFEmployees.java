@@ -8,14 +8,10 @@ import javax.swing.JLabel;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
-
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.table.WebTable;
 import com.alee.managers.style.StyleId;
 import javax.swing.JSeparator;
-import javax.swing.JTable;
-
 import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
@@ -29,7 +25,6 @@ public class JIFEmployees extends JInternalFrame {
 	private WebTable table;
 	private JButton btnAdd;
 	private JButton btnDelete;
-	private JButton btnEdit;
 	private JButton btnClose;
 	private WebComboBox cbAttribute;
 	private WebComboBox cbDirection;
@@ -53,7 +48,7 @@ public class JIFEmployees extends JInternalFrame {
 		panelSuperior.add(lblSortBy);
 		
 		cbAttribute = new WebComboBox(StyleId.comboboxUndecorated);		
-		cbAttribute.setModel(new DefaultComboBoxModel(new String[] {"DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo"}));
+		cbAttribute.setModel(new DefaultComboBoxModel<String>(new String[] {"DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo"}));
 		panelSuperior.add(cbAttribute);
 		
 		JSeparator separator = new JSeparator();
@@ -76,20 +71,11 @@ public class JIFEmployees extends JInternalFrame {
 		panelCentral.add(scrollPane, BorderLayout.CENTER);
 		
 		table = new WebTable();
-		table.setEditable(false);
+//		table.setEditable(false);
 		table.optimizeColumnWidths(true);
         table.setOptimizeRowHeight(true);
         
-        DefaultTableModel dtm =new DefaultTableModel();
-        dtm.addColumn("DNI");
-        dtm.addColumn("Nombre");
-        dtm.addColumn("Apellidos");
-        dtm.addColumn("Domicilio");
-        dtm.addColumn("CP");
-        dtm.addColumn("email");
-        dtm.addColumn("fechaNac");
-        dtm.addColumn("Cargo");
-        table.setModel(dtm);
+        
 		scrollPane.setViewportView(table);
 		
 		JPanel panelInferior = new JPanel();
@@ -101,9 +87,6 @@ public class JIFEmployees extends JInternalFrame {
 		
 		btnDelete = new JButton("Delete");
 		panelInferior.add(btnDelete);
-		
-		btnEdit = new JButton("Edit");
-		panelInferior.add(btnEdit);
 		
 		btnClose = new JButton("Close");
 		panelInferior.add(btnClose);
@@ -120,10 +103,6 @@ public class JIFEmployees extends JInternalFrame {
 
 	public JButton getBtnDelete() {
 		return btnDelete;
-	}
-
-	public JButton getBtnEdit() {
-		return btnEdit;
 	}
 
 	public JButton getBtnClose() {
