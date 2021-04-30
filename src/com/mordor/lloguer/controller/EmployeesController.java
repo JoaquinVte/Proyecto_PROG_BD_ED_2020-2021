@@ -252,15 +252,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		public Employee getRow(int row) {
 			return data.get(row);
 		}
-		
-		public void setNewContent(List<Employee> employees) {
-			data = new ArrayList<Employee>();
-			for(Employee employee : employees) {
-				data.add(employee);				
-			}	
-			fireTableDataChanged();
-		}
-		
+				
 		public void addRow(Employee employee) {
 			data.add(employee);
 			fireTableRowsInserted(data.size() - 1, data.size() - 1);
