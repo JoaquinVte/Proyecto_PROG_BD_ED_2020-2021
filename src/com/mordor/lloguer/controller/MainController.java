@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -12,10 +14,12 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
+import com.mordor.lloguer.view.JIFPreferences;
 
 public class MainController implements ActionListener {
 
@@ -25,7 +29,8 @@ public class MainController implements ActionListener {
 	// JIFrames
 	private JIFLogin jifLogin;
 	private JIFEmployees jifEmployees;
-	
+	private JIFPreferences jifPreferences;
+
 	// Controllers
 	public static EmployeesController employeesController;
 
@@ -38,6 +43,8 @@ public class MainController implements ActionListener {
 	}
 
 	private void inicialize() {
+		
+		JDialog.setDefaultLookAndFeelDecorated(true);
 
 		// Hacemos que la aplicacion se vea maximizada
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -51,11 +58,13 @@ public class MainController implements ActionListener {
 		view.getBtnLogin().addActionListener(this);
 		view.getBtnLogout().addActionListener(this);
 		view.getBtnEmployees().addActionListener(this);
+		view.getMntmPreferences().addActionListener(this);
 
 		// Añadimos ActionCommand
 		view.getBtnLogin().setActionCommand("Open JIFLogin");
 		view.getBtnLogout().setActionCommand("Logout");
 		view.getBtnEmployees().setActionCommand("Open JIFEmployees");
+		view.getMntmPreferences().setActionCommand("Open JIFPreferences");
 
 	}
 
@@ -70,6 +79,10 @@ public class MainController implements ActionListener {
 
 		if (command.equals("Open JIFLogin")) {
 			openJIFLogin();
+		} else if (command.equals("Open JIFPreferences")) {
+			openJIFPreferences();
+		} else if (command.equals("Save preferences")) {
+			savePreferences();
 		} else if (command.equals("Login")) {
 			login();
 		} else if (command.equals("Logout")) {
@@ -79,12 +92,67 @@ public class MainController implements ActionListener {
 		}
 
 	}
-	
+
+	private void savePreferences() {
+
+		MyConfig.getInstancia().setDriver(jifPreferences.gettFDriver().getText());
+		MyConfig.getInstancia().setURL(jifPreferences.gettFURL().getText());
+		MyConfig.getInstancia().setUsername(jifPreferences.gettFUsername().getText());
+		MyConfig.getInstancia().setPassword(String.valueOf(jifPreferences.gettFPassword().getPassword()));
+
+		JOptionPane.showMessageDialog(jifPreferences, "Your configuration has been saved", "Information",
+				JOptionPane.INFORMATION_MESSAGE);
+		jifPreferences.dispose();
+
+	}
+
+	private void openJIFPreferences() {
+		if (!isOpen(jifPreferences)) {
+			jifPreferences = new JIFPreferences();
+
+			jifPreferences.gettFDriver().setText(MyConfig.getInstancia().getDriver());
+			jifPreferences.gettFURL().setText(MyConfig.getInstancia().getURL());
+			jifPreferences.gettFUsername().setText(MyConfig.getInstancia().getUsername());
+			jifPreferences.gettFPassword().setText(MyConfig.getInstancia().getPassword());
+
+			// Add Listener
+			jifPreferences.getBtnSave().addActionListener(this);
+
+			// Add command
+			jifPreferences.getBtnSave().setActionCommand("Save preferences");
+
+			centrar(jifPreferences);
+			view.getDesktopPane().add(jifPreferences);
+			jifPreferences.setVisible(true);
+		}
+
+	}
+
+	private void openJIFLogin() {
+
+		if (!isOpen(jifLogin)) {
+			jifLogin = new JIFLogin();
+
+			// Centramos el iframe
+			centrar(jifLogin);
+
+			// Añadimos ActionListeners
+			jifLogin.getBtnLogin().addActionListener(this);
+
+			// Añadimos ActionCommands
+			jifLogin.getBtnLogin().setActionCommand("Login");
+
+			view.getDesktopPane().add(jifLogin);
+			jifLogin.setVisible(true);
+		}
+
+	}
+
 	private void openJIFEmployees() {
-		if(!isOpen(jifEmployees)) {
+		if (!isOpen(jifEmployees)) {
 			jifEmployees = new JIFEmployees();
 			view.getDesktopPane().add(jifEmployees);
-			employeesController = new EmployeesController(jifEmployees,model);
+			employeesController = new EmployeesController(jifEmployees, model);
 			employeesController.go();
 		}
 	}
@@ -129,14 +197,18 @@ public class MainController implements ActionListener {
 
 				jifLogin.getProgressBar().setVisible(true);
 
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				Boolean isLogin = false;
 
-				return model.athenticate(login, password);
+				try {
+
+					isLogin = model.athenticate(login, password);
+
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(jifLogin, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
+				return isLogin;
+
 			}
 
 			/*
@@ -146,14 +218,14 @@ public class MainController implements ActionListener {
 
 				jifLogin.getProgressBar().setVisible(false);
 
-				try {
+				Boolean login;
 
-					Boolean login = get();
+				try {
+					login = get();
 
 					if (login) {
 
 						// Login correcto segun rol se deberia habilitar las opciones pertinentes
-						JDialog.setDefaultLookAndFeelDecorated(true);
 						JOptionPane.showMessageDialog(jifLogin, "Login Successful", "Login",
 								JOptionPane.INFORMATION_MESSAGE);
 						view.getBtnLogin().setEnabled(false);
@@ -161,39 +233,16 @@ public class MainController implements ActionListener {
 						view.getBtnEmployees().setEnabled(true);
 						jifLogin.dispose();
 
-					} else {
-						jifLogin.getLblError().setText("Usuario/Password incorrecto");
 					}
-
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(jifLogin, "Se ha producido un error inesperado", "Error",
-							JOptionPane.ERROR_MESSAGE);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
 				}
+
 			}
 		};
 		taskLogin.execute();
-
-	}
-
-	private void openJIFLogin() {
-
-		if (!isOpen(jifLogin)) {
-			jifLogin = new JIFLogin();
-
-			// Centramos el iframe
-			Dimension deskSize = view.getDesktopPane().getSize();
-			Dimension ifSize = jifLogin.getSize();
-			jifLogin.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
-
-			// Añadimos ActionListeners
-			jifLogin.getBtnLogin().addActionListener(this);
-
-			// Añadimos ActionCommands
-			jifLogin.getBtnLogin().setActionCommand("Login");
-
-			view.getDesktopPane().add(jifLogin);
-			jifLogin.setVisible(true);
-		}
 
 	}
 
@@ -205,6 +254,12 @@ public class MainController implements ActionListener {
 				existe = true;
 
 		return existe;
+	}
+
+	private void centrar(JInternalFrame jif) {
+		Dimension deskSize = view.getDesktopPane().getSize();
+		Dimension ifSize = jif.getSize();
+		jif.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
 	}
 
 }

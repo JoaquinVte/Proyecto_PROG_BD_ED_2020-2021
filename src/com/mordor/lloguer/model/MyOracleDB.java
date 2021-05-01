@@ -18,7 +18,7 @@ public class MyOracleDB implements Model {
 		return getEmployees(null);		
 	}
 	@Override
-	public boolean athenticate(String dni, String password) {
+	public boolean athenticate(String dni, String password) throws Exception {
 
 		DataSource ds = MyDataSource.getOracleDataSource();
 		boolean authenticated = false;
@@ -39,9 +39,13 @@ public class MyOracleDB implements Model {
 				cantidad = rs.getInt(1);
 
 			authenticated = cantidad == 1;
+			
+			if(!authenticated)
+				throw new Exception("Usuario/Password incorrecto");
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			if(e.getErrorCode()==1017)
+				throw new Exception("Connection refused. Check server configuration.");
 		}
 
 		return authenticated;

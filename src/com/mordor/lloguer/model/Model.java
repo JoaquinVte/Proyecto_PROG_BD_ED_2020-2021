@@ -10,7 +10,7 @@ public interface Model {
 
 	public ArrayList<Employee> getEmployees();
 	public ArrayList<Employee> getEmployeesByField(String field,int direction);
-	public boolean athenticate(String dni, String password);
+	public boolean athenticate(String dni, String password) throws Exception;
 	public List<String> getTableAttributes(String table);
 	public boolean updateEmployee(Employee employee);
 	

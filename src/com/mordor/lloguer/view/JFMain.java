@@ -35,6 +35,7 @@ public class JFMain extends JFrame {
 	private JButton btnLogout;
 	private JButton btnEmployees;
 	private JToolBar toolBar;
+	private JMenuItem mntmPreferences;
 
 	/**
 	 * Create the frame.
@@ -68,7 +69,7 @@ public class JFMain extends JFrame {
 		mnEdit.setMnemonic('E');
 		menuBar.add(mnEdit);
 		
-		JMenuItem mntmPreferences = new JMenuItem("Preferences");
+		mntmPreferences = new JMenuItem("Preferences");
 		mntmPreferences.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/settings.png")));
 		mnEdit.add(mntmPreferences);
 		contentPane = new JPanel();
@@ -106,6 +107,9 @@ public class JFMain extends JFrame {
 
 	public JDesktopPane getDesktopPane() {
 		return desktopPane;
+	}
+	public JMenuItem getMntmPreferences() {
+		return mntmPreferences;
 	}
 	public JButton getBtnLogin() {
 		return btnLogin;

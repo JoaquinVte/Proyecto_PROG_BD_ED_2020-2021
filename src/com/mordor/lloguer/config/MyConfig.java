@@ -151,11 +151,11 @@ public class MyConfig {
 		guardar();
 	}
 	public void setUsername(String username) {
-		properties.put("ORACLE_DB_DRIVER_CLASS", encrypt(username));
+		properties.put("ORACLE_DB_USERNAME", encrypt(username));
 		guardar();
 	}
 	public void setPassword(String password) {
-		properties.put("ORACLE_DB_DRIVER_CLASS", encrypt(password));
+		properties.put("ORACLE_DB_PASSWORD", encrypt(password));
 		guardar();
 	}
 
