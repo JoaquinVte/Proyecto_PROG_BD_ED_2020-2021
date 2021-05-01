@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
@@ -27,8 +29,6 @@ public class MainController implements ActionListener {
 	private JFMain view;
 	private Model model;
 	
-	private static JDesktopPane desktopPane;
-
 	// JIFrames
 	private JIFLogin jifLogin;
 	private JIFEmployees jifEmployees;
@@ -36,6 +36,9 @@ public class MainController implements ActionListener {
 
 	// Controllers
 	public static EmployeesController employeesController;
+	
+	// DesktopPane
+	private static JDesktopPane desktopPane;
 
 	public MainController(JFMain view, Model model) {
 		super();
@@ -140,6 +143,19 @@ public class MainController implements ActionListener {
 
 			// Centramos el iframe
 			centrar(jifLogin);
+			
+			Action action = new AbstractAction() {
+			    @Override
+			    public void actionPerformed(ActionEvent e)
+			    {
+			         login();
+			    }
+			};
+			
+			jifLogin.getTxtFieldLogin().setAction(action);
+			jifLogin.getPasswordField().setAction(action);
+			
+
 
 			// Añadimos ActionListeners
 			jifLogin.getBtnLogin().addActionListener(this);
@@ -252,9 +268,9 @@ public class MainController implements ActionListener {
 
 	}
 	
-	static void addJInternalFrame(JInternalFrame jif) {
-		centrar(jif);
+	static void addJInternalFrame(JInternalFrame jif) {		
 		desktopPane.add(jif);
+		centrar(jif);
 	}
 
 	static boolean isOpen(JInternalFrame jif) {

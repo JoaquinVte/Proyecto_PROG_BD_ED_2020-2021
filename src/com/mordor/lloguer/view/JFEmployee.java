@@ -35,6 +35,8 @@ public class JFEmployee extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public JFEmployee() {
+		setFrameIcon(new ImageIcon(JFEmployee.class.getResource("/com/mordor/lloguer/assets/user.png")));
+		setClosable(true);
 		setTitle("Employee");
 		setBounds(100, 100, 413, 386);
 		

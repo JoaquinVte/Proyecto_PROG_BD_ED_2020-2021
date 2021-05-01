@@ -120,10 +120,26 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			openEmployeeForm();
 		} else if (command.equals("Add new employee")) {
 			addNewEmployee();
+		} else if (command.equals("Delete employee")) {
+			deleteEmployee();
 		} else if (command.equals("Cancel add new employee")) {
 			cancelAddNewEmployee();
 		}
 
+	}
+
+	private void deleteEmployee() {
+		
+		int option = JOptionPane.showConfirmDialog(view, "Are you sure yout want to remove the employee?", "Confirm",
+				JOptionPane.YES_NO_OPTION);
+
+		if (option == JOptionPane.YES_OPTION) {
+
+			Employee employee = ((MyEmployeeTableModel)webtable.getModel()).getEmployeeAtRow(webtable.getSelectedRow());
+
+			System.out.println(employee);
+		}
+		
 	}
 
 	private void cancelAddNewEmployee() {
@@ -218,9 +234,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			jifEmployee.getBtnSave().setActionCommand("Add new employee");
 			jifEmployee.getBtnCancel().setActionCommand("Cancel add new employee");
 
-			jifEmployee.setVisible(true);
-
 			MainController.addJInternalFrame(jifEmployee);
+			
+			jifEmployee.setVisible(true);
 		}
 
 	}
@@ -382,6 +398,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		public void addRow(Employee employee) {
 			data.add(employee);
 			fireTableRowsInserted(data.size() - 1, data.size() - 1);
+		}
+		
+		public Employee getEmployeeAtRow(int row) {
+			if(row<0 || row>=data.size())
+				return null;
+			else
+				return data.get(row);
 		}
 
 		public void removeRow(int row) {

@@ -4,6 +4,8 @@ import javax.swing.JInternalFrame;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
@@ -54,6 +56,7 @@ public class JIFLogin extends JInternalFrame {
 		getContentPane().add(progressBar, "cell 1 5,growx");
 		
 		btnLogin = new JButton("Login");
+		btnLogin.setMnemonic(KeyEvent.VK_ACCEPT);
 		btnLogin.setBackground(Color.GRAY);
 		btnLogin.setFont(new Font("DejaVu Sans", Font.PLAIN, 24));
 		getContentPane().add(btnLogin, "cell 1 6,grow");
