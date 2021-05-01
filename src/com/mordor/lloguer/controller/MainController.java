@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
+import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -17,6 +18,7 @@ import javax.swing.SwingWorker;
 import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
+import com.mordor.lloguer.view.JFEmployee;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
 import com.mordor.lloguer.view.JIFPreferences;
@@ -25,6 +27,8 @@ public class MainController implements ActionListener {
 
 	private JFMain view;
 	private Model model;
+	
+	static JDesktopPane desktopPane;
 
 	// JIFrames
 	private JIFLogin jifLogin;
@@ -38,6 +42,8 @@ public class MainController implements ActionListener {
 		super();
 		this.view = view;
 		this.model = model;
+		
+		desktopPane = view.getDesktopPane();
 
 		inicialize();
 	}
@@ -152,6 +158,7 @@ public class MainController implements ActionListener {
 		if (!isOpen(jifEmployees)) {
 			jifEmployees = new JIFEmployees();
 			view.getDesktopPane().add(jifEmployees);
+			centrar(jifEmployees);
 			employeesController = new EmployeesController(jifEmployees, model);
 			employeesController.go();
 		}
@@ -246,9 +253,9 @@ public class MainController implements ActionListener {
 
 	}
 
-	private boolean isOpen(JInternalFrame jif) {
+	static boolean isOpen(JInternalFrame jif) {
 		boolean existe = false;
-		JInternalFrame[] frames = view.getDesktopPane().getAllFrames();
+		JInternalFrame[] frames = desktopPane.getAllFrames();
 		for (JInternalFrame frame : frames)
 			if (frame == jif)
 				existe = true;
@@ -256,8 +263,8 @@ public class MainController implements ActionListener {
 		return existe;
 	}
 
-	private void centrar(JInternalFrame jif) {
-		Dimension deskSize = view.getDesktopPane().getSize();
+	static void centrar(JInternalFrame jif) {
+		Dimension deskSize = desktopPane.getSize();
 		Dimension ifSize = jif.getSize();
 		jif.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
 	}

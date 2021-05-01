@@ -17,6 +17,7 @@ import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Employee;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JDProgress;
+import com.mordor.lloguer.view.JFEmployee;
 import com.mordor.lloguer.view.JIFEmployees;
 
 public class EmployeesController implements ActionListener, TableModelListener {
@@ -111,8 +112,22 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		if (command.equals("Change search")) {
 			changeQuery();
-		}
+		} else if (command.equals("Open employee form")) {
+			openEmployeeForm();
+		} 
 
+	}
+
+	private void openEmployeeForm() {
+		
+		JFEmployee jifEmployee = new JFEmployee();
+		
+		MainController.desktopPane.add(jifEmployee);
+		MainController.centrar(jifEmployee);	
+		
+		
+		
+		jifEmployee.setVisible(true);		
 	}
 
 	private void changeQuery() {

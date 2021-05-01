@@ -74,10 +74,8 @@ public class JIFEmployees extends JInternalFrame {
 		panelCentral.add(scrollPane, BorderLayout.CENTER);
 		
 		table = new WebTable();
-//		table.setEditable(false);
 		table.optimizeColumnWidths(true);
-        table.setOptimizeRowHeight(true);
-        
+        table.setRowHeight(30);
         
 		scrollPane.setViewportView(table);
 		
