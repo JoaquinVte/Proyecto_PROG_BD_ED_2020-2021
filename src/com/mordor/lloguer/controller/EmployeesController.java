@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
@@ -29,6 +30,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	// Progress Dialog
 	private JDProgress jdp;
 
+	// JInternalFrame
+	private JFEmployee jifEmployee;
+
 	public EmployeesController(JIFEmployees view, Model model) {
 		super();
 		this.view = view;
@@ -40,7 +44,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private void initialize() {
 
 		webtable = view.getTable();
-	
+
 		// Add ActionListener
 		view.getCbAttribute().addActionListener(this);
 		view.getCbDirection().addActionListener(this);
@@ -68,13 +72,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
-				
+
 				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
-				
-				webtable.setModel(metm);		
-				
+
+				webtable.setModel(metm);
+
 				metm.addTableModelListener(MainController.employeesController);
-				
+
 				webtable.setDefaultEditor(Date.class, new WebDateEditor());
 
 				return null;
@@ -86,7 +90,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				jdp.dispose();
 
 				view.setVisible(true);
-				
+
 			}
 		};
 
@@ -114,58 +118,150 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			changeQuery();
 		} else if (command.equals("Open employee form")) {
 			openEmployeeForm();
-		} 
+		} else if (command.equals("Add new employee")) {
+			addNewEmployee();
+		} else if (command.equals("Cancel add new employee")) {
+			cancelAddNewEmployee();
+		}
+
+	}
+
+	private void cancelAddNewEmployee() {
+
+		int option = JOptionPane.showConfirmDialog(view, "Are you sure to cancel?", "Confirm",
+				JOptionPane.YES_NO_OPTION);
+
+		if (option == JOptionPane.YES_OPTION) {
+
+			jifEmployee.dispose();
+
+		}
+
+	}
+
+	private void addNewEmployee() {
+
+		int option = JOptionPane.showConfirmDialog(view, "Are you sure to add the new employee?", "Confirm",
+				JOptionPane.YES_NO_OPTION);
+
+		if (option == JOptionPane.YES_OPTION) {
+
+			Employee employee;
+
+			String DNI = jifEmployee.gettFDNI().getText();
+			String nombre = jifEmployee.gettFName().getText().toString();
+			String apellidos = jifEmployee.gettFSurname().getText().toString();
+			String domicilio = jifEmployee.gettFAddress().getText().toString();
+			String CP = jifEmployee.gettFCP().getText().toString();
+			String email = jifEmployee.gettFEmail().getText().toString();
+			Date fechaNac = null;
+			String cargo = jifEmployee.gettFPosition().getText().toString();
+
+			if (jifEmployee.getWdfBirthday().getDate() != null)
+				fechaNac = new Date(jifEmployee.getWdfBirthday().getDate().getTime());
+
+			employee = new Employee(DNI, nombre, apellidos, domicilio, CP, email, fechaNac, cargo);
+
+			SwingWorker<Boolean, Void> task = new SwingWorker<Boolean, Void>() {
+
+				@Override
+				protected Boolean doInBackground() throws Exception {
+
+					boolean added = false;
+
+					added = model.addEmployee(employee);
+
+					return added;
+				}
+
+				@Override
+				protected void done() {
+
+					boolean added;
+
+					try {
+						added = get();
+
+						if (added) {
+
+							JOptionPane.showMessageDialog(jifEmployee, "Employee added sucessfully", "Information",
+									JOptionPane.INFORMATION_MESSAGE);
+
+							((MyEmployeeTableModel) webtable.getModel()).addRow(employee);
+							jifEmployee.dispose();
+						}
+
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(jifEmployee, "The employee has not been added! Check the fields.", "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+
+				}
+			};
+			task.execute();
+		}
 
 	}
 
 	private void openEmployeeForm() {
-		
-		JFEmployee jifEmployee = new JFEmployee();
-		
-		MainController.desktopPane.add(jifEmployee);
-		MainController.centrar(jifEmployee);	
-		
-		
-		
-		jifEmployee.setVisible(true);		
+
+		if (jifEmployee == null) {
+			jifEmployee = new JFEmployee();
+
+			jifEmployee.getBtnSave().addActionListener(this);
+			jifEmployee.getBtnCancel().addActionListener(this);
+
+			jifEmployee.getBtnSave().setActionCommand("Add new employee");
+			jifEmployee.getBtnCancel().setActionCommand("Cancel add new employee");
+
+			jifEmployee.setVisible(true);
+
+			MainController.addJInternalFrame(jifEmployee);
+		}
+
 	}
 
 	private void changeQuery() {
-		
+
 		showProgressDialog();
-		
-		SwingWorker<Void,Void> task = new SwingWorker<Void,Void>(){
-			
+
+		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
+
 			@Override
 			protected Void doInBackground() throws Exception {
-				
+
 				String field = view.getCbAttribute().getSelectedItem().toString();
-				int direction = ((view.getCbDirection().getSelectedItem().toString().compareToIgnoreCase("Ascending")==0))?Model.ASCENDING:Model.DESCENDING;
-				
+				int direction = ((view.getCbDirection().getSelectedItem().toString()
+						.compareToIgnoreCase("Ascending") == 0)) ? Model.ASCENDING : Model.DESCENDING;
+
 				List<Employee> employees = model.getEmployeesByField(field, direction);
-				
+
 				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
-				
-				webtable.setModel(metm);		
-				
+
+				webtable.setModel(metm);
+
 				metm.addTableModelListener(MainController.employeesController);
-				
+
 				return null;
 			}
-			
+
 			@Override
 			protected void done() {
-				
+
 				jdp.dispose();
-				
+
 				view.setVisible(true);
-				
+
 			}
-			
+
 		};
-		
+
 		task.execute();
-		
+
 	}
 
 	private class MyEmployeeTableModel extends AbstractTableModel {
@@ -178,8 +274,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		private final String[] COLUMN_NAMES = { "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac",
 				"Cargo" };
 		List<Employee> data;
-		
-		
+
 		public MyEmployeeTableModel(List<Employee> data) {
 			this.data = data;
 		}
@@ -230,11 +325,21 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				return null;
 			}
 		}
-		public Class<?>	getColumnClass(int columnIndex){
-			switch(columnIndex) {
-			case 0: case 1: case 2: case 3: case 4: case 5: case 7 : return String.class;
-			case 6: return Date.class;
-			default : return String.class;
+
+		public Class<?> getColumnClass(int columnIndex) {
+			switch (columnIndex) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 7:
+				return String.class;
+			case 6:
+				return Date.class;
+			default:
+				return String.class;
 			}
 		}
 
@@ -259,8 +364,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			case 5:
 				data.get(rowIndex).setEmail(aValue.toString());
 				break;
-			case 6:				
-				data.get(rowIndex).setFechaNac(new Date(((java.util.Date)aValue).getTime()));					
+			case 6:
+				data.get(rowIndex).setFechaNac(new Date(((java.util.Date) aValue).getTime()));
 				break;
 			case 7:
 				data.get(rowIndex).setCargo(aValue.toString());
@@ -269,15 +374,16 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 			fireTableCellUpdated(rowIndex, columnIndex);
 		}
-		
+
 		public Employee getRow(int row) {
 			return data.get(row);
 		}
-				
+
 		public void addRow(Employee employee) {
 			data.add(employee);
 			fireTableRowsInserted(data.size() - 1, data.size() - 1);
 		}
+
 		public void removeRow(int row) {
 			data.remove(row);
 			this.fireTableRowsDeleted(row, row);
@@ -287,9 +393,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
-		if(arg0.getType()==TableModelEvent.UPDATE)	{
+		if (arg0.getType() == TableModelEvent.UPDATE) {
 			MyEmployeeTableModel dtm = (MyEmployeeTableModel) webtable.getModel();
-			if(model.updateEmployee(dtm.getRow(arg0.getFirstRow())))
+			if (model.updateEmployee(dtm.getRow(arg0.getFirstRow())))
 				JOptionPane.showMessageDialog(view, "Employee updated", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}

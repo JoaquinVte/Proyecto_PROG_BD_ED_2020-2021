@@ -27,6 +27,18 @@ public class Employee {
 		this.fechaNac = fechaNac;
 		this.cargo = cargo;
 	}
+	public Employee( String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
+			Date fechaNac, String cargo) {
+		super();
+		DNI = dNI;
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.domicilio = domicilio;
+		CP = cP;
+		this.email = email;
+		this.fechaNac = fechaNac;
+		this.cargo = cargo;
+	}
 	public int getId() {
 		return id;
 	}

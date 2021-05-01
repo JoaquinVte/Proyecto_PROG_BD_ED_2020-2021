@@ -18,7 +18,6 @@ import javax.swing.SwingWorker;
 import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
-import com.mordor.lloguer.view.JFEmployee;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
 import com.mordor.lloguer.view.JIFPreferences;
@@ -28,7 +27,7 @@ public class MainController implements ActionListener {
 	private JFMain view;
 	private Model model;
 	
-	static JDesktopPane desktopPane;
+	private static JDesktopPane desktopPane;
 
 	// JIFrames
 	private JIFLogin jifLogin;
@@ -251,6 +250,11 @@ public class MainController implements ActionListener {
 		};
 		taskLogin.execute();
 
+	}
+	
+	static void addJInternalFrame(JInternalFrame jif) {
+		centrar(jif);
+		desktopPane.add(jif);
 	}
 
 	static boolean isOpen(JInternalFrame jif) {

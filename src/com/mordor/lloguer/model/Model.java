@@ -13,5 +13,6 @@ public interface Model {
 	public boolean athenticate(String dni, String password) throws Exception;
 	public List<String> getTableAttributes(String table);
 	public boolean updateEmployee(Employee employee);
+	public boolean addEmployee(Employee employee) throws Exception ;
 	
 }

@@ -24,10 +24,10 @@ public class JFEmployee extends JInternalFrame {
 	private JTextField tFName;
 	private JTextField tFSurname;
 	private JTextField tFAddress;
-	private JTextField textField_4;
-	private JTextField textField_5;
+	private JTextField tFCP;
+	private JTextField tFEmail;
 	private WebDateField wdfBirthday;
-	private JTextField textField_7;
+	private JTextField tFPosition;
 	private JButton btnSave;
 	private JButton btnCancel;
 
@@ -87,16 +87,16 @@ public class JFEmployee extends JInternalFrame {
 		JLabel lblCp = new JLabel("CP");
 		panelData.add(lblCp, "cell 1 5,alignx left");
 		
-		textField_4 = new JTextField();
-		panelData.add(textField_4, "cell 2 5,growx");
-		textField_4.setColumns(10);
+		tFCP = new JTextField();
+		panelData.add(tFCP, "cell 2 5,growx");
+		tFCP.setColumns(10);
 		
 		JLabel lblEmail = new JLabel("email");
 		panelData.add(lblEmail, "cell 1 6,alignx left");
 		
-		textField_5 = new JTextField();
-		panelData.add(textField_5, "cell 2 6,growx");
-		textField_5.setColumns(10);
+		tFEmail = new JTextField();
+		panelData.add(tFEmail, "cell 2 6,growx");
+		tFEmail.setColumns(10);
 		
 		JLabel lblBirthday = new JLabel("Birthday");
 		panelData.add(lblBirthday, "cell 1 7,alignx left");
@@ -107,9 +107,9 @@ public class JFEmployee extends JInternalFrame {
 		JLabel lblPosition = new JLabel("Job position");
 		panelData.add(lblPosition, "cell 1 8,alignx left");
 		
-		textField_7 = new JTextField();
-		panelData.add(textField_7, "cell 2 8,growx");
-		textField_7.setColumns(10);
+		tFPosition = new JTextField();
+		panelData.add(tFPosition, "cell 2 8,growx");
+		tFPosition.setColumns(10);
 		
 		JPanel panelButtons = new JPanel();
 		panelData.add(panelButtons, "cell 1 10 2 1,growx");
@@ -123,4 +123,45 @@ public class JFEmployee extends JInternalFrame {
 		getContentPane().setLayout(groupLayout);
 
 	}
+
+	public JTextField gettFDNI() {
+		return tFDNI;
+	}
+
+	public JTextField gettFName() {
+		return tFName;
+	}
+
+	public JTextField gettFSurname() {
+		return tFSurname;
+	}
+
+	public JTextField gettFAddress() {
+		return tFAddress;
+	}
+
+	public JTextField gettFCP() {
+		return tFCP;
+	}
+
+	public JTextField gettFEmail() {
+		return tFEmail;
+	}
+
+	public WebDateField getWdfBirthday() {
+		return wdfBirthday;
+	}
+
+	public JTextField gettFPosition() {
+		return tFPosition;
+	}
+
+	public JButton getBtnSave() {
+		return btnSave;
+	}
+
+	public JButton getBtnCancel() {
+		return btnCancel;
+	}
+	
 }

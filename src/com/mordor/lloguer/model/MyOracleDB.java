@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +103,34 @@ public class MyOracleDB implements Model {
 		}
 		
 		return getEmployees(where);
+	}
+	
+	public boolean addEmployee(Employee employee) throws Exception {
+		boolean added = false;
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "INSERT INTO EMPLEADO (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,cargo,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?)";
+						
+		try (Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(query);) {
+
+			int pos=0;
+			
+			pstmt.setString(++pos, employee.getDNI());
+			pstmt.setString(++pos, employee.getNombre());
+			pstmt.setString(++pos, employee.getApellidos());
+			pstmt.setString(++pos, employee.getDomicilio());
+			pstmt.setString(++pos, employee.getCP());
+			pstmt.setString(++pos, employee.getEmail());
+			pstmt.setDate(++pos, employee.getFechaNac());
+			pstmt.setString(++pos, employee.getCargo());
+			pstmt.setString(++pos, "mordorlloguer_addEmployee");
+			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
+						
+			added = (pstmt.executeUpdate()==1)?true:false;
+			
+		} 
+					
+		return added;
 	}
 	
 	public boolean updateEmployee(Employee employee) {
