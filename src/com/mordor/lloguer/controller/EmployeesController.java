@@ -43,10 +43,16 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		// Add ActionListener
 		view.getCbAttribute().addActionListener(this);
 		view.getCbDirection().addActionListener(this);
+		view.getBtnAdd().addActionListener(this);
+		view.getBtnDelete().addActionListener(this);
+		view.getBtnClose().addActionListener(this);
 
 		// Add ActionCommand
 		view.getCbAttribute().setActionCommand("Change search");
 		view.getCbDirection().setActionCommand("Change search");
+		view.getBtnAdd().setActionCommand("Open employee form");
+		view.getBtnDelete().setActionCommand("Delete employee");
+		view.getBtnClose().setActionCommand("Close jifEmployee");
 
 	}
 
