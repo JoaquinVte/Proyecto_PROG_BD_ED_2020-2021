@@ -14,5 +14,6 @@ public interface Model {
 	public List<String> getTableAttributes(String table);
 	public boolean updateEmployee(Employee employee);
 	public boolean addEmployee(Employee employee) throws Exception ;
+	public boolean deleteEmployee(String dni);
 	
 }

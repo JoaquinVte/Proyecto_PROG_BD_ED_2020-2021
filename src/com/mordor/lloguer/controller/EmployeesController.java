@@ -4,11 +4,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -17,7 +20,7 @@ import com.alee.laf.table.WebTable;
 import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Employee;
 import com.mordor.lloguer.model.Model;
-import com.mordor.lloguer.view.JDProgress;
+import com.mordor.lloguer.view.JIFProgressInformation;
 import com.mordor.lloguer.view.JFEmployee;
 import com.mordor.lloguer.view.JIFEmployees;
 
@@ -28,7 +31,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private WebTable webtable;
 
 	// Progress Dialog
-	private JDProgress jdp;
+	private JIFProgressInformation jdp;
 
 	// JInternalFrame
 	private JFEmployee jifEmployee;
@@ -63,12 +66,14 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	public void go() {
 
-		showProgressDialog();
+		
 
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() throws Exception {
+				
+				jdp = showProgressDialog(null,"Retrieving data from server.");
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
@@ -97,16 +102,23 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		task.execute();
 	}
 
-	private void showProgressDialog() {
+	private JIFProgressInformation showProgressDialog(SwingWorker<?, ?> task, String info) {
 
-		jdp = new JDProgress();
+		JIFProgressInformation jdp = new JIFProgressInformation(task, info);
 
 		// Centramos el dialog
 		Dimension deskSize = view.getDesktopPane().getSize();
 		Dimension ifSize = jdp.getSize();
 		jdp.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
 
+		if (task != null) {
+			jdp.getBtnButton().setText("Cancel");
+			jdp.getBtnButton().addActionListener((e) -> task.cancel(true));
+		}
+
 		jdp.setVisible(true);
+		
+		return jdp;
 	}
 
 	@Override
@@ -129,17 +141,49 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	}
 
 	private void deleteEmployee() {
-		
+
 		int option = JOptionPane.showConfirmDialog(view, "Are you sure yout want to remove the employee?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 
 		if (option == JOptionPane.YES_OPTION) {
 
-			Employee employee = ((MyEmployeeTableModel)webtable.getModel()).getEmployeeAtRow(webtable.getSelectedRow());
+			SwingWorker<Void,Integer> task = new SwingWorker<Void,Integer>(){
 
-			System.out.println(employee);
+				JProgressBar jpb;
+				ArrayList<Employee> employees;
+				int index=0;
+				
+				@Override
+				protected Void doInBackground() throws Exception {
+					
+					jdp = showProgressDialog(this,"Deleting employees....");
+					MainController.addJInternalFrame(jdp);
+					jdp.setVisible(true);
+					
+					employees = ((MyEmployeeTableModel)webtable.getModel()).getEmployeesAtRows(webtable.getSelectedRows());
+					
+					Iterator<Employee> it = employees.iterator();
+					Employee employee;
+					
+					while(it.hasNext() && !isCancelled()) {
+						employee = it.next();
+						model.deleteEmployee(employee.getDNI());
+						jdp.getProgressBar().setIndeterminate(false);
+						jdp.getProgressBar().setValue((++index)*100/employees.size());
+					}				
+					
+					return null;
+				}
+				
+				@Override
+				protected void done() {
+					jdp.dispose();
+				}
+							
+			};
+			task.execute();
 		}
-		
+
 	}
 
 	private void cancelAddNewEmployee() {
@@ -212,8 +256,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						e.printStackTrace();
 					} catch (ExecutionException e) {
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(jifEmployee, "The employee has not been added! Check the fields.", "Information",
-								JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(jifEmployee, "The employee has not been added! Check the fields.",
+								"Information", JOptionPane.INFORMATION_MESSAGE);
 					}
 
 				}
@@ -235,7 +279,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			jifEmployee.getBtnCancel().setActionCommand("Cancel add new employee");
 
 			MainController.addJInternalFrame(jifEmployee);
-			
+
 			jifEmployee.setVisible(true);
 		}
 
@@ -243,12 +287,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	private void changeQuery() {
 
-		showProgressDialog();
-
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() throws Exception {
+				
+				showProgressDialog(null,"Retrieving data from server");
 
 				String field = view.getCbAttribute().getSelectedItem().toString();
 				int direction = ((view.getCbDirection().getSelectedItem().toString()
@@ -400,8 +444,17 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			fireTableRowsInserted(data.size() - 1, data.size() - 1);
 		}
 		
+		public ArrayList<Employee> getEmployeesAtRows(int[] rows){
+			ArrayList<Employee> employees = new ArrayList<Employee>();
+			
+			for(int row : rows)
+				employees.add(getEmployeeAtRow(row));
+			
+			return employees;
+		}
+
 		public Employee getEmployeeAtRow(int row) {
-			if(row<0 || row>=data.size())
+			if (row < 0 || row >= data.size())
 				return null;
 			else
 				return data.get(row);
