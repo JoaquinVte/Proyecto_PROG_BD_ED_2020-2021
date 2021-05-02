@@ -66,14 +66,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	public void go() {
 
-		
-
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				
-				jdp = showProgressDialog(null,"Retrieving data from server.");
+
+				jdp = showProgressDialog(null, "Retrieving data from server.");
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
@@ -117,7 +115,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		}
 
 		jdp.setVisible(true);
-		
+
 		return jdp;
 	}
 
@@ -142,44 +140,45 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	private void deleteEmployee() {
 
-		int option = JOptionPane.showConfirmDialog(view, "Are you sure yout want to remove the employee?", "Confirm",
+		int option = JOptionPane.showConfirmDialog(null, "Are you sure yout want to remove the employee?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 
 		if (option == JOptionPane.YES_OPTION) {
 
-			SwingWorker<Void,Integer> task = new SwingWorker<Void,Integer>(){
+			SwingWorker<Void, Integer> task = new SwingWorker<Void, Integer>() {
 
-				JProgressBar jpb;
 				ArrayList<Employee> employees;
-				int index=0;
-				
+				int index = 0;
+
 				@Override
 				protected Void doInBackground() throws Exception {
+
+					jdp = showProgressDialog(this, "Deleting employees....");
 					
-					jdp = showProgressDialog(this,"Deleting employees....");
 					MainController.addJInternalFrame(jdp);
-					jdp.setVisible(true);
-					
-					employees = ((MyEmployeeTableModel)webtable.getModel()).getEmployeesAtRows(webtable.getSelectedRows());
-					
+
+					employees = ((MyEmployeeTableModel) webtable.getModel())
+							.getEmployeesAtRows(webtable.getSelectedRows());
+
 					Iterator<Employee> it = employees.iterator();
 					Employee employee;
-					
-					while(it.hasNext() && !isCancelled()) {
+
+					while (it.hasNext() && !isCancelled()) {
 						employee = it.next();
 						model.deleteEmployee(employee.getDNI());
 						jdp.getProgressBar().setIndeterminate(false);
-						jdp.getProgressBar().setValue((++index)*100/employees.size());
-					}				
-					
+						jdp.getProgressBar().setValue((++index) * 100 / employees.size());
+						jdp.getLblInformation().setText("Deleting employees...." + index + "/" + employees.size());
+					}
+
 					return null;
 				}
-				
+
 				@Override
 				protected void done() {
 					jdp.dispose();
 				}
-							
+
 			};
 			task.execute();
 		}
@@ -291,8 +290,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				
-				showProgressDialog(null,"Retrieving data from server");
+
+				showProgressDialog(null, "Retrieving data from server");
 
 				String field = view.getCbAttribute().getSelectedItem().toString();
 				int direction = ((view.getCbDirection().getSelectedItem().toString()
@@ -443,13 +442,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			data.add(employee);
 			fireTableRowsInserted(data.size() - 1, data.size() - 1);
 		}
-		
-		public ArrayList<Employee> getEmployeesAtRows(int[] rows){
+
+		public ArrayList<Employee> getEmployeesAtRows(int[] rows) {
 			ArrayList<Employee> employees = new ArrayList<Employee>();
-			
-			for(int row : rows)
+
+			for (int row : rows)
 				employees.add(getEmployeeAtRow(row));
-			
+
 			return employees;
 		}
 

@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
@@ -271,6 +272,13 @@ public class MainController implements ActionListener {
 	static void addJInternalFrame(JInternalFrame jif) {		
 		desktopPane.add(jif);
 		centrar(jif);
+		jif.setVisible(true);
+		try {
+			jif.setSelected(true);
+		} catch (PropertyVetoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	static boolean isOpen(JInternalFrame jif) {

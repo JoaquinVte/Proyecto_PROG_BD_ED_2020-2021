@@ -24,7 +24,7 @@ public class JIFProgressInformation extends JInternalFrame {
 	private JProgressBar progressBar;
 	private JLabel lblInformation;
 
-	public JIFProgressInformation(SwingWorker<?,?> task,String info) {				
+	public JIFProgressInformation(SwingWorker<?,?> task,String info) {
 		
 		this.task=task;
 			
