@@ -52,8 +52,6 @@ public class MainController implements ActionListener {
 	}
 
 	private void inicialize() {
-		
-		JDialog.setDefaultLookAndFeelDecorated(true);
 
 		// Hacemos que la aplicacion se vea maximizada
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();

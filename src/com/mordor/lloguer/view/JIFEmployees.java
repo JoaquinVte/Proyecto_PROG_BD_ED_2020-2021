@@ -3,8 +3,11 @@ package com.mordor.lloguer.view;
 import javax.swing.JInternalFrame;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
@@ -91,6 +94,14 @@ public class JIFEmployees extends JInternalFrame {
 		
 		btnClose = new JButton("Close");
 		panelInferior.add(btnClose);
+		
+		JPopupMenu popupMenu = new JPopupMenu();
+		JMenuItem menuItemAdd = new JMenuItem("Add New Row");
+		JMenuItem menuItemRemove = new JMenuItem("Remove Current Row");
+		 
+		popupMenu.add(menuItemAdd);
+		popupMenu.add(menuItemRemove);
+		table.setComponentPopupMenu(popupMenu);
 
 	}
 

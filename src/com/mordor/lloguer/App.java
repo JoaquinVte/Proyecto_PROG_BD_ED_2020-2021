@@ -1,5 +1,6 @@
 package com.mordor.lloguer;
 
+import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 import com.alee.laf.WebLookAndFeel;
 import com.mordor.lloguer.controller.MainController;
@@ -18,6 +19,7 @@ public class App {
                 WebLookAndFeel.install();
                 
                 //StyleManager.setSkin(WebDarkSkin.class);
+                JDialog.setDefaultLookAndFeelDecorated(true);
                 
 				JFMain view = new JFMain();
 				Model model = new MyOracleDB();
