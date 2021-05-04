@@ -105,7 +105,7 @@ public class MyOracleDB implements Model {
 		return getEmployees(where);
 	}
 	
-	public boolean addEmployee(Employee employee) throws Exception {
+	public boolean addEmployee(Employee employee) throws SQLException {
 		boolean added = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
 		String query = "INSERT INTO EMPLEADO (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,cargo,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -123,7 +123,7 @@ public class MyOracleDB implements Model {
 			pstmt.setString(++pos, employee.getEmail());
 			pstmt.setDate(++pos, employee.getFechaNac());
 			pstmt.setString(++pos, employee.getCargo());
-			pstmt.setString(++pos, "mordorlloguer_addEmployee");
+			pstmt.setString(++pos, "mlloguer_addEmployee");
 			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
 						
 			added = (pstmt.executeUpdate()==1)?true:false;
@@ -198,16 +198,25 @@ public class MyOracleDB implements Model {
 		return empleados;
 	}
 	@Override
-	public boolean deleteEmployee(String dni) {
+	public boolean deleteEmployee(String dni) throws SQLException {
 		
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
+		boolean removed = false;
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "DELETE FROM EMPLEADO WHERE DNI=?";
+						
+		try (Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(query);) {
+
+			int pos=0;
+			
+			pstmt.setString(++pos, dni);
+			
+						
+			removed = (pstmt.executeUpdate()==1)?true:false;
+			
+		} 
+					
+		return removed;
 	}
 	
 }
