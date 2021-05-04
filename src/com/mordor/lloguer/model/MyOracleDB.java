@@ -12,23 +12,21 @@ import java.util.List;
 import javax.sql.DataSource;
 
 public class MyOracleDB implements Model {
-	
+
 	// STATEMENTS
 	@Override
 	public ArrayList<Employee> getEmployees() {
-		return getEmployees(null);		
+		return getEmployees(null);
 	}
+
 	@Override
-	public boolean athenticate(String dni, String password) throws Exception {
+	public boolean authenticate(String dni, String password) throws Exception {
 
 		DataSource ds = MyDataSource.getOracleDataSource();
 		boolean authenticated = false;
 		String query = "SELECT COUNT(*) FROM EMPLEADO WHERE DNI=? AND password=?";
-		
-		try (
-				Connection con = ds.getConnection(); 
-				PreparedStatement pstmt = con.prepareStatement(query)
-			){
+
+		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query)) {
 
 			pstmt.setString(1, dni);
 			pstmt.setString(2, password);
@@ -40,12 +38,12 @@ public class MyOracleDB implements Model {
 				cantidad = rs.getInt(1);
 
 			authenticated = cantidad == 1;
-			
-			if(!authenticated)
+
+			if (!authenticated)
 				throw new Exception("Usuario/Password incorrecto");
 
 		} catch (SQLException e) {
-			if(e.getErrorCode()==1017)
+			if (e.getErrorCode() == 1017)
 				throw new Exception("Connection refused. Check server configuration.");
 		}
 
@@ -57,12 +55,10 @@ public class MyOracleDB implements Model {
 
 		List<String> atributos = new ArrayList<String>();
 		DataSource ds = MyDataSource.getOracleDataSource();
-	
+
 		/*
-		SELECT column_name
-		FROM all_tab_columns 
-		WHERE table_name = 'EMPLEADO'
-		*/
+		 * SELECT column_name FROM all_tab_columns WHERE table_name = 'EMPLEADO'
+		 */
 
 		String fields = "COLUMN_NAME";
 		String tables = "all_tab_columns";
@@ -73,10 +69,9 @@ public class MyOracleDB implements Model {
 				Statement stm = con.createStatement();
 				ResultSet rs = stm.executeQuery(query);) {
 
-			while (rs.next()) 
+			while (rs.next())
 				atributos.add(rs.getString("COLUMN_NAME"));
-			
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,11 +80,12 @@ public class MyOracleDB implements Model {
 		return atributos;
 
 	}
+
 	@Override
 	public ArrayList<Employee> getEmployeesByField(String field, int direction) {
-		
-		String where  = " ORDER BY " + field ;
-		
+
+		String where = " ORDER BY " + field;
+
 		switch (direction) {
 		case ASCENDING:
 			where += " ASC ";
@@ -101,20 +97,19 @@ public class MyOracleDB implements Model {
 			where += " ASC ";
 			break;
 		}
-		
+
 		return getEmployees(where);
 	}
-	
+
 	public boolean addEmployee(Employee employee) throws Exception {
 		boolean added = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
 		String query = "INSERT INTO EMPLEADO (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,cargo,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?)";
-						
-		try (Connection con = ds.getConnection();
-			PreparedStatement pstmt = con.prepareStatement(query);) {
 
-			int pos=0;
-			
+		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query);) {
+
+			int pos = 0;
+
 			pstmt.setString(++pos, employee.getDNI());
 			pstmt.setString(++pos, employee.getNombre());
 			pstmt.setString(++pos, employee.getApellidos());
@@ -125,68 +120,55 @@ public class MyOracleDB implements Model {
 			pstmt.setString(++pos, employee.getCargo());
 			pstmt.setString(++pos, "mordorlloguer_addEmployee");
 			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
-						
-			added = (pstmt.executeUpdate()==1)?true:false;
-			
-		} 
-					
+
+			added = (pstmt.executeUpdate() == 1) ? true : false;
+
+		}
+
 		return added;
 	}
-	
+
 	public boolean updateEmployee(Employee employee) {
 		boolean actualizado = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
-						
-		try (Connection con = ds.getConnection();
-			Statement stmt = con.createStatement();) {
 
-			String query = "UPDATE EMPLEADO SET nombre='"+employee.getNombre()+"', "+
-												"apellidos='"+employee.getApellidos()+"',"+
-												"domicilio='"+employee.getDomicilio()+"',"+
-												"CP='"+employee.getCP()+"',"+
-												"email='"+employee.getEmail()+"',"+
-												"fechaNac=TO_DATE('"+employee.getFechaNac()+"','yyyy-mm-dd'), "+
-												"cargo='"+employee.getCargo()+"' "+
-												"WHERE DNI='" + employee.getDNI() +"'";
-						
-			actualizado = (stmt.executeUpdate(query)==1)?true:false;
-			
+		try (Connection con = ds.getConnection(); Statement stmt = con.createStatement();) {
+
+			String query = "UPDATE EMPLEADO SET nombre='" + employee.getNombre() + "', " + "apellidos='"
+					+ employee.getApellidos() + "'," + "domicilio='" + employee.getDomicilio() + "'," + "CP='"
+					+ employee.getCP() + "'," + "email='" + employee.getEmail() + "'," + "fechaNac=TO_DATE('"
+					+ employee.getFechaNac() + "','yyyy-mm-dd'), " + "cargo='" + employee.getCargo() + "' "
+					+ "WHERE DNI='" + employee.getDNI() + "'";
+
+			actualizado = (stmt.executeUpdate(query) == 1) ? true : false;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-					
+
 		return actualizado;
 	}
-	
-	private ArrayList<Employee> getEmployees(String where){
+
+	private ArrayList<Employee> getEmployees(String where) {
 		DataSource ds = MyDataSource.getOracleDataSource();
 		ArrayList<Employee> empleados = new ArrayList<Employee>();
-		
-		String query = "SELECT * FROM EMPLEADO";
-		
-		if(where!=null)
-			query+=where;
 
-		try (
-				Connection con = ds.getConnection();
+		String query = "SELECT * FROM EMPLEADO";
+
+		if (where != null)
+			query += where;
+
+		try (Connection con = ds.getConnection();
 				Statement stmt = con.createStatement();
-				ResultSet rs = stmt.executeQuery(query);
-			){
+				ResultSet rs = stmt.executeQuery(query);) {
 
 			Employee empleado;
 
-						
 			while (rs.next()) {
-				
-				empleado = new Employee(rs.getInt("IDEMPLEADO"), 
-										rs.getString("DNI"), 
-										rs.getString("nombre"),
-										rs.getString("apellidos"),
-										rs.getString("domicilio"),
-										rs.getString("CP"),
-										rs.getString("email"),
-										rs.getDate("fechaNac"),
-										rs.getString("cargo"));
+
+				empleado = new Employee(rs.getInt("IDEMPLEADO"), rs.getString("DNI"), rs.getString("nombre"),
+						rs.getString("apellidos"), rs.getString("domicilio"), rs.getString("CP"), rs.getString("email"),
+						rs.getDate("fechaNac"), rs.getString("cargo"));
 
 				empleados.add(empleado);
 			}
@@ -197,17 +179,18 @@ public class MyOracleDB implements Model {
 
 		return empleados;
 	}
+
 	@Override
 	public boolean deleteEmployee(String dni) {
-		
+
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
-	
+
 }

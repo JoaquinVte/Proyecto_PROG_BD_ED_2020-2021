@@ -222,7 +222,7 @@ public class MainController implements ActionListener {
 
 				try {
 
-					isLogin = model.athenticate(login, password);
+					isLogin = model.authenticate(login, password);
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(jifLogin, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -292,7 +292,8 @@ public class MainController implements ActionListener {
 	static void centrar(JInternalFrame jif) {
 		Dimension deskSize = desktopPane.getSize();
 		Dimension ifSize = jif.getSize();
-		jif.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
+		jif.setLocation((deskSize.width - ifSize.width) / 2, 
+				(deskSize.height - ifSize.height) / 2);
 	}
 
 }

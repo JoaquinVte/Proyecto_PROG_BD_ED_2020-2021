@@ -75,6 +75,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			protected Void doInBackground() throws Exception {
 
 				jdp = showProgressDialog(null, "Retrieving data from server.");
+				MainController.addJInternalFrame(jdp);
+				jdp.setVisible(true);
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
@@ -86,6 +88,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 				metm.addTableModelListener(MainController.employeesController);
 
 				webtable.setDefaultEditor(Date.class, new WebDateEditor());
+				
+				Thread.sleep(3000);
 
 				return null;
 			}
