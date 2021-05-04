@@ -47,6 +47,8 @@ public class MyOracleDB implements Model {
 		} catch (SQLException e) {
 			if(e.getErrorCode()==1017)
 				throw new Exception("Connection refused. Check server configuration.");
+			else
+				throw new Exception(e.getMessage());			
 		}
 
 		return authenticated;
