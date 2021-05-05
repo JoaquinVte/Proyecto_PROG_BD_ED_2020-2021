@@ -1,12 +1,10 @@
 package com.mordor.lloguer.controller;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,11 +13,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -521,8 +515,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		public void removeEmployee(Employee employee) {
 			int row = data.indexOf(employee);
 			if (row >= 0) {
-				data.remove(employee);
-				this.fireTableRowsDeleted(row, row);
+				removeRow(row);
 			}
 		}
 
