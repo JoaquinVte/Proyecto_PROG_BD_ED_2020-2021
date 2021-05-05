@@ -45,6 +45,8 @@ public class MyOracleDB implements Model {
 		} catch (SQLException e) {
 			if (e.getErrorCode() == 1017)
 				throw new Exception("Connection refused. Check server configuration.");
+			else
+				throw new Exception(e.getMessage());			
 		}
 
 		return authenticated;
@@ -100,8 +102,8 @@ public class MyOracleDB implements Model {
 
 		return getEmployees(where);
 	}
-
-	public boolean addEmployee(Employee employee) throws Exception {
+	
+	public boolean addEmployee(Employee employee) throws SQLException {
 		boolean added = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
 		String query = "INSERT INTO EMPLEADO (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,cargo,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -118,7 +120,7 @@ public class MyOracleDB implements Model {
 			pstmt.setString(++pos, employee.getEmail());
 			pstmt.setDate(++pos, employee.getFechaNac());
 			pstmt.setString(++pos, employee.getCargo());
-			pstmt.setString(++pos, "mordorlloguer_addEmployee");
+			pstmt.setString(++pos, "mlloguer_addEmployee");
 			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
 
 			added = (pstmt.executeUpdate() == 1) ? true : false;
@@ -181,16 +183,26 @@ public class MyOracleDB implements Model {
 	}
 
 	@Override
-	public boolean deleteEmployee(String dni) {
 
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public boolean deleteEmployee(String dni) throws SQLException {
+		
+		boolean removed = false;
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "DELETE FROM EMPLEADO WHERE DNI=?";
+						
+		try (Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(query);) {
 
-		return true;
+			int pos=0;
+			
+			pstmt.setString(++pos, dni);
+			
+						
+			removed = (pstmt.executeUpdate()==1)?true:false;
+			
+		} 
+					
+		return removed;
 	}
 
 }

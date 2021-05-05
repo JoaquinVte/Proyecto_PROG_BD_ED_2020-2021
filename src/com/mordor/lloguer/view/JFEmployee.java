@@ -1,17 +1,11 @@
 package com.mordor.lloguer.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import java.awt.Toolkit;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle.ComponentPlacement;
-
 import com.alee.extended.date.WebDateField;
 
 import java.awt.FlowLayout;
@@ -20,6 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 public class JFEmployee extends JInternalFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField tFDNI;
 	private JTextField tFName;
 	private JTextField tFSurname;

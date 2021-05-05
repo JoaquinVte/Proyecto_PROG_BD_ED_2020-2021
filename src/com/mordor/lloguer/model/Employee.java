@@ -94,6 +94,13 @@ public class Employee {
 		this.cargo = cargo;
 	}
 	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Employee) {
+			return ((Employee) o).getDNI().equalsIgnoreCase(DNI);
+		}else
+			return false;
+	}
+	@Override
 	public String toString() {
 		return "Empleado [id=" + id + ", DNI=" + DNI + ", nombre=" + nombre + ", apellidos=" + apellidos
 				+ ", domicilio=" + domicilio + ", CP=" + CP + ", email=" + email + ", fechaNac=" + fechaNac + ", cargo="

@@ -1,5 +1,6 @@
 package com.mordor.lloguer.model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface Model {
 	public boolean authenticate(String dni, String password) throws Exception;
 	public List<String> getTableAttributes(String table);
 	public boolean updateEmployee(Employee employee);
-	public boolean addEmployee(Employee employee) throws Exception ;
-	public boolean deleteEmployee(String dni);
+	public boolean addEmployee(Employee employee) throws SQLException ;
+	public boolean deleteEmployee(String dni) throws SQLException;
 	
 }

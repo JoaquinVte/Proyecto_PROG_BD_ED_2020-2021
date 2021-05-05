@@ -1,12 +1,12 @@
 package com.mordor.lloguer.controller;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -50,13 +49,34 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private void initialize() {
 
 		webtable = view.getTable();
+		webtable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    int r = webtable.rowAtPoint(e.getPoint());
+                   
+                    if(r < 0 || r >= webtable.getRowCount()) {
+                    	webtable.clearSelection();								 	// Row not in table
+                    }else if( webtable.getSelectedRow()>=0) {
+                    	view.getPopupMenu().show(webtable, e.getX(), e.getY());	 	// Many rows selected
+                    }else {
+                    	webtable.setRowSelectionInterval(r, r);						// No row selected previously
+                        view.getPopupMenu().show(webtable, e.getX(), e.getY());	 
+                    }
+                }
+            }
+        });
 
+		
+		
 		// Add ActionListener
 		view.getCbAttribute().addActionListener(this);
 		view.getCbDirection().addActionListener(this);
 		view.getBtnAdd().addActionListener(this);
 		view.getBtnDelete().addActionListener(this);
 		view.getBtnClose().addActionListener(this);
+		view.getMenuItemAdd().addActionListener(this);
+		view.getMenuItemRemove().addActionListener(this);
 
 		// Add ActionCommand
 		view.getCbAttribute().setActionCommand("Change search");
@@ -64,6 +84,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		view.getBtnAdd().setActionCommand("Open employee form");
 		view.getBtnDelete().setActionCommand("Delete employee");
 		view.getBtnClose().setActionCommand("Close jifEmployee");
+		view.getMenuItemAdd().setActionCommand("Open employee form");
+		view.getMenuItemRemove().setActionCommand("Delete employee");
 
 	}
 
@@ -76,6 +98,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				jdp = showProgressDialog(null, "Retrieving data from server.");
 				MainController.addJInternalFrame(jdp);
+				
 				jdp.setVisible(true);
 
 				List<Employee> employees = model.getEmployees().stream()
@@ -139,10 +162,19 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			addNewEmployee();
 		} else if (command.equals("Delete employee")) {
 			deleteEmployee();
+		} else if (command.equals("Close jifEmployee")) {
+			CloseEmployees();
 		} else if (command.equals("Cancel add new employee")) {
 			cancelAddNewEmployee();
 		}
 
+	}
+
+	private void CloseEmployees() {
+		int option = JOptionPane.showConfirmDialog(view, "Are you sure to close the employees window?", "Confirm",JOptionPane.YES_NO_OPTION);
+		if(option==JOptionPane.YES_OPTION) {
+			view.dispose();
+		}		
 	}
 
 	private void deleteEmployee() {
@@ -152,14 +184,15 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		if (option == JOptionPane.YES_OPTION) {
 
-			SwingWorker<Void, Integer> task = new SwingWorker<Void, Integer>() {
+			SwingWorker<Boolean, Integer> task = new SwingWorker<Boolean, Integer>() {
 
 				ArrayList<Employee> employees;
 				int index = 0;
 
 				@Override
-				protected Void doInBackground() throws Exception {
+				protected Boolean doInBackground() throws Exception {
 
+					boolean deleted = false;
 					jdp = showProgressDialog(this, "Deleting employees....");
 					
 					MainController.addJInternalFrame(jdp);
@@ -172,18 +205,24 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 					while (it.hasNext() && !isCancelled()) {
 						employee = it.next();
-						model.deleteEmployee(employee.getDNI());
+						
+						if(model.deleteEmployee(employee.getDNI())) {
+							((MyEmployeeTableModel) webtable.getModel()).removeEmployee(employee);
+						}
+						
 						jdp.getProgressBar().setIndeterminate(false);
 						jdp.getProgressBar().setValue((++index) * 100 / employees.size());
 						jdp.getLblInformation().setText("Deleting employees...." + index + "/" + employees.size());
 					}
 
-					return null;
+					return deleted;
 				}
 
 				@Override
 				protected void done() {
+					
 					jdp.dispose();
+					
 				}
 
 			};
@@ -235,7 +274,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 					boolean added = false;
 
-					added = model.addEmployee(employee);
+					try {
+						added = model.addEmployee(employee);
+					} catch (SQLException sql) {
+						JOptionPane.showMessageDialog(jifEmployee, sql.getMessage(), "Error",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
 
 					return added;
 				}
@@ -261,6 +305,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (ExecutionException e) {
+						
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(jifEmployee, "The employee has not been added! Check the fields.",
 								"Information", JOptionPane.INFORMATION_MESSAGE);
@@ -275,7 +320,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	private void openEmployeeForm() {
 
-		if (jifEmployee == null) {
+		if (!MainController.isOpen(jifEmployee)) {
 			jifEmployee = new JFEmployee();
 
 			jifEmployee.getBtnSave().addActionListener(this);
@@ -469,6 +514,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		public void removeRow(int row) {
 			data.remove(row);
 			this.fireTableRowsDeleted(row, row);
+		}
+
+		public void removeEmployee(Employee employee) {
+			int row = data.indexOf(employee);
+			if (row >= 0) {
+				removeRow(row);
+			}
 		}
 
 	}

@@ -32,6 +32,9 @@ public class JIFEmployees extends JInternalFrame {
 	private JButton btnClose;
 	private WebComboBox cbAttribute;
 	private WebComboBox cbDirection;
+	private JPopupMenu popupMenu;
+	private JMenuItem menuItemAdd;
+	private JMenuItem menuItemRemove;
 
 	/**
 	 * Create the frame.
@@ -94,14 +97,13 @@ public class JIFEmployees extends JInternalFrame {
 		
 		btnClose = new JButton("Close");
 		panelInferior.add(btnClose);
-		
-		JPopupMenu popupMenu = new JPopupMenu();
-		JMenuItem menuItemAdd = new JMenuItem("Add New Row");
-		JMenuItem menuItemRemove = new JMenuItem("Remove Current Row");
-		 
+
+		popupMenu = new JPopupMenu();
+		menuItemAdd = new JMenuItem("Add new employee",new ImageIcon(JIFEmployees.class.getResource("/com/mordor/lloguer/assets/employee_add.png")));
+		menuItemRemove = new JMenuItem("Remove selected employee",new ImageIcon(JIFEmployees.class.getResource("/com/mordor/lloguer/assets/employee_del.png")));
+
 		popupMenu.add(menuItemAdd);
 		popupMenu.add(menuItemRemove);
-		table.setComponentPopupMenu(popupMenu);
 
 	}
 
@@ -127,6 +129,18 @@ public class JIFEmployees extends JInternalFrame {
 
 	public WebComboBox getCbDirection() {
 		return cbDirection;
+	}
+
+	public JPopupMenu getPopupMenu() {
+		return popupMenu;
+	}
+
+	public JMenuItem getMenuItemAdd() {
+		return menuItemAdd;
+	}
+
+	public JMenuItem getMenuItemRemove() {
+		return menuItemRemove;
 	}
 	
 }
