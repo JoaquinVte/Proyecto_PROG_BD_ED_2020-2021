@@ -13,11 +13,18 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+
+import com.alee.extended.date.WebDateField;
+import com.alee.laf.combobox.WebComboBoxEditor;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Employee;
@@ -50,25 +57,23 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		webtable = view.getTable();
 		webtable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    int r = webtable.rowAtPoint(e.getPoint());
-                   
-                    if(r < 0 || r >= webtable.getRowCount()) {
-                    	webtable.clearSelection();								 	// Row not in table
-                    }else if( webtable.getSelectedRow()>=0) {
-                    	view.getPopupMenu().show(webtable, e.getX(), e.getY());	 	// Many rows selected
-                    }else {
-                    	webtable.setRowSelectionInterval(r, r);						// No row selected previously
-                        view.getPopupMenu().show(webtable, e.getX(), e.getY());	 
-                    }
-                }
-            }
-        });
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					int r = webtable.rowAtPoint(e.getPoint());
 
-		
-		
+					if (r < 0 || r >= webtable.getRowCount()) {
+						webtable.clearSelection(); // Row not in table
+					} else if (webtable.getRowCount() > 1) {
+						view.getPopupMenu().show(webtable, e.getX(), e.getY()); // Many rows selected
+					} else {
+						webtable.setRowSelectionInterval(r, r); // No row selected previously
+						view.getPopupMenu().show(webtable, e.getX(), e.getY());
+					}
+				}
+			}
+		});
+
 		// Add ActionListener
 		view.getCbAttribute().addActionListener(this);
 		view.getCbDirection().addActionListener(this);
@@ -98,7 +103,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				jdp = showProgressDialog(null, "Retrieving data from server.");
 				MainController.addJInternalFrame(jdp);
-				
 				jdp.setVisible(true);
 
 				List<Employee> employees = model.getEmployees().stream()
@@ -112,7 +116,16 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				webtable.setDefaultEditor(Date.class, new WebDateEditor());
 				
-				Thread.sleep(3000);
+				// Adding comboBox just to edit the company position in the WebTable
+//				JComboBox<String> comboBox = new JComboBox<String>();
+//			    comboBox.addItem("mecanico");
+//			    comboBox.addItem("administrativo");
+//			    comboBox.addItem("comercial");
+//			    comboBox.addItem("gerente");
+//				
+//				TableColumn column = webtable.getColumn("Cargo");
+//				column.setCellEditor(new DefaultCellEditor(comboBox));
+				
 
 				return null;
 			}
@@ -171,10 +184,11 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	}
 
 	private void CloseEmployees() {
-		int option = JOptionPane.showConfirmDialog(view, "Are you sure to close the employees window?", "Confirm",JOptionPane.YES_NO_OPTION);
-		if(option==JOptionPane.YES_OPTION) {
+		int option = JOptionPane.showConfirmDialog(view, "Are you sure to close the employees window?", "Confirm",
+				JOptionPane.YES_NO_OPTION);
+		if (option == JOptionPane.YES_OPTION) {
 			view.dispose();
-		}		
+		}
 	}
 
 	private void deleteEmployee() {
@@ -194,7 +208,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 					boolean deleted = false;
 					jdp = showProgressDialog(this, "Deleting employees....");
-					
+
 					MainController.addJInternalFrame(jdp);
 
 					employees = ((MyEmployeeTableModel) webtable.getModel())
@@ -205,11 +219,11 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 					while (it.hasNext() && !isCancelled()) {
 						employee = it.next();
-						
-						if(model.deleteEmployee(employee.getDNI())) {
+
+						if (model.deleteEmployee(employee.getDNI())) {
 							((MyEmployeeTableModel) webtable.getModel()).removeEmployee(employee);
 						}
-						
+
 						jdp.getProgressBar().setIndeterminate(false);
 						jdp.getProgressBar().setValue((++index) * 100 / employees.size());
 						jdp.getLblInformation().setText("Deleting employees...." + index + "/" + employees.size());
@@ -220,9 +234,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				@Override
 				protected void done() {
-					
+
 					jdp.dispose();
-					
+
 				}
 
 			};
@@ -305,7 +319,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (ExecutionException e) {
-						
+
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(jifEmployee, "The employee has not been added! Check the fields.",
 								"Information", JOptionPane.INFORMATION_MESSAGE);
@@ -387,7 +401,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		List<Employee> data;
 
 		public MyEmployeeTableModel(List<Employee> data) {
+			super();
 			this.data = data;
+
 		}
 
 		public String getColumnName(int col) {
