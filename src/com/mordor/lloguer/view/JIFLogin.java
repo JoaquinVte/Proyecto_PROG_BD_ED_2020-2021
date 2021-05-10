@@ -28,8 +28,8 @@ public class JIFLogin extends JInternalFrame {
 	 */
 	public JIFLogin() {
 		setClosable(true);
-		setBounds(100, 100, 450, 269);
-		getContentPane().setLayout(new MigLayout("", "[][grow][]", "[40.00][50px][50px][50px][60px][10px][59.00,grow][30px]"));
+		setBounds(100, 100, 543, 269);
+		getContentPane().setLayout(new MigLayout("", "[][:474.00:474.00][]", "[40.00][50px][50px][50px][60px][10px][59.00,grow][30px]"));
 		
 		JLabel lblLogin = new JLabel("Member Login");
 		lblLogin.setFont(new Font("DejaVu Sans", Font.PLAIN, 28));
@@ -48,7 +48,7 @@ public class JIFLogin extends JInternalFrame {
 		lblError = new JLabel("");
 		lblError.setForeground(Color.RED);
 		lblError.setHorizontalAlignment(JLabel.CENTER);
-		getContentPane().add(lblError, "cell 1 4,growx");
+		getContentPane().add(lblError, "cell 1 4,alignx center");
 				
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -75,8 +75,8 @@ public class JIFLogin extends JInternalFrame {
 		return btnLogin;
 	}
 
-	public JLabel getLblError() {
-		return lblError;
+	public void setError(String error) {
+		lblError.setText("<html><p>" + error + "</p></html>");
 	}
 
 	public JProgressBar getProgressBar() {

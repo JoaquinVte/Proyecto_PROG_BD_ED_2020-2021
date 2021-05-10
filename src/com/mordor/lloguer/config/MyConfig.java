@@ -15,8 +15,9 @@ public class MyConfig {
 
 	private String defaultFile = "db.properties";
 	private String appFile = "app.properties";
-	private String key = "ieslavereda.es";
 	private Properties properties;
+	
+	private String key = "ieslavereda.es";	
 	private Map<String, String> propiedadesSeguras;
 
 	private MyConfig() {
@@ -59,7 +60,8 @@ public class MyConfig {
 		propiedadesSeguras.put("ORACLE_DB_USERNAME", "IS_ORACLE_DB_USERNAME_ENCRYPTED");
 		propiedadesSeguras.put("ORACLE_DB_PASSWORD", "IS_ORACLE_DB_PASSWORD_ENCRYPTED");
 		
-		// Si no existe la propiedad que indica si esta encriptado una key, la creamos y la ponemos a false
+		// Si no existe la propiedad que indica si esta encriptado una key, 
+		// la creamos y la ponemos a false
 		for(String isEncripted : propiedadesSeguras.values()) {
 			if(!properties.containsKey(isEncripted))
 				properties.put(isEncripted, "false");
@@ -152,10 +154,12 @@ public class MyConfig {
 	}
 	public void setUsername(String username) {
 		properties.put("ORACLE_DB_USERNAME", encrypt(username));
+		properties.put("IS_ORACLE_DB_USERNAME_ENCRYPTED", "true");		
 		guardar();
 	}
 	public void setPassword(String password) {
 		properties.put("ORACLE_DB_PASSWORD", encrypt(password));
+		properties.put("IS_ORACLE_DB_PASSWORD_ENCRYPTED", "true");
 		guardar();
 	}
 

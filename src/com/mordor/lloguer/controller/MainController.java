@@ -206,7 +206,7 @@ public class MainController implements ActionListener {
 
 	private void login() {
 
-		jifLogin.getLblError().setText("");
+		
 
 		String login = jifLogin.getTxtFieldLogin().getText();
 		String password = String.valueOf(jifLogin.getPasswordField().getPassword());
@@ -218,7 +218,7 @@ public class MainController implements ActionListener {
 			@Override
 			public Boolean doInBackground() {
 
-				jifLogin.getLblError().setText("");
+				jifLogin.setError("");
 
 				jifLogin.getProgressBar().setVisible(true);
 
@@ -229,7 +229,8 @@ public class MainController implements ActionListener {
 					isLogin = model.authenticate(login, password);
 
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(jifLogin, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					jifLogin.setError(e.getMessage());
+					//JOptionPane.showMessageDialog(jifLogin, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 
 				return isLogin;
