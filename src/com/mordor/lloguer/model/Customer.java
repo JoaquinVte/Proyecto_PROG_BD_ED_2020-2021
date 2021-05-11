@@ -17,8 +17,16 @@ public class Customer {
 	
 	public Customer(int id, String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
 			Date fechaNac, char carnet, byte[] foto) {
+		
+		this(dNI, nombre, apellidos, domicilio, cP, email, fechaNac, carnet, foto);
+		
+		this.id = id;
+	}
+	
+	public Customer( String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
+			Date fechaNac, char carnet, byte[] foto) {
 		super();
-		this.id=id;
+
 		DNI = dNI;
 		this.nombre = nombre;
 		this.apellidos = apellidos;

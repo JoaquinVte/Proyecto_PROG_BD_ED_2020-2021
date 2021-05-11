@@ -20,5 +20,6 @@ public interface Model {
 	
 	// Customers
 	public ArrayList<Customer> getCustomers() throws SQLException;
+	public boolean addCustomer(Customer customer) throws SQLException;
 	
 }

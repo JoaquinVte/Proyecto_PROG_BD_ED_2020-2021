@@ -1,30 +1,34 @@
 package com.mordor.lloguer.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import java.awt.GridLayout;
-import java.io.File;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JPanel;
 
-import com.alee.api.resource.Resource;
 import com.alee.extended.date.WebDateField;
-import com.alee.extended.svg.SvgIcon;
+import com.mordor.lloguer.model.Customer;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
+import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
 
 public class JIFCustomer extends JInternalFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField textFieldEmail;
 	private JTextField textFieldDNI;
 	private WebDateField wdfBirthday;
@@ -33,8 +37,22 @@ public class JIFCustomer extends JInternalFrame {
 	private JTextField textFieldSurname;
 	private JTextField textFieldAddress;
 	private JTextField textFieldClientId;
+	private JLabel lblLicensePhoto;
+	private JComboBox<String> cbLicense;
+	private JButton btnAdd;
+	private JButton btnCancel;
+	
+	private Customer customer;
+	private byte[] image;
 
-
+	
+	public JIFCustomer(Customer customer) {
+		this();
+		
+		this.customer = customer;
+		this.setImage(customer.getFoto());
+	}
+	
 	/**
 	 * Create the frame.
 	 */
@@ -49,7 +67,7 @@ public class JIFCustomer extends JInternalFrame {
 		getContentPane().add(panelSuperior);
 		panelSuperior.setLayout(new MigLayout("", "[grow][410px][grow]", "[grow][150px][grow]"));
 		
-		JLabel lblLicensePhoto = new JLabel();
+		lblLicensePhoto = new JLabel();
 		lblLicensePhoto.setPreferredSize(new Dimension(410, 150));
 		lblLicensePhoto.setIcon(new ImageIcon(JIFCustomer.class.getResource("/com/mordor/lloguer/assets/default_license.png")));
 		panelSuperior.add(lblLicensePhoto, "cell 1 1,alignx center,aligny center");
@@ -102,7 +120,8 @@ public class JIFCustomer extends JInternalFrame {
 		JLabel lblDrivingLicense = new JLabel("Driving license");
 		panelInferior.add(lblDrivingLicense, "cell 3 4,alignx left");
 		
-		JComboBox cbLicense = new JComboBox();
+		cbLicense = new JComboBox<String>();
+		cbLicense.setModel(new DefaultComboBoxModel(new String[] {"A", "B", "C", "D", "E", "F", "Z"}));
 		panelInferior.add(cbLicense, "cell 4 4,alignx left");
 		
 		JLabel lblAddress = new JLabel("Address");
@@ -123,12 +142,96 @@ public class JIFCustomer extends JInternalFrame {
 		panelInferior.add(panel, "cell 0 6 5 1,grow");
 		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		
-		JButton btnAdd = new JButton("Add");
+		btnAdd = new JButton("Add");
 		panel.add(btnAdd);
 		
-		JButton btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		panel.add(btnCancel);
 
+	}
+
+	public JTextField getTextFieldEmail() {
+		return textFieldEmail;
+	}
+
+	public JTextField getTextFieldDNI() {
+		return textFieldDNI;
+	}
+
+	public WebDateField getWdfBirthday() {
+		return wdfBirthday;
+	}
+
+	public JTextField getTextFieldCP() {
+		return textFieldCP;
+	}
+
+	public JTextField getTextFieldName() {
+		return textFieldName;
+	}
+
+	public JTextField getTextFieldSurname() {
+		return textFieldSurname;
+	}
+
+	public JTextField getTextFieldAddress() {
+		return textFieldAddress;
+	}
+
+	public JTextField getTextFieldClientId() {
+		return textFieldClientId;
+	}
+
+	public JLabel getLblLicensePhoto() {
+		return lblLicensePhoto;
+	}
+
+	public JComboBox<String> getCbLicense() {
+		return cbLicense;
+	}
+
+	public JButton getBtnAdd() {
+		return btnAdd;
+	}
+
+	public JButton getBtnCancel() {
+		return btnCancel;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
+			
+		if (image != null) {
+			
+			BufferedImage ima = null;
+			InputStream in = new ByteArrayInputStream(image);
+			try {
+				ima = ImageIO.read(in);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			ImageIcon icono = new ImageIcon(ima);
+			Image imageToResize = icono.getImage();
+			Image nuevaResized = imageToResize.getScaledInstance(410, 150,
+					java.awt.Image.SCALE_SMOOTH);
+			lblLicensePhoto.setIcon(new ImageIcon(nuevaResized));
+		} else {
+			lblLicensePhoto.setIcon(new ImageIcon(JIFCustomer.class.getResource("/com/mordor/lloguer/assets/default_license.png")));
+		}
 	}
 
 }

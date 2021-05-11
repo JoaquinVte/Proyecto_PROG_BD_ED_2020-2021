@@ -1,5 +1,7 @@
 package com.mordor.lloguer.model;
 
+import java.awt.Image;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.swing.ImageIcon;
 
 public class MyOracleDB implements Model {
 
@@ -76,7 +80,6 @@ public class MyOracleDB implements Model {
 				atributos.add(rs.getString("COLUMN_NAME"));
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -220,25 +223,74 @@ public class MyOracleDB implements Model {
 			){
 			
 			Customer customer;
+			int clientId;
+			String DNI;
+			String name;
+			String surname;
+			String address;
+			String CP;
+			String email;
+			Date birthday;
+			char license;
+			Blob photo;
+			byte[] content = null;
+
 			
 			while(rs.next()) {
-				customer = new Customer(
-						rs.getInt("IDCLIENTE"), 
-						rs.getString("DNI"), 
-						rs.getString("nombre"),
-						rs.getString("apellidos"), 
-						rs.getString("domicilio"), 
-						rs.getString("CP"), 
-						rs.getString("email"),
-						rs.getDate("fechaNac"), 
-						rs.getString("carnet").charAt(0),
-						rs.getBytes("foto"));
 				
-				customers.add(customer);						
-			}			
+				clientId = rs.getInt("IDCLIENTE");
+				DNI = rs.getString("DNI");
+				name = rs.getString("nombre");
+				surname = rs.getString("apellidos");
+				address= rs.getString("domicilio"); 
+				CP = rs.getString("CP");
+				email = rs.getString("email");
+				birthday = rs.getDate("fechaNac"); 
+				license = rs.getString("carnet").charAt(0);
+				photo = rs.getBlob("foto");
+				
+				if (photo != null) {
+					content = photo.getBytes(1L, (int) photo.length());					
+				} 
+				customer = new Customer(clientId, DNI, name, surname, address, CP, email, birthday, license, content);
+				customers.add(customer);
+			}
 		} 	
 		
 		return customers;
+	}
+
+	@Override
+	public boolean addCustomer(Customer customer) throws SQLException {
+		boolean added = false;
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "INSERT INTO CLIENTE (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,carnet,foto,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query);) {
+
+			int pos = 0;
+			
+			Blob blob = null;
+			if(customer.getFoto()!=null)
+				blob = new SerialBlob(customer.getFoto());
+			
+			pstmt.setString(++pos, customer.getDNI());
+			pstmt.setString(++pos, customer.getNombre());
+			pstmt.setString(++pos, customer.getApellidos());
+			pstmt.setString(++pos, customer.getDomicilio());
+			pstmt.setString(++pos, customer.getCP());
+			pstmt.setString(++pos, customer.getEmail());
+			pstmt.setDate(++pos, customer.getFechaNac());
+			pstmt.setString(++pos, String.valueOf(customer.getCarnet()));
+			pstmt.setBytes(++pos, customer.getFoto());
+			pstmt.setString(++pos, "mlloguer_addCustomer");
+			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
+
+			added = (pstmt.executeUpdate() == 1) ? true : false;
+
+		}
+
+		return added;
 	}
 
 }
