@@ -54,6 +54,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	}
 
 	private void initialize() {
+		
+		MainController.addJInternalFrame(view);
 
 		webtable = view.getTable();
 		webtable.addMouseListener(new MouseAdapter() {

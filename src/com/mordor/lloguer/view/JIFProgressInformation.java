@@ -11,6 +11,7 @@ import javax.swing.SwingWorker;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
 
 public class JIFProgressInformation extends JInternalFrame {
 
@@ -25,6 +26,7 @@ public class JIFProgressInformation extends JInternalFrame {
 	private JLabel lblInformation;
 
 	public JIFProgressInformation(SwingWorker<?,?> task,String info) {
+		setFrameIcon(new ImageIcon(JIFProgressInformation.class.getResource("/com/mordor/lloguer/assets/clock.png")));
 		
 		this.task=task;
 			

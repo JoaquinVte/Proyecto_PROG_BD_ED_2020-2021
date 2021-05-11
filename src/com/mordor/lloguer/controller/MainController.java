@@ -20,6 +20,7 @@ import javax.swing.SwingWorker;
 import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
+import com.mordor.lloguer.view.JIFCustomers;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
 import com.mordor.lloguer.view.JIFPreferences;
@@ -32,6 +33,7 @@ public class MainController implements ActionListener {
 	// JIFrames
 	private JIFLogin jifLogin;
 	private JIFEmployees jifEmployees;
+	private JIFCustomers jifCustomers;
 	private JIFPreferences jifPreferences;
 
 	// Controllers
@@ -64,12 +66,15 @@ public class MainController implements ActionListener {
 		view.getBtnLogin().addActionListener(this);
 		view.getBtnLogout().addActionListener(this);
 		view.getBtnEmployees().addActionListener(this);
+		view.getBtnCustomers().addActionListener(this);
 		view.getMntmPreferences().addActionListener(this);
+		
 
 		// Añadimos ActionCommand
 		view.getBtnLogin().setActionCommand("Open JIFLogin");
 		view.getBtnLogout().setActionCommand("Logout");
 		view.getBtnEmployees().setActionCommand("Open JIFEmployees");
+		view.getBtnCustomers().setActionCommand("Open JIFCustomers");
 		view.getMntmPreferences().setActionCommand("Open JIFPreferences");
 
 	}
@@ -95,9 +100,13 @@ public class MainController implements ActionListener {
 			logout();
 		} else if (command.equals("Open JIFEmployees")) {
 			openJIFEmployees();
+		} else if (command.equals("Open JIFCustomers")) {
+			openJIFCustomers();
 		}
 
 	}
+
+
 
 	private void savePreferences() {
 
@@ -174,12 +183,22 @@ public class MainController implements ActionListener {
 
 	private void openJIFEmployees() {
 		if (!isOpen(jifEmployees)) {
+			
 			jifEmployees = new JIFEmployees();
-			view.getDesktopPane().add(jifEmployees);
-			centrar(jifEmployees);
+			
 			employeesController = new EmployeesController(jifEmployees, model);
 			employeesController.go();
 		}
+	}
+	private void openJIFCustomers() {
+		
+		if (!isOpen(jifEmployees)) {
+			
+			jifCustomers = new JIFCustomers();			
+			CustomersController employeesController = new CustomersController(jifCustomers, model);
+			employeesController.go();
+		}
+		
 	}
 
 	private void logout() {
@@ -257,6 +276,7 @@ public class MainController implements ActionListener {
 						view.getBtnLogin().setEnabled(false);
 						view.getBtnLogout().setEnabled(true);
 						view.getBtnEmployees().setEnabled(true);
+						view.getBtnCustomers().setEnabled(true);
 						jifLogin.dispose();
 
 					}

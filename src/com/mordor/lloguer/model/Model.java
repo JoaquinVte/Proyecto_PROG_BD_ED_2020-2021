@@ -17,4 +17,8 @@ public interface Model {
 	public boolean addEmployee(Employee employee) throws SQLException ;
 	public boolean deleteEmployee(String dni) throws SQLException;
 	
+	
+	// Customers
+	public ArrayList<Customer> getCustomers() throws SQLException;
+	
 }

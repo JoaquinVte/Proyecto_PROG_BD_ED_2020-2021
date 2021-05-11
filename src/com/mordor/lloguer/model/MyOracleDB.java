@@ -1,6 +1,7 @@
 package com.mordor.lloguer.model;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -203,6 +204,41 @@ public class MyOracleDB implements Model {
 		} 
 					
 		return removed;
+	}
+
+	@Override
+	public ArrayList<Customer> getCustomers() throws SQLException {
+		
+		ArrayList<Customer> customers = new ArrayList<Customer>();
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "SELECT * FROM CLIENTE";
+		
+		try(
+				Connection con = ds.getConnection();
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query)
+			){
+			
+			Customer customer;
+			
+			while(rs.next()) {
+				customer = new Customer(
+						rs.getInt("IDCLIENTE"), 
+						rs.getString("DNI"), 
+						rs.getString("nombre"),
+						rs.getString("apellidos"), 
+						rs.getString("domicilio"), 
+						rs.getString("CP"), 
+						rs.getString("email"),
+						rs.getDate("fechaNac"), 
+						rs.getString("carnet").charAt(0),
+						rs.getBytes("foto"));
+				
+				customers.add(customer);						
+			}			
+		} 	
+		
+		return customers;
 	}
 
 }

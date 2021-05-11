@@ -36,6 +36,7 @@ public class JFMain extends JFrame {
 	private JButton btnEmployees;
 	private JToolBar toolBar;
 	private JMenuItem mntmPreferences;
+	private JButton btnCustomers;
 
 	/**
 	 * Create the frame.
@@ -102,6 +103,10 @@ public class JFMain extends JFrame {
 		btnEmployees.setEnabled(false);
 		btnEmployees.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/employee.png")));
 		toolBar.add(btnEmployees);
+		
+		btnCustomers = new JButton("");
+		btnCustomers.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/customers.png")));
+		toolBar.add(btnCustomers);
 	}
 	
 
@@ -119,6 +124,9 @@ public class JFMain extends JFrame {
 	}
 	public JButton getBtnEmployees() {
 		return btnEmployees;
+	}	
+	public JButton getBtnCustomers() {
+		return btnCustomers;
 	}
 	public JToolBar getToolBar() {
 		return toolBar;
