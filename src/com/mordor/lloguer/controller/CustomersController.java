@@ -17,6 +17,7 @@ import com.mordor.lloguer.model.Customer;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JIFCustomers;
 import com.mordor.lloguer.view.JIFProgressInformation;
+import com.mordor.lloguer.view.JIFCustomer;
 
 public class CustomersController implements ActionListener, DocumentListener {
 	
@@ -25,6 +26,7 @@ public class CustomersController implements ActionListener, DocumentListener {
 	
 	private ArrayList<Customer> customers;
 	private JIFProgressInformation jifProgress;
+	private JIFCustomer jifCustomer;
 	
 	public CustomersController(JIFCustomers view, Model model) {
 		super();
@@ -47,7 +49,7 @@ public class CustomersController implements ActionListener, DocumentListener {
 		view.getCbSearchDrivingLicense().addActionListener(this);
 		
 		// Add ActionCommand
-		view.getBtnAdd().setActionCommand("Add customer");
+		view.getBtnAdd().setActionCommand("Open empty form customer");
 		view.getBtnDelete().setActionCommand("Delete customer");
 		view.getBtnEdit().setActionCommand("Edit customer");
 		view.getCbSearchDrivingLicense().setActionCommand("Update search");
@@ -64,8 +66,8 @@ public class CustomersController implements ActionListener, DocumentListener {
 
 		String command = e.getActionCommand();
 		
-		if(command.equals("Add customer")) {
-			
+		if(command.equals("Open empty form customer")) {
+			openJIFCustomer();
 		} else if(command.equals("Edit customer")) {
 			
 		} else if(command.equals("Update search")) {
@@ -73,6 +75,15 @@ public class CustomersController implements ActionListener, DocumentListener {
 		}
 	}
 	
+	private void openJIFCustomer() {
+		
+		if(!MainController.isOpen(jifCustomer)) {
+			jifCustomer = new JIFCustomer();
+			MainController.addJInternalFrame(jifCustomer);
+		}
+		
+	}
+
 	private void fillTable() {
 
 		SwingWorker<ArrayList<Customer>,Void> task = new SwingWorker<ArrayList<Customer>,Void>(){
