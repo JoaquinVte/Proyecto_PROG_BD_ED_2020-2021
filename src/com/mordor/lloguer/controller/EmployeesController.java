@@ -107,8 +107,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
+				String[] header = new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" };
 
-				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(header,employees);
 
 				webtable.setModel(metm);
 
@@ -212,7 +213,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 					MainController.addJInternalFrame(jdp);
 
 					employees = ((MyEmployeeTableModel) webtable.getModel())
-							.getEmployeesAtRows(webtable.getSelectedRows());
+							.getElementsAtRows(webtable.getSelectedRows());
 
 					Iterator<Employee> it = employees.iterator();
 					Employee employee;
@@ -221,7 +222,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						employee = it.next();
 
 						if (model.deleteEmployee(employee.getDNI())) {
-							((MyEmployeeTableModel) webtable.getModel()).removeEmployee(employee);
+							((MyEmployeeTableModel) webtable.getModel()).removeElement(employee);
 						}
 
 						jdp.getProgressBar().setIndeterminate(false);
@@ -316,8 +317,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						}
 
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					    e.printStackTrace();
 					} catch (ExecutionException e) {
 
 						e.printStackTrace();
@@ -364,8 +364,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						.compareToIgnoreCase("Ascending") == 0)) ? Model.ASCENDING : Model.DESCENDING;
 
 				List<Employee> employees = model.getEmployeesByField(field, direction);
-
-				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
+				String[] header = new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" };
+				
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(header,employees);
 
 				webtable.setModel(metm);
 
@@ -389,35 +390,16 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	}
 
-	private class MyEmployeeTableModel extends AbstractTableModel {
+	private class MyEmployeeTableModel extends MyTableModel<Employee> {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		private final String[] COLUMN_NAMES = { "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac",
-				"Cargo" };
-		List<Employee> data;
 
-		public MyEmployeeTableModel(List<Employee> data) {
-			super();
-			this.data = data;
-
-		}
-
-		public String getColumnName(int col) {
-			return COLUMN_NAMES[col];
-		}
-
-		@Override
-		public int getColumnCount() {
-			return COLUMN_NAMES.length;
-		}
-
-		@Override
-		public int getRowCount() {
-			return data.size();
+		public MyEmployeeTableModel(String[] HEADER, List<Employee> data) {
+			super(HEADER,data);
 		}
 
 		@Override
@@ -500,43 +482,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			}
 
 			fireTableCellUpdated(rowIndex, columnIndex);
-		}
-
-		public Employee getRow(int row) {
-			return data.get(row);
-		}
-
-		public void addRow(Employee employee) {
-			data.add(employee);
-			fireTableRowsInserted(data.size() - 1, data.size() - 1);
-		}
-
-		public ArrayList<Employee> getEmployeesAtRows(int[] rows) {
-			ArrayList<Employee> employees = new ArrayList<Employee>();
-
-			for (int row : rows)
-				employees.add(getEmployeeAtRow(row));
-
-			return employees;
-		}
-
-		public Employee getEmployeeAtRow(int row) {
-			if (row < 0 || row >= data.size())
-				return null;
-			else
-				return data.get(row);
-		}
-
-		public void removeRow(int row) {
-			data.remove(row);
-			this.fireTableRowsDeleted(row, row);
-		}
-
-		public void removeEmployee(Employee employee) {
-			int row = data.indexOf(employee);
-			if (row >= 0) {
-				removeRow(row);
-			}
 		}
 
 	}

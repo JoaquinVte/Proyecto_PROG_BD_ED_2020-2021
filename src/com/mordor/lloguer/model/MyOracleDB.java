@@ -24,7 +24,7 @@ public class MyOracleDB implements Model {
 
 		DataSource ds = MyDataSource.getOracleDataSource();
 		boolean authenticated = false;
-		String query = "SELECT COUNT(*) FROM EMPLEADO WHERE DNI=? AND password=?";
+		String query = "SELECT COUNT(*) FROM EMPLEADO WHERE DNI=? AND password=ENCRYPT_PASWD.encrypt_val(?)";
 
 		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query)) {
 
