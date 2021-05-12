@@ -2,6 +2,7 @@ package com.mordor.lloguer.model;
 
 import java.awt.Image;
 import java.sql.Blob;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -15,6 +16,8 @@ import java.util.List;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.swing.ImageIcon;
+
+import oracle.jdbc.OracleTypes;
 
 public class MyOracleDB implements Model {
 
@@ -212,22 +215,29 @@ public class MyOracleDB implements Model {
 					
 		return removed;
 	}
+	
 
 	@Override
 	public ArrayList<Customer> getCustomers() throws SQLException {
 		
 		ArrayList<Customer> customers = new ArrayList<Customer>();
 		DataSource ds = MyDataSource.getOracleDataSource();
-		String query = "SELECT * FROM CLIENTE";
+		String query = "{ call ?:=GESTIONALQUILER.listarClientes() }";
+		ResultSet rs = null;
 		
 		try(
 				Connection con = ds.getConnection();
-				Statement stmt = con.createStatement();
-				ResultSet rs = stmt.executeQuery(query)
+				CallableStatement cs = con.prepareCall(query);
+				
 			){
 			
+			cs.registerOutParameter(1, OracleTypes.CURSOR);
+			cs.execute();
+			
+			rs = (ResultSet)cs.getObject(1);
+			
 			Customer customer;
-			int clientId;
+
 			String DNI;
 			String name;
 			String surname;
@@ -242,7 +252,6 @@ public class MyOracleDB implements Model {
 			
 			while(rs.next()) {
 				
-				clientId = rs.getInt("IDCLIENTE");
 				DNI = rs.getString("DNI");
 				name = rs.getString("nombre");
 				surname = rs.getString("apellidos");
@@ -256,37 +265,91 @@ public class MyOracleDB implements Model {
 				if (photo != null) {
 					content = photo.getBytes(1L, (int) photo.length());					
 				} 
-				customer = new Customer(clientId, DNI, name, surname, address, CP, email, birthday, license, content);
+				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, content);
 				customers.add(customer);
 			}
-		} 	
+		} finally {
+			if(rs!=null)
+				rs.close();
+		}
 		
 		return customers;
 	}
+
+
+//	@Override
+//	public ArrayList<Customer> getCustomers() throws SQLException {
+//		
+//		ArrayList<Customer> customers = new ArrayList<Customer>();
+//		DataSource ds = MyDataSource.getOracleDataSource();
+//		String query = "SELECT * FROM CLIENTE";
+//		
+//		try(
+//				Connection con = ds.getConnection();
+//				Statement stmt = con.createStatement();
+//				ResultSet rs = stmt.executeQuery(query)
+//			){
+//			
+//			Customer customer;
+//
+//			String DNI;
+//			String name;
+//			String surname;
+//			String address;
+//			String CP;
+//			String email;
+//			Date birthday;
+//			char license;
+//			Blob photo;
+//			byte[] content = null;
+//
+//			
+//			while(rs.next()) {
+//				
+//				DNI = rs.getString("DNI");
+//				name = rs.getString("nombre");
+//				surname = rs.getString("apellidos");
+//				address= rs.getString("domicilio"); 
+//				CP = rs.getString("CP");
+//				email = rs.getString("email");
+//				birthday = rs.getDate("fechaNac"); 
+//				license = rs.getString("carnet").charAt(0);
+//				photo = rs.getBlob("foto");
+//				
+//				if (photo != null) {
+//					content = photo.getBytes(1L, (int) photo.length());					
+//				} 
+//				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, content);
+//				customers.add(customer);
+//			}
+//		} 	
+//		
+//		return customers;
+//	}
 
 	@Override
 	public boolean addCustomer(Customer customer) throws SQLException {
 		boolean added = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
-		String query = "INSERT INTO CLIENTE (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,carnet,foto,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+		//String query = "INSERT INTO CLIENTE (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,carnet,foto,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+		String query = "{ call GESTIONALQUILER.grabarCliente(?,?,?,?,?,?,?,?)}";
 
-		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query);) {
+		try (Connection con = ds.getConnection(); CallableStatement cstmt = con.prepareCall(query);) {
 
 			int pos = 0;
 						
-			pstmt.setString(++pos, customer.getDNI());
-			pstmt.setString(++pos, customer.getNombre());
-			pstmt.setString(++pos, customer.getApellidos());
-			pstmt.setString(++pos, customer.getDomicilio());
-			pstmt.setString(++pos, customer.getCP());
-			pstmt.setString(++pos, customer.getEmail());
-			pstmt.setDate(++pos, customer.getFechaNac());
-			pstmt.setString(++pos, String.valueOf(customer.getCarnet()));
-			pstmt.setBytes(++pos, customer.getFoto());
-			pstmt.setString(++pos, "mlloguer_addCustomer");
-			pstmt.setTimestamp(++pos, new Timestamp(System.currentTimeMillis()));
+			cstmt.setString(++pos, customer.getDNI());
+			cstmt.setString(++pos, customer.getNombre());
+			cstmt.setString(++pos, customer.getApellidos());
+			cstmt.setString(++pos, customer.getEmail());
+			cstmt.setDate(++pos, customer.getFechaNac());
+			cstmt.setString(++pos, String.valueOf(customer.getCarnet()));
+			cstmt.setBytes(++pos, customer.getFoto());
+			cstmt.setString(++pos, customer.getDomicilio());
+			cstmt.setString(++pos, customer.getCP());		
+			
 
-			added = (pstmt.executeUpdate() == 1) ? true : false;
+			added = (cstmt.executeUpdate() == 1) ? true : false;
 
 		}
 

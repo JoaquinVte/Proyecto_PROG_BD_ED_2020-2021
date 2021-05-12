@@ -133,7 +133,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 					if (jifCustomer.getWdfBirthday().getDate() != null)
 						birthday = new Date(jifCustomer.getWdfBirthday().getDate().getTime());
 
-					customer = new Customer(0, DNI, name, surname, address, CP, email, birthday, license,
+					customer = new Customer(DNI, name, surname, address, CP, email, birthday, license,
 							jifCustomer.getImage());
 
 					return model.addCustomer(customer);
@@ -245,7 +245,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	private class MyCustomerTableModel extends MyTableModel<Customer> {
 
 		public MyCustomerTableModel( List<Customer> data) {
-			super(new String[]{"id", "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" }, data);
+			super(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" }, data);
 			// TODO Auto-generated constructor stub
 		}
 		
@@ -257,15 +257,14 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		@Override
 		public Object getValueAt(int arg0, int arg1) {
 			switch(arg1) {
-				case 0: return data.get(arg0).getId();
-				case 1: return data.get(arg0).getDNI();
-				case 2: return data.get(arg0).getNombre();
-				case 3:	return data.get(arg0).getApellidos();
-				case 4: return data.get(arg0).getDomicilio();
-				case 5:	return data.get(arg0).getCP();
-				case 6:	return data.get(arg0).getEmail();
-				case 7:	return data.get(arg0).getFechaNac();
-				case 8:	return data.get(arg0).getCarnet();
+				case 0: return data.get(arg0).getDNI();
+				case 1: return data.get(arg0).getNombre();
+				case 2:	return data.get(arg0).getApellidos();
+				case 3: return data.get(arg0).getDomicilio();
+				case 4:	return data.get(arg0).getCP();
+				case 5:	return data.get(arg0).getEmail();
+				case 6:	return data.get(arg0).getFechaNac();
+				case 7:	return data.get(arg0).getCarnet();
 				default: return null;
 			}
 		}	

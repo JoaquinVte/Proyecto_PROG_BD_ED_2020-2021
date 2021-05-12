@@ -55,8 +55,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 	private void initialize() {
 		
-		MainController.addJInternalFrame(view);
-
 		webtable = view.getTable();
 		webtable.addMouseListener(new MouseAdapter() {
 			@Override
@@ -128,8 +126,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 //				
 //				TableColumn column = webtable.getColumn("Cargo");
 //				column.setCellEditor(new DefaultCellEditor(comboBox));
-				
-
+	
 				return null;
 			}
 
@@ -137,8 +134,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			protected void done() {
 
 				jdp.dispose();
-
-				view.setVisible(true);
+				MainController.addJInternalFrame(view);
 
 			}
 		};

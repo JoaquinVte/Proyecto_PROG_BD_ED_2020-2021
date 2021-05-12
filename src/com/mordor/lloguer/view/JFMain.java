@@ -105,6 +105,7 @@ public class JFMain extends JFrame {
 		toolBar.add(btnEmployees);
 		
 		btnCustomers = new JButton("");
+		btnCustomers.setEnabled(false);
 		btnCustomers.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/customers.png")));
 		toolBar.add(btnCustomers);
 	}
