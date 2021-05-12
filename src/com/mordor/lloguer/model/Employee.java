@@ -13,22 +13,15 @@ public class Employee {
 	private String email;
 	private Date fechaNac;
 	private String cargo;
+	private String password;
 	
 	public Employee(int id, String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
-			Date fechaNac, String cargo) {
-		super();
+			Date fechaNac, String cargo,String password) {
+		this(dNI,nombre,apellidos,domicilio,cP,email,fechaNac,cargo,password);
 		this.id = id;
-		DNI = dNI;
-		this.nombre = nombre;
-		this.apellidos = apellidos;
-		this.domicilio = domicilio;
-		CP = cP;
-		this.email = email;
-		this.fechaNac = fechaNac;
-		this.cargo = cargo;
 	}
 	public Employee( String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
-			Date fechaNac, String cargo) {
+			Date fechaNac, String cargo, String password) {
 		super();
 		DNI = dNI;
 		this.nombre = nombre;
@@ -38,6 +31,7 @@ public class Employee {
 		this.email = email;
 		this.fechaNac = fechaNac;
 		this.cargo = cargo;
+		this.password = password;
 	}
 	public int getId() {
 		return id;
@@ -92,6 +86,12 @@ public class Employee {
 	}
 	public void setCargo(String cargo) {
 		this.cargo = cargo;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	@Override
 	public boolean equals(Object o) {

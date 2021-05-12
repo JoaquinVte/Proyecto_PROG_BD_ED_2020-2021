@@ -278,11 +278,15 @@ public class EmployeesController implements ActionListener, TableModelListener {
 			String email = jifEmployee.gettFEmail().getText().toString();
 			Date fechaNac = null;
 			String cargo = jifEmployee.gettFPosition().getText().toString();
+			String password=null;
+			if(!jifEmployee.getPasswordField().isEmpty())
+				password = String.valueOf(jifEmployee.getPasswordField().getPassword());
 
 			if (jifEmployee.getWdfBirthday().getDate() != null)
 				fechaNac = new Date(jifEmployee.getWdfBirthday().getDate().getTime());
+			
 
-			employee = new Employee(DNI, nombre, apellidos, domicilio, CP, email, fechaNac, cargo);
+			employee = new Employee(DNI, nombre, apellidos, domicilio, CP, email, fechaNac, cargo,password);
 
 			SwingWorker<Boolean, Void> task = new SwingWorker<Boolean, Void>() {
 

@@ -143,8 +143,12 @@ public class MyOracleDB implements Model {
 			String query = "UPDATE EMPLEADO SET nombre='" + employee.getNombre() + "', " + "apellidos='"
 					+ employee.getApellidos() + "'," + "domicilio='" + employee.getDomicilio() + "'," + "CP='"
 					+ employee.getCP() + "'," + "email='" + employee.getEmail() + "'," + "fechaNac=TO_DATE('"
-					+ employee.getFechaNac() + "','yyyy-mm-dd'), " + "cargo='" + employee.getCargo() + "' "
-					+ "WHERE DNI='" + employee.getDNI() + "'";
+					+ employee.getFechaNac() + "','yyyy-mm-dd'), " + "cargo='" + employee.getCargo() + "' ";
+			
+			if(employee.getPassword()!=null)
+				query += ",password=ENCRYPT_PASWD.encrypt_val('"+ employee.getPassword()+"') ";
+			
+			query += "WHERE DNI='"+employee.getDNI()+"'";
 
 			actualizado = (stmt.executeUpdate(query) == 1) ? true : false;
 
@@ -174,7 +178,7 @@ public class MyOracleDB implements Model {
 
 				empleado = new Employee(rs.getInt("IDEMPLEADO"), rs.getString("DNI"), rs.getString("nombre"),
 						rs.getString("apellidos"), rs.getString("domicilio"), rs.getString("CP"), rs.getString("email"),
-						rs.getDate("fechaNac"), rs.getString("cargo"));
+						rs.getDate("fechaNac"), rs.getString("cargo"),null);
 
 				empleados.add(empleado);
 			}
@@ -269,11 +273,7 @@ public class MyOracleDB implements Model {
 		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query);) {
 
 			int pos = 0;
-			
-			Blob blob = null;
-			if(customer.getFoto()!=null)
-				blob = new SerialBlob(customer.getFoto());
-			
+						
 			pstmt.setString(++pos, customer.getDNI());
 			pstmt.setString(++pos, customer.getNombre());
 			pstmt.setString(++pos, customer.getApellidos());

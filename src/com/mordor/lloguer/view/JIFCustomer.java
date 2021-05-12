@@ -23,6 +23,8 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class JIFCustomer extends JInternalFrame {
 	/**
@@ -44,6 +46,7 @@ public class JIFCustomer extends JInternalFrame {
 	
 	private Customer customer;
 	private byte[] image;
+	private JLabel lblClientid;
 
 	
 	public JIFCustomer(Customer customer) {
@@ -76,10 +79,11 @@ public class JIFCustomer extends JInternalFrame {
 		getContentPane().add(panelInferior);
 		panelInferior.setLayout(new MigLayout("", "[grow][][grow][][grow][]", "[][16.00][][][][][36.00]"));
 		
-		JLabel lblClientid = new JLabel("ClientId");
+		lblClientid = new JLabel("ClientId");
 		panelInferior.add(lblClientid, "cell 1 0,alignx left");
 		
 		textFieldClientId = new JTextField();
+		textFieldClientId.setEditable(false);
 		panelInferior.add(textFieldClientId, "cell 2 0,alignx left");
 		textFieldClientId.setColumns(10);
 		
@@ -146,6 +150,11 @@ public class JIFCustomer extends JInternalFrame {
 		panel.add(btnAdd);
 		
 		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		panel.add(btnCancel);
 
 	}
@@ -208,6 +217,10 @@ public class JIFCustomer extends JInternalFrame {
 
 	public byte[] getImage() {
 		return image;
+	}
+
+	public JLabel getLblClientid() {
+		return lblClientid;
 	}
 
 	public void setImage(byte[] image) {

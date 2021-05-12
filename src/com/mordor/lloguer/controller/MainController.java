@@ -106,8 +106,6 @@ public class MainController implements ActionListener {
 
 	}
 
-
-
 	private void savePreferences() {
 
 		MyConfig.getInstancia().setDriver(jifPreferences.gettFDriver().getText());
@@ -195,8 +193,8 @@ public class MainController implements ActionListener {
 		if (!isOpen(jifEmployees)) {
 			
 			jifCustomers = new JIFCustomers();			
-			CustomersController employeesController = new CustomersController(jifCustomers, model);
-			employeesController.go();
+			CustomersController customersController = new CustomersController(jifCustomers, model);
+			customersController.go();
 		}
 		
 	}

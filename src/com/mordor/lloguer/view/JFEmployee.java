@@ -7,11 +7,15 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JPanel;
 import com.alee.extended.date.WebDateField;
+import com.alee.extended.image.WebImage;
+import com.alee.laf.text.WebPasswordField;
+import com.alee.managers.style.StyleId;
 
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 
 public class JFEmployee extends JInternalFrame {
 	/**
@@ -28,6 +32,7 @@ public class JFEmployee extends JInternalFrame {
 	private JTextField tFPosition;
 	private JButton btnSave;
 	private JButton btnCancel;
+	private WebPasswordField passwordField;
 
 	/**
 	 * Create the frame.
@@ -36,7 +41,7 @@ public class JFEmployee extends JInternalFrame {
 		setFrameIcon(new ImageIcon(JFEmployee.class.getResource("/com/mordor/lloguer/assets/user.png")));
 		setClosable(true);
 		setTitle("Employee");
-		setBounds(100, 100, 413, 386);
+		setBounds(100, 100, 413, 395);
 		
 		JPanel panelData = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -54,7 +59,7 @@ public class JFEmployee extends JInternalFrame {
 					.addComponent(panelData, GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
 					.addContainerGap())
 		);
-		panelData.setLayout(new MigLayout("", "[10px][104.00][grow][10px]", "[][][][][][][][][][][grow]"));
+		panelData.setLayout(new MigLayout("", "[10px][104.00][grow][10px]", "[][][][][][][][][][][grow][]"));
 		
 		JLabel lblDni = new JLabel("DNI");
 		panelData.add(lblDni, "cell 1 1,alignx left");
@@ -108,8 +113,11 @@ public class JFEmployee extends JInternalFrame {
 		panelData.add(lblPosition, "cell 1 8,alignx left");
 		
 		tFPosition = new JTextField();
-		panelData.add(tFPosition, "cell 2 8,growx");
+		panelData.add(tFPosition, "flowy,cell 2 8,growx");
 		tFPosition.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password");
+		panelData.add(lblPassword, "cell 1 9");
 		
 		JPanel panelButtons = new JPanel();
 		panelData.add(panelButtons, "cell 1 10 2 1,growx");
@@ -120,6 +128,11 @@ public class JFEmployee extends JInternalFrame {
 		
 		btnCancel = new JButton("Cancel");
 		panelButtons.add(btnCancel);
+		
+		passwordField = new WebPasswordField();
+		passwordField.setTrailingComponent ( new WebImage ( StyleId.of ( "trailing" ), new ImageIcon(JFEmployee.class.getResource("/com/mordor/lloguer/assets/key.png")) ) );
+
+		panelData.add(passwordField, "cell 2 9,growx");
 		getContentPane().setLayout(groupLayout);
 
 	}
@@ -163,5 +176,8 @@ public class JFEmployee extends JInternalFrame {
 	public JButton getBtnCancel() {
 		return btnCancel;
 	}
-	
+
+	public WebPasswordField getPasswordField() {
+		return passwordField;
+	}
 }

@@ -1,19 +1,14 @@
 package com.mordor.lloguer.controller;
 
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +22,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import com.mordor.lloguer.model.Customer;
 import com.mordor.lloguer.model.Model;
@@ -71,11 +67,10 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		view.getBtnEdit().setActionCommand("Open form customer to edit");
 		view.getCbSearchDrivingLicense().setActionCommand("Update search");
 		
-		fillTable();
 	}
 	
 	public void go() {
-		
+		fillTable();
 	}
 
 	@Override
@@ -84,7 +79,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		String command = e.getActionCommand();
 		
 		if(command.equals("Open empty form customer")) {
-			openJIFCustomer();
+			openJIFCustomerToAdd();
 		} else if(command.equals("Add customer")) {
 			addCustomer();
 		} else if(command.equals("Update search")) {
@@ -117,35 +112,79 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	}
 
 	private void addCustomer() {
-		
-		Customer customer;
+		int option = JOptionPane.showConfirmDialog(jifCustomer, "Are you sure to add the customer?", "Confirm", JOptionPane.YES_NO_OPTION);
+		if (option == JOptionPane.YES_OPTION) {
+			SwingWorker<Boolean, Void> task = new SwingWorker<Boolean, Void>() {
 
-		String DNI = jifCustomer.getTextFieldDNI().getText();
-		String name = jifCustomer.getTextFieldName().getText();
-		String surname = jifCustomer.getTextFieldSurname().getText();
-		String address = jifCustomer.getTextFieldAddress().getText();
-		String CP = jifCustomer.getTextFieldCP().getText();
-		String email = jifCustomer.getTextFieldEmail().getText();
-		Date birthday = null;
-		char license = jifCustomer.getCbLicense().getSelectedItem().toString().charAt(0);
+				Customer customer;
 
-		if (jifCustomer.getWdfBirthday().getDate() != null)
-			birthday = new Date(jifCustomer.getWdfBirthday().getDate().getTime());
-		
-		customer = new Customer(0, DNI, name, surname, address, CP, email, birthday, license, jifCustomer.getImage());
-		
-		try {
-			model.addCustomer(customer);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				@Override
+				protected Boolean doInBackground() throws Exception {
+
+					String DNI = jifCustomer.getTextFieldDNI().getText();
+					String name = jifCustomer.getTextFieldName().getText();
+					String surname = jifCustomer.getTextFieldSurname().getText();
+					String address = jifCustomer.getTextFieldAddress().getText();
+					String CP = jifCustomer.getTextFieldCP().getText();
+					String email = jifCustomer.getTextFieldEmail().getText();
+					Date birthday = null;
+					char license = jifCustomer.getCbLicense().getSelectedItem().toString().charAt(0);
+
+					if (jifCustomer.getWdfBirthday().getDate() != null)
+						birthday = new Date(jifCustomer.getWdfBirthday().getDate().getTime());
+
+					customer = new Customer(0, DNI, name, surname, address, CP, email, birthday, license,
+							jifCustomer.getImage());
+
+					return model.addCustomer(customer);
+				}
+
+				@Override
+				protected void done() {
+
+					jifProgress.dispose();
+
+					if (!isCancelled()) {
+
+						try {
+
+							boolean added = get();
+
+							if (added) {
+								JOptionPane.showMessageDialog(jifCustomer, "Customer added", "Info",
+										JOptionPane.INFORMATION_MESSAGE);
+								jifCustomer.dispose();
+								((MyCustomerTableModel) view.getTable().getModel()).addRow(customer);
+
+							} else {
+								JOptionPane.showMessageDialog(jifCustomer, "The customer could not been added", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
+
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							JOptionPane.showMessageDialog(jifCustomer, e.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					}
+
+				}
+			};
+
+			jifProgress = new JIFProgressInformation(task, "Adding the customer.");
+			MainController.addJInternalFrame(jifProgress);
+			task.execute();
 		}
 	}
 
-	private void openJIFCustomer() {
+	private void openJIFCustomerToAdd() {
 		
 		if(!MainController.isOpen(jifCustomer)) {
 			jifCustomer = new JIFCustomer();
+			jifCustomer.getTextFieldClientId().setVisible(false);
+			jifCustomer.getLblClientid().setVisible(false);
 			
 			MainController.addJInternalFrame(jifCustomer);
 			
@@ -184,9 +223,11 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 						
 						MainController.addJInternalFrame(view);
 						
-					} catch (InterruptedException | ExecutionException e) {
+					} catch (InterruptedException ie) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						ie.printStackTrace();
+					} catch (ExecutionException e) {
+						JOptionPane.showMessageDialog(jifCustomer, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					
 				}
@@ -242,8 +283,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		
 		view.getTable().setModel(mctm);
 	}
-	
-
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {update();}
@@ -254,8 +293,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	@Override
 	public void changedUpdate(DocumentEvent e) {update();}
 	
-	
-
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
