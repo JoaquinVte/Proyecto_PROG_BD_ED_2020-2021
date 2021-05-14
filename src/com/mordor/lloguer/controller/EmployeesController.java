@@ -31,9 +31,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	private Model model;
 	private WebTable webtable;
 
-	// Progress Dialog
-	private JIFProgressInformation jdp;
-
 	// JInternalFrame
 	private JFEmployee jifEmployee;
 
@@ -90,13 +87,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
+			JIFProgressInformation jdp;
+			
 			@Override
 			protected Void doInBackground() throws Exception {
 
-				jdp = showProgressDialog(null, "Retrieving data from server.");
-				MainController.addJInternalFrame(jdp);
-				jdp.setVisible(true);
-
+				jdp = showProgressDialog(this, "Retrieving data from server.");
+								
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
 				String[] header = new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" };
@@ -124,13 +121,13 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 			@Override
 			protected void done() {
-
+				
 				jdp.dispose();
 				MainController.addJInternalFrame(view);
 
 			}
-		};
-
+		};	
+		
 		task.execute();
 	}
 
@@ -138,17 +135,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		JIFProgressInformation jdp = new JIFProgressInformation(task, info);
 
-		// Centramos el dialog
-		Dimension deskSize = view.getDesktopPane().getSize();
-		Dimension ifSize = jdp.getSize();
-		jdp.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
-
 		if (task != null) {
 			jdp.getBtnButton().setText("Cancel");
 			jdp.getBtnButton().addActionListener((e) -> task.cancel(true));
 		}
-
-		jdp.setVisible(true);
+		
+		MainController.addJInternalFrame(jdp);
 
 		return jdp;
 	}
@@ -190,7 +182,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		if (option == JOptionPane.YES_OPTION) {
 
 			SwingWorker<Boolean, Integer> task = new SwingWorker<Boolean, Integer>() {
-
+				
+				JIFProgressInformation jdp;				
 				ArrayList<Employee> employees;
 				int index = 0;
 
@@ -199,8 +192,6 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 					boolean deleted = false;
 					jdp = showProgressDialog(this, "Deleting employees....");
-
-					MainController.addJInternalFrame(jdp);
 
 					employees = ((MyEmployeeTableModel) webtable.getModel())
 							.getElementsAtRows(webtable.getSelectedRows());
@@ -348,10 +339,12 @@ public class EmployeesController implements ActionListener, TableModelListener {
 
 		SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
+			JIFProgressInformation jdp;
+			
 			@Override
 			protected Void doInBackground() throws Exception {
 
-				showProgressDialog(null, "Retrieving data from server");
+				jdp = showProgressDialog(null, "Retrieving data from server");
 
 				String field = view.getCbAttribute().getSelectedItem().toString();
 				int direction = ((view.getCbDirection().getSelectedItem().toString()
