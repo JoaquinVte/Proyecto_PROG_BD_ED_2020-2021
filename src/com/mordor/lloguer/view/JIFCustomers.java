@@ -1,7 +1,5 @@
 package com.mordor.lloguer.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -13,10 +11,8 @@ import com.alee.laf.table.WebTable;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
@@ -24,12 +20,12 @@ import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
 
 public class JIFCustomers extends JInternalFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField txtFSearchDNI;
 	private WebTable table;
 	private JButton btnAdd;
@@ -38,7 +34,7 @@ public class JIFCustomers extends JInternalFrame {
 	private JButton btnCancel;
 	private JTextField textFSearchSurname;
 	private JTextField textFSearchName;
-	private JComboBox cbSearchDrivingLicense;
+	private JComboBox<String> cbSearchDrivingLicense;
 
 	/**
 	 * Create the frame.
@@ -129,8 +125,8 @@ public class JIFCustomers extends JInternalFrame {
 		JLabel lblType = new JLabel("driving license");
 		panelSearch.add(lblType, "cell 6 0,alignx trailing");
 		
-		cbSearchDrivingLicense = new JComboBox();
-		cbSearchDrivingLicense.setModel(new DefaultComboBoxModel(new String[] {"All", "A", "B", "C", "D", "E", "Z"}));
+		cbSearchDrivingLicense = new JComboBox<String>();
+		cbSearchDrivingLicense.setModel(new DefaultComboBoxModel<String>(new String[] {"All", "A", "B", "C", "D", "E", "Z"}));
 		panelSearch.add(cbSearchDrivingLicense, "cell 7 0,growx");
 		getContentPane().setLayout(groupLayout);
 
@@ -148,7 +144,7 @@ public class JIFCustomers extends JInternalFrame {
 		return textFSearchName;
 	}
 
-	public JComboBox getCbSearchDrivingLicense() {
+	public JComboBox<String> getCbSearchDrivingLicense() {
 		return cbSearchDrivingLicense;
 	}
 

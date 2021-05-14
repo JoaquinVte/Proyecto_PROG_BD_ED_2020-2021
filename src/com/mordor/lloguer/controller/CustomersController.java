@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Date;
@@ -17,9 +15,6 @@ import java.util.stream.Collectors;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.imageio.ImageIO;
-import javax.sql.rowset.serial.SerialBlob;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -39,7 +34,8 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	private JIFProgressInformation jifProgress;
 	private JIFCustomer jifCustomer;
 	
-	private JLabel photo;
+	private JLabel labelPhoto;
+	private MyCustomerTableModel mctm;
 	
 	public CustomersController(JIFCustomers view, Model model) {
 		super();
@@ -51,6 +47,10 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	}
 	
 	private void inicialize() {
+		
+		mctm = new MyCustomerTableModel(new ArrayList<Customer>());
+		view.getTable().setModel(mctm);
+		
 				
 		// Add ActionListener
 		view.getBtnAdd().addActionListener(this);
@@ -93,19 +93,19 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		
 		if (!MainController.isOpen(jifCustomer)) {
 
-			MyCustomerTableModel mtm = (MyCustomerTableModel) view.getTable().getModel();
-			Customer customer = mtm.getRow(view.getTable().getSelectedRow());
+			Customer customer = mctm.getElementAtRow(view.getTable().getSelectedRow());
 
 			jifCustomer = new JIFCustomer(customer);
 
 			MainController.addJInternalFrame(jifCustomer);
+			
+			jifCustomer.getBtnAction().setText("Save");
 
 			jifCustomer.getLblLicensePhoto().addMouseListener(this);
-			jifCustomer.getBtnAdd().addActionListener(this);
+			jifCustomer.getBtnAction().addActionListener(this);
 
-			jifCustomer.getBtnAdd().setActionCommand("Add customer");
-			photo = jifCustomer.getLblLicensePhoto(); // Guardamos la referencia de la etiqueta para identificar quien
-														// lanza el evento de clic
+			jifCustomer.getBtnAction().setActionCommand("Save customer changes");
+			labelPhoto = jifCustomer.getLblLicensePhoto(); // Guardamos la referencia de la etiqueta para identificar quien lanza el evento de clic
 			
 		}
 
@@ -154,7 +154,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 								JOptionPane.showMessageDialog(jifCustomer, "Customer added", "Info",
 										JOptionPane.INFORMATION_MESSAGE);
 								jifCustomer.dispose();
-								((MyCustomerTableModel) view.getTable().getModel()).addRow(customer);
+								mctm.addElement(customer);
 
 							} else {
 								JOptionPane.showMessageDialog(jifCustomer, "The customer could not been added", "Error",
@@ -162,7 +162,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 							}
 
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (ExecutionException e) {
 							JOptionPane.showMessageDialog(jifCustomer, e.getMessage(), "Error",
@@ -183,16 +182,14 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		
 		if(!MainController.isOpen(jifCustomer)) {
 			jifCustomer = new JIFCustomer();
-			jifCustomer.getTextFieldClientId().setVisible(false);
-			jifCustomer.getLblClientid().setVisible(false);
 			
 			MainController.addJInternalFrame(jifCustomer);
 			
 			jifCustomer.getLblLicensePhoto().addMouseListener(this);
-			jifCustomer.getBtnAdd().addActionListener(this);
+			jifCustomer.getBtnAction().addActionListener(this);
 			
-			jifCustomer.getBtnAdd().setActionCommand("Add customer");
-			photo = jifCustomer.getLblLicensePhoto(); // Guardamos la referencia de la etiqueta para identificar quien lanza el evento de clic
+			jifCustomer.getBtnAction().setActionCommand("Add customer");
+			labelPhoto = jifCustomer.getLblLicensePhoto(); // Guardamos la referencia de la etiqueta para identificar quien lanza el evento de clic
 			
 		}
 		
@@ -218,8 +215,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 					try {
 						customers = get();
 						
-						MyCustomerTableModel mctm = new MyCustomerTableModel(customers);
-						view.getTable().setModel(mctm);
+						mctm.setNewData(customers);
 						
 						MainController.addJInternalFrame(view);
 						
@@ -239,35 +235,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		MainController.addJInternalFrame(jifProgress);
 		task.execute();
 		
-		
-	}
-	
-	private class MyCustomerTableModel extends MyTableModel<Customer> {
-
-		public MyCustomerTableModel( List<Customer> data) {
-			super(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" }, data);
-			// TODO Auto-generated constructor stub
-		}
-		
-		public void setNewData(List<Customer> data) {
-			super.data = data;
-			fireTableDataChanged();
-		}
-
-		@Override
-		public Object getValueAt(int arg0, int arg1) {
-			switch(arg1) {
-				case 0: return data.get(arg0).getDNI();
-				case 1: return data.get(arg0).getNombre();
-				case 2:	return data.get(arg0).getApellidos();
-				case 3: return data.get(arg0).getDomicilio();
-				case 4:	return data.get(arg0).getCP();
-				case 5:	return data.get(arg0).getEmail();
-				case 6:	return data.get(arg0).getFechaNac();
-				case 7:	return data.get(arg0).getCarnet();
-				default: return null;
-			}
-		}	
 		
 	}
 	
@@ -295,7 +262,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
-		if(e.getComponent().equals(photo)) {
+		if(e.getComponent().equals(labelPhoto)) {
 			
 			JFileChooser jfch = new JFileChooser();
 			int option = jfch.showOpenDialog(jifCustomer);
@@ -305,13 +272,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 				InputStream inte = new FileInputStream(jfch.getSelectedFile());
 				byte[] imgFoto = new byte[(int) jfch.getSelectedFile().length()];				
 				inte.read(imgFoto);
-		
-				SerialBlob fotoBLOB = new SerialBlob(imgFoto);
-				
-				InputStream in = new ByteArrayInputStream(imgFoto);
-				BufferedImage image = ImageIO.read(in);
-		
-				ImageIcon icono = new ImageIcon(image);
 		
 				jifCustomer.setImage(imgFoto);
 				
@@ -347,6 +307,34 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		
 	}
 
+	private class MyCustomerTableModel extends MyTableModel<Customer> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public MyCustomerTableModel( List<Customer> data) {
+			super(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" }, data);
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public Object getValueAt(int arg0, int arg1) {
+			switch(arg1) {
+				case 0: return data.get(arg0).getDNI();
+				case 1: return data.get(arg0).getNombre();
+				case 2:	return data.get(arg0).getApellidos();
+				case 3: return data.get(arg0).getDomicilio();
+				case 4:	return data.get(arg0).getCP();
+				case 5:	return data.get(arg0).getEmail();
+				case 6:	return data.get(arg0).getFechaNac();
+				case 7:	return data.get(arg0).getCarnet();
+				default: return null;
+			}
+		}	
+		
+	}
 }
 
 

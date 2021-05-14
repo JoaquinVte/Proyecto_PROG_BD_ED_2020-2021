@@ -13,18 +13,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
-
-import com.alee.extended.date.WebDateField;
-import com.alee.laf.combobox.WebComboBoxEditor;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Employee;
@@ -314,7 +306,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 							JOptionPane.showMessageDialog(jifEmployee, "Employee added sucessfully", "Information",
 									JOptionPane.INFORMATION_MESSAGE);
 
-							((MyEmployeeTableModel) webtable.getModel()).addRow(employee);
+							((MyEmployeeTableModel) webtable.getModel()).addElement(employee);
 							jifEmployee.dispose();
 						}
 
@@ -492,7 +484,7 @@ public class EmployeesController implements ActionListener, TableModelListener {
 	public void tableChanged(TableModelEvent arg0) {
 		if (arg0.getType() == TableModelEvent.UPDATE) {
 			MyEmployeeTableModel dtm = (MyEmployeeTableModel) webtable.getModel();
-			if (model.updateEmployee(dtm.getRow(arg0.getFirstRow())))
+			if (model.updateEmployee(dtm.getElementAtRow(arg0.getFirstRow())))
 				JOptionPane.showMessageDialog(view, "Employee updated", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}

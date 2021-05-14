@@ -1,6 +1,5 @@
 package com.mordor.lloguer.model;
 
-import java.awt.Image;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -14,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
-import javax.sql.rowset.serial.SerialBlob;
-import javax.swing.ImageIcon;
-
 import oracle.jdbc.OracleTypes;
 
 public class MyOracleDB implements Model {

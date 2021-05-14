@@ -15,7 +15,6 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.JPasswordField;
 
 public class JFEmployee extends JInternalFrame {
 	/**
