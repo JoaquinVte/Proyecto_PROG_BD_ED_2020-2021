@@ -371,7 +371,25 @@ public class MyOracleDB implements Model {
 			
 			try(ResultSet rs = (ResultSet)cstmt.getObject(2)){
 				
-				
+				while(rs.next()) {
+					
+					
+					
+					if(table.equals(Model.CAR)) {
+						
+					} else if(table.equals(Model.MINIBUS)) {
+						
+						
+					}else if(table.equals(Model.VAN)) {
+						
+						
+					}else if(table.equals(Model.TRUCK)) {
+						
+						
+					}
+					
+					
+				}			
 				
 			}	
 

@@ -8,6 +8,10 @@ public interface Model {
 	
 	public static final int ASCENDING = 0;
 	public static final int DESCENDING = 1;
+	public static final String CAR = "COCHE";
+	public static final String TRUCK = "CAMION";
+	public static final String MINIBUS = "MICROBUS";
+	public static final String VAN = "FURGONETA";
 
 	public ArrayList<Employee> getEmployees();
 	public ArrayList<Employee> getEmployeesByField(String field,int direction);
