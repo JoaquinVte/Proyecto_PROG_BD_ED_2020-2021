@@ -24,6 +24,7 @@ import com.mordor.lloguer.view.JIFCustomers;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
 import com.mordor.lloguer.view.JIFPreferences;
+import com.mordor.lloguer.view.JIFVehicles;
 
 public class MainController implements ActionListener {
 
@@ -67,6 +68,7 @@ public class MainController implements ActionListener {
 		view.getBtnLogout().addActionListener(this);
 		view.getBtnEmployees().addActionListener(this);
 		view.getBtnCustomers().addActionListener(this);
+		view.getBtnVehicle().addActionListener(this);
 		view.getMntmPreferences().addActionListener(this);
 		
 
@@ -75,6 +77,7 @@ public class MainController implements ActionListener {
 		view.getBtnLogout().setActionCommand("Logout");
 		view.getBtnEmployees().setActionCommand("Open JIFEmployees");
 		view.getBtnCustomers().setActionCommand("Open JIFCustomers");
+		view.getBtnVehicle().setActionCommand("Open JIFVehicle");
 		view.getMntmPreferences().setActionCommand("Open JIFPreferences");
 
 	}
@@ -100,11 +103,15 @@ public class MainController implements ActionListener {
 			logout();
 		} else if (command.equals("Open JIFEmployees")) {
 			openJIFEmployees();
+		} else if (command.equals("Open JIFVehicle")) {
+			openJIFVehicles();
 		} else if (command.equals("Open JIFCustomers")) {
 			openJIFCustomers();
 		}
 
 	}
+
+	
 
 	private void savePreferences() {
 
@@ -198,6 +205,14 @@ public class MainController implements ActionListener {
 		}
 		
 	}
+	
+	private void openJIFVehicles() {
+		
+		JIFVehicles jifVehicles = new JIFVehicles();
+		VehiclesController vc = new VehiclesController(jifVehicles,model);
+		vc.go();
+		
+	}
 
 	private void logout() {
 
@@ -275,6 +290,7 @@ public class MainController implements ActionListener {
 						view.getBtnLogout().setEnabled(true);
 						view.getBtnEmployees().setEnabled(true);
 						view.getBtnCustomers().setEnabled(true);
+						view.getBtnVehicle().setEnabled(true);
 						jifLogin.dispose();
 
 					}

@@ -22,4 +22,10 @@ public interface Model {
 	public ArrayList<Customer> getCustomers() throws SQLException;
 	public boolean addCustomer(Customer customer) throws SQLException;
 	
+	
+	// Vehicles
+	public ArrayList<Coche> getCars();
+	public ArrayList<Camion> getTrucks();
+	public ArrayList<Furgoneta> getVan();
+	public ArrayList<Microbus> getMinibus();
 }

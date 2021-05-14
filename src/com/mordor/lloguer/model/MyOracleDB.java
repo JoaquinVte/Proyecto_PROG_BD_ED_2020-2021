@@ -352,4 +352,57 @@ public class MyOracleDB implements Model {
 		return added;
 	}
 
+	private ArrayList<Vehicle> getVehicles(String table) throws SQLException {
+
+		ArrayList<Vehicle> vehicles = new ArrayList<Vehicle>();
+
+		DataSource ds = MyDataSource.getOracleDataSource();
+
+		String query = "{ call GESTIONVEHICULOS.listarvehiculos(?,?)}";
+		
+
+		try (Connection con = ds.getConnection(); CallableStatement cstmt = con.prepareCall(query);) {
+
+			int pos = 0;
+			
+			cstmt.setString(++pos, table);
+			cstmt.registerOutParameter(++pos, OracleTypes.CURSOR);
+			cstmt.execute();
+			
+			try(ResultSet rs = (ResultSet)cstmt.getObject(2)){
+				
+				
+				
+			}	
+
+		}
+
+		return vehicles;
+	}
+
+	@Override
+	public ArrayList<Coche> getCars() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Camion> getTrucks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Furgoneta> getVan() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Microbus> getMinibus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }
