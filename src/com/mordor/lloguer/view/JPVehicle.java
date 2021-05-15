@@ -3,6 +3,8 @@ package com.mordor.lloguer.view;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import java.awt.BorderLayout;
+import java.awt.Component;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JLabel;
@@ -11,6 +13,7 @@ import javax.swing.JTextField;
 import com.alee.laf.table.WebTable;
 
 import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class JPVehicle extends JPanel {
 	/**
@@ -39,6 +42,7 @@ public class JPVehicle extends JPanel {
 		
 		textFieldRegistration = new JTextField();
 		textFieldRegistration.setText("");
+		textFieldRegistration.getDocument().putProperty("owner", textFieldRegistration);
 		panelSearch.add(textFieldRegistration, "cell 1 0,growx");
 		textFieldRegistration.setColumns(10);
 		
@@ -46,6 +50,7 @@ public class JPVehicle extends JPanel {
 		panelSearch.add(lblModel, "cell 2 0,alignx trailing");
 		
 		textFieldModel = new JTextField();
+		textFieldModel.getDocument().putProperty("owner", textFieldModel);
 		panelSearch.add(textFieldModel, "cell 3 0,growx");
 		textFieldModel.setColumns(10);
 		
@@ -53,12 +58,14 @@ public class JPVehicle extends JPanel {
 		panelSearch.add(lblEngine, "cell 4 0,alignx trailing");
 		
 		comboBoxEngine = new JComboBox<String>();
+		comboBoxEngine.setModel(new DefaultComboBoxModel(new String[] {"All"}));
 		panelSearch.add(comboBoxEngine, "cell 5 0,growx");
 		
 		JLabel lblLicense = new JLabel("License");
 		panelSearch.add(lblLicense, "cell 6 0,alignx trailing");
 		
 		comboBoxLicense = new JComboBox<String>();
+		comboBoxLicense.setModel(new DefaultComboBoxModel(new String[] {"All", "A", "B", "C", "D", "E", "F", "Z"}));
 		panelSearch.add(comboBoxLicense, "cell 7 0,growx");
 		
 		JPanel panelTable = new JPanel();
@@ -96,6 +103,11 @@ public class JPVehicle extends JPanel {
 
 	public JPanel getPanelSearch() {
 		return panelSearch;
+	}
+
+	public boolean contains(Component c) {
+		return c == table || c == textFieldRegistration || c == textFieldModel || c == comboBoxEngine
+				|| c == comboBoxLicense;
 	}
 
 }

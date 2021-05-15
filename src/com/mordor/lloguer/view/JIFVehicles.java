@@ -21,6 +21,7 @@ public class JIFVehicles extends JInternalFrame {
 	private JPVehicle panelVan;
 	private JPVehicle panelTruck;
 	private JPVehicle panelMinibus;
+	private JButton btnSelect;
 
 	/**
 	 * Create the frame.
@@ -50,6 +51,11 @@ public class JIFVehicles extends JInternalFrame {
 		JPanel panelButtons = new JPanel();
 		getContentPane().add(panelButtons, "cell 0 1,grow");
 		panelButtons.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		
+		btnSelect = new JButton("Select");
+		btnSelect.setVisible(false);
+		btnSelect.setEnabled(false);
+		panelButtons.add(btnSelect);
 		
 		btnAdd = new JButton("Add");
 		panelButtons.add(btnAdd);
@@ -99,6 +105,10 @@ public class JIFVehicles extends JInternalFrame {
 
 	public JPVehicle getPanelMinibus() {
 		return panelMinibus;
+	}
+
+	public JButton getBtnSelect() {
+		return btnSelect;
 	}
 
 }
