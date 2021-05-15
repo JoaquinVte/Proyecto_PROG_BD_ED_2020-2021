@@ -7,6 +7,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import com.alee.laf.table.WebTable;
+
 import javax.swing.JComboBox;
 
 public class JPVehicle extends JPanel {
@@ -14,7 +17,7 @@ public class JPVehicle extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTable table;
+	private WebTable table;
 	private JTextField textFieldRegistration;
 	private JTextField textFieldModel;
 	private JComboBox<String> comboBoxEngine;
@@ -58,19 +61,20 @@ public class JPVehicle extends JPanel {
 		comboBoxLicense = new JComboBox<String>();
 		panelSearch.add(comboBoxLicense, "cell 7 0,growx");
 		
-		JPanel panel_1 = new JPanel();
-		add(panel_1, "cell 0 1,grow");
-		panel_1.setLayout(new BorderLayout(0, 0));
+		JPanel panelTable = new JPanel();
+		add(panelTable, "cell 0 1,grow");
+		panelTable.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
-		panel_1.add(scrollPane, BorderLayout.CENTER);
+		panelTable.add(scrollPane, BorderLayout.CENTER);
 		
-		table = new JTable();
+		table = new WebTable();
+		table.setOptimizeRowHeight(true);
 		scrollPane.setViewportView(table);
 
 	}
 
-	public JTable getTable() {
+	public WebTable getTable() {
 		return table;
 	}
 

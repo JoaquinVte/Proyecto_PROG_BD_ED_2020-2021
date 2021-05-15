@@ -9,8 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 import oracle.jdbc.OracleTypes;
@@ -352,7 +355,7 @@ public class MyOracleDB implements Model {
 		return added;
 	}
 
-	private ArrayList<Vehicle> getVehicles(String table) throws SQLException {
+	private ArrayList<Vehicle> getVehicles(String table) throws Exception {
 
 		ArrayList<Vehicle> vehicles = new ArrayList<Vehicle>();
 
@@ -371,55 +374,93 @@ public class MyOracleDB implements Model {
 			
 			try(ResultSet rs = (ResultSet)cstmt.getObject(2)){
 				
-				while(rs.next()) {
+				String matricula,marca,descripcion,color,motor,estado,carnet;
+				float precioDia,medida;
+				int cilindrada,numPuertas,numPlazas,MMA,numRuedas;
+				Date fechaAdq;
+				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+				
+				while(rs.next()) {						
 					
-					
+					matricula = rs.getString("c1");
+					marca = rs.getString("c2");
+					descripcion = rs.getString("c3");
+					color = rs.getString("c4");
+					motor = rs.getString("c5");
+					fechaAdq = new Date(format.parse(rs.getString("c6")).getTime());
+					estado = rs.getString("c7");
+					carnet = rs.getString("c8");
+					precioDia=rs.getFloat("n1");
+					cilindrada = rs.getInt("n2");
 					
 					if(table.equals(Model.CAR)) {
 						
+						numPuertas = rs.getInt("n3");
+						numPlazas = rs.getInt("n4");
+
+						vehicles.add(new Coche(matricula, precioDia, marca, descripcion, color, motor, cilindrada,
+								fechaAdq, estado, carnet, numPlazas, numPuertas));
+
 					} else if(table.equals(Model.MINIBUS)) {
 						
+						numPlazas = rs.getInt("n3");
+						medida = rs.getFloat("n4");
 						
-					}else if(table.equals(Model.VAN)) {
+						vehicles.add(new Microbus(matricula, precioDia, marca, descripcion, color, motor, cilindrada,
+								fechaAdq, estado, carnet, numPlazas, medida));
 						
+					}else if(table.equals(Model.VAN)) {		
+						
+						MMA = rs.getInt("n3");
+						
+						vehicles.add(new Furgoneta(matricula, precioDia, marca, descripcion, color, motor, cilindrada,
+								fechaAdq, estado, carnet, MMA));
 						
 					}else if(table.equals(Model.TRUCK)) {
+						MMA = rs.getInt("n3");
+						numRuedas = rs.getInt("n4");
 						
+						vehicles.add(new Camion(matricula, precioDia, marca, descripcion, color, motor, cilindrada,
+								fechaAdq, estado, carnet, MMA,numRuedas));
 						
-					}
-					
-					
-				}			
-				
+					}					
+				}	
 			}	
-
 		}
 
 		return vehicles;
 	}
 
 	@Override
-	public ArrayList<Coche> getCars() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Coche> getCars() throws Exception {
+						
+		return new ArrayList<Coche>(getVehicles(Model.CAR).stream()
+														.map(v -> ((Coche)v))
+														.collect(Collectors.toList()));
 	}
 
 	@Override
-	public ArrayList<Camion> getTrucks() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Camion> getTrucks() throws Exception {
+		
+		return new ArrayList<Camion>(getVehicles(Model.TRUCK).stream()
+														.map(v -> ((Camion)v))
+														.collect(Collectors.toList()));
 	}
 
 	@Override
-	public ArrayList<Furgoneta> getVan() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Furgoneta> getVan() throws Exception {
+		
+		return new ArrayList<Furgoneta>(getVehicles(Model.VAN).stream()
+														.map(v -> ((Furgoneta)v))
+														.collect(Collectors.toList()));
 	}
 
 	@Override
-	public ArrayList<Microbus> getMinibus() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Microbus> getMinibus() throws Exception {
+		
+		return new ArrayList<Microbus>(getVehicles(Model.MINIBUS).stream()
+														.map(v -> ((Microbus)v))
+														.collect(Collectors.toList()));
 	}
 
 

@@ -29,5 +29,14 @@ public class Coche extends Vehicle {
 	public void setNumPuertas(int numPuertas) {
 		this.numPuertas = numPuertas;
 	}
+
+	@Override
+	public String toString() {
+		return "Coche [numPlazas=" + numPlazas + ", numPuertas=" + numPuertas + ", getMatricula()=" + getMatricula()
+				+ ", getPrecioDia()=" + getPrecioDia() + ", getMarca()=" + getMarca() + ", getDescripcion()="
+				+ getDescripcion() + ", getColor()=" + getColor() + ", getMotor()=" + getMotor() + ", getCilindrada()="
+				+ getCilindrada() + ", getFechaAdq()=" + getFechaAdq() + ", getEstado()=" + getEstado()
+				+ ", getCarnet()=" + getCarnet() + "]";
+	}
 		
 }

@@ -26,8 +26,10 @@ public class JIFVehicles extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public JIFVehicles() {
+		setResizable(true);
+		setClosable(true);
 		setTitle("Vehicle");
-		setBounds(100, 100, 689, 543);
+		setBounds(100, 100, 966, 662);
 		getContentPane().setLayout(new MigLayout("", "[856px,grow]", "[441.00px,grow][]"));
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);

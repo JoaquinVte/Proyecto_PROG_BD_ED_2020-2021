@@ -28,8 +28,8 @@ public interface Model {
 	
 	
 	// Vehicles
-	public ArrayList<Coche> getCars();
-	public ArrayList<Camion> getTrucks();
-	public ArrayList<Furgoneta> getVan();
-	public ArrayList<Microbus> getMinibus();
+	public ArrayList<Coche> getCars() throws Exception;
+	public ArrayList<Camion> getTrucks() throws Exception;
+	public ArrayList<Furgoneta> getVan() throws Exception;
+	public ArrayList<Microbus> getMinibus() throws Exception;
 }

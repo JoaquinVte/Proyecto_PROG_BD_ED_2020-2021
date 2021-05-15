@@ -14,6 +14,22 @@ public class Microbus extends Vehicle{
 		this.medida = medida;
 	}
 
+	public int getNumPlazas() {
+		return numPlazas;
+	}
+
+	public void setNumPlazas(int numPlazas) {
+		this.numPlazas = numPlazas;
+	}
+
+	public float getMedida() {
+		return medida;
+	}
+
+	public void setMedida(float medida) {
+		this.medida = medida;
+	}
+
 
 	
 
