@@ -26,6 +26,8 @@ import com.mordor.lloguer.view.JIFLogin;
 import com.mordor.lloguer.view.JIFPreferences;
 import com.mordor.lloguer.view.JIFVehicles;
 
+import net.sf.jasperreports.swing.JRViewer;
+
 public class MainController implements ActionListener {
 
 	private JFMain view;
@@ -316,6 +318,18 @@ public class MainController implements ActionListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	static void addJasperPrint(JRViewer jrViewer) {
+		
+		desktopPane.add(jrViewer);
+		
+//		Dimension deskSize = desktopPane.getSize();
+//		Dimension ifSize = jrViewer.getSize();
+//		
+//		jrViewer.setLocation((deskSize.width - ifSize.width) / 2, (deskSize.height - ifSize.height) / 2);
+		
+		jrViewer.setVisible(true);
+		
 	}
 
 	static boolean isOpen(JInternalFrame jif) {

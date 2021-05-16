@@ -17,21 +17,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	 <properties>
-        <jasperreports.version>6.17.0</jasperreports.version>
-        <jasperreportsfonts.version>4.0.0</jasperreportsfonts.version>
-    </properties>
-    
-     <repositories>
-        <!-- Needed for Jasperreports chart-themes -->
-        <repository>
-            <id>jr-ce-releases</id>
-            <name>JasperReports CE Releases</name>
-            <url>http://jaspersoft.jfrog.io/jaspersoft/jr-ce-releases</url>
-        </repository>
-    </repositories>
-    
 	<dependencies>
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
@@ -49,21 +34,15 @@
 			<artifactId>jasypt</artifactId>
 			<version>1.9.3</version>
 		</dependency>
-		 <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-            <version>${jasperreports.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports-fonts</artifactId>
-            <version>${jasperreportsfonts.version}</version>
-        </dependency>
-        <!-- jasperreports-chart-themes -->
-        <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports-chart-themes</artifactId>
-            <version>${jasperreports.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.4.0</version>
+		</dependency>
+<dependency>
+    <groupId>net.sf.jasperreports</groupId>
+    <artifactId>jasperreports-fonts</artifactId>
+    <version>4.0.0</version>
+</dependency>
 	</dependencies>
 </project>

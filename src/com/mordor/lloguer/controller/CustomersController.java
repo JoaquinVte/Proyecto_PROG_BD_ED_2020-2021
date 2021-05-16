@@ -1,5 +1,6 @@
 package com.mordor.lloguer.controller;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -7,8 +8,11 @@ import java.awt.event.MouseListener;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -22,7 +26,18 @@ import javax.swing.JOptionPane;
 import com.mordor.lloguer.model.Customer;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JIFCustomers;
+import com.mordor.lloguer.view.JIFJasper;
 import com.mordor.lloguer.view.JIFProgressInformation;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.swing.JRViewer;
+
 import com.mordor.lloguer.view.JIFCustomer;
 
 public class CustomersController implements ActionListener, DocumentListener, MouseListener {
@@ -36,6 +51,10 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	
 	private JLabel labelPhoto;
 	private MyCustomerTableModel mctm;
+	
+	private JasperReport report;
+	private JasperPrint reportFilled;
+	private JRViewer jrViewer;
 	
 	public CustomersController(JIFCustomers view, Model model) {
 		super();
@@ -60,12 +79,14 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		view.getTextFSearchSurname().getDocument().addDocumentListener(this);
 		view.getTxtFSearchDNI().getDocument().addDocumentListener(this);
 		view.getCbSearchDrivingLicense().addActionListener(this);
+		view.getBtnPrint().addActionListener(this);
 		
 		// Add ActionCommand
 		view.getBtnAdd().setActionCommand("Open empty form customer");
 		view.getBtnDelete().setActionCommand("Delete customer");
 		view.getBtnEdit().setActionCommand("Open form customer to edit");
 		view.getCbSearchDrivingLicense().setActionCommand("Update search");
+		view.getBtnPrint().setActionCommand("Print");
 		
 	}
 	
@@ -86,9 +107,47 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 			update();
 		} else if(command.equals("Open form customer to edit")) {
 			openJIFCutomerToEdit();
+		} else if(command.equals("Print")) {
+			openJasperView();
 		}
 	}
 	
+	private void openJasperView() {
+		
+
+		
+		try {
+			
+			String reportJRXML = "/com/mordor/lloguer/reports/Clientes.jrxml"; // path of your report source.
+			
+			InputStream reportFile = null;
+			reportFile = getClass().getResourceAsStream(reportJRXML);
+			
+			// Compile the jrxml file
+			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+			Map<String, Object> parametres = new HashMap<String, Object>();
+
+			// Produce the report (fill the report with data)
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, model.getConnection());
+			jrViewer = new JRViewer(jasperPrint);	
+			jrViewer.setSize(new Dimension(500, 400));
+
+			JIFJasper jifj = new JIFJasper();
+			jifj.add(jrViewer);
+			
+			MainController.addJInternalFrame(jifj);
+			
+			jrViewer.setVisible(true);
+
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void openJIFCutomerToEdit() {
 		
 		if (!MainController.isOpen(jifCustomer)) {

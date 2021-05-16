@@ -1,5 +1,6 @@
 package com.mordor.lloguer.model;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ public interface Model {
 	public static final String MINIBUS = "MICROBUS";
 	public static final String VAN = "FURGONETA";
 
+	public Connection getConnection() throws SQLException;
+	
+	// Employee
 	public ArrayList<Employee> getEmployees();
 	public ArrayList<Employee> getEmployeesByField(String field,int direction);
 	public boolean authenticate(String dni, String password) throws Exception;

@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JSeparator;
+import java.awt.Dimension;
 
 public class JIFCustomers extends JInternalFrame {
 	/**
@@ -35,6 +37,7 @@ public class JIFCustomers extends JInternalFrame {
 	private JTextField textFSearchSurname;
 	private JTextField textFSearchName;
 	private JComboBox<String> cbSearchDrivingLicense;
+	private JButton btnPrint;
 
 	/**
 	 * Create the frame.
@@ -52,21 +55,21 @@ public class JIFCustomers extends JInternalFrame {
 		JPanel panelButtons = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panelSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 879, Short.MAX_VALUE)
 						.addComponent(panelTable, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 879, Short.MAX_VALUE)
-						.addComponent(panelButtons, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 879, Short.MAX_VALUE)
-						.addComponent(panelSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 879, Short.MAX_VALUE))
+						.addComponent(panelButtons, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 879, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(panelSearch, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
+					.addComponent(panelSearch, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panelTable, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(panelButtons, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -99,35 +102,40 @@ public class JIFCustomers extends JInternalFrame {
 		table.optimizeColumnWidths(true);
         table.setRowHeight(30);
 		scrollPane.setViewportView(table);
-		panelSearch.setLayout(new MigLayout("", "[44.00px][124px][][grow][][grow][][]", "[19px]"));
+		panelSearch.setLayout(new MigLayout("", "[44.00px][124px][][grow][][grow][][][59.00]", "[30.00px]"));
 		
 		JLabel lblSearch = new JLabel("DNI");
 		panelSearch.add(lblSearch, "cell 0 0,alignx left,aligny center");
 		
 		txtFSearchDNI = new JTextField();
-		panelSearch.add(txtFSearchDNI, "cell 1 0,alignx left,aligny top");
+		panelSearch.add(txtFSearchDNI, "cell 1 0,alignx left,aligny center");
 		txtFSearchDNI.setColumns(10);
 		
 		JLabel lblName = new JLabel("Name");
-		panelSearch.add(lblName, "cell 2 0,alignx trailing");
+		panelSearch.add(lblName, "cell 2 0,alignx trailing,aligny center");
 		
 		textFSearchName = new JTextField();
-		panelSearch.add(textFSearchName, "cell 3 0,growx");
+		panelSearch.add(textFSearchName, "cell 3 0,growx,aligny center");
 		textFSearchName.setColumns(10);
 		
 		JLabel lblSurname = new JLabel("Surname");
-		panelSearch.add(lblSurname, "cell 4 0,alignx trailing");
+		panelSearch.add(lblSurname, "cell 4 0,alignx trailing,aligny center");
 		
 		textFSearchSurname = new JTextField();
-		panelSearch.add(textFSearchSurname, "cell 5 0,growx");
+		panelSearch.add(textFSearchSurname, "cell 5 0,growx,aligny center");
 		textFSearchSurname.setColumns(10);
 		
 		JLabel lblType = new JLabel("driving license");
-		panelSearch.add(lblType, "cell 6 0,alignx trailing");
+		panelSearch.add(lblType, "cell 6 0,alignx trailing,aligny center");
 		
 		cbSearchDrivingLicense = new JComboBox<String>();
 		cbSearchDrivingLicense.setModel(new DefaultComboBoxModel<String>(new String[] {"All", "A", "B", "C", "D", "E", "Z"}));
-		panelSearch.add(cbSearchDrivingLicense, "cell 7 0,growx");
+		panelSearch.add(cbSearchDrivingLicense, "flowx,cell 7 0,growx,aligny center");
+		
+		btnPrint = new JButton("");
+		btnPrint.setPreferredSize(new Dimension(20, 20));
+		btnPrint.setIcon(new ImageIcon(JIFCustomers.class.getResource("/com/mordor/lloguer/assets/printer.png")));
+		panelSearch.add(btnPrint, "cell 8 0,alignx right,aligny center");
 		getContentPane().setLayout(groupLayout);
 
 	}
@@ -166,5 +174,9 @@ public class JIFCustomers extends JInternalFrame {
 
 	public WebTable getTable() {
 		return table;
+	}
+
+	public JButton getBtnPrint() {
+		return btnPrint;
 	}
 }

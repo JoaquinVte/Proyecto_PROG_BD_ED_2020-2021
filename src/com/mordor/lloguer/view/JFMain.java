@@ -101,12 +101,10 @@ public class JFMain extends JFrame {
 		toolBar.addSeparator(new Dimension(20,10));
 		
 		btnEmployees = new JButton("");
-		btnEmployees.setEnabled(false);
 		btnEmployees.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/employee.png")));
 		toolBar.add(btnEmployees);
 		
 		btnCustomers = new JButton("");
-		btnCustomers.setEnabled(false);
 		btnCustomers.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/customers.png")));
 		toolBar.add(btnCustomers);
 		

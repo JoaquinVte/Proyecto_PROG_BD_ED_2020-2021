@@ -463,5 +463,14 @@ public class MyOracleDB implements Model {
 														.collect(Collectors.toList()));
 	}
 
+	@Override
+	public Connection getConnection() throws SQLException {
+		DataSource ds = MyDataSource.getOracleDataSource();
+		boolean authenticated = false;
+		String query = "SELECT COUNT(*) FROM EMPLEADO WHERE DNI=? AND password=ENCRYPT_PASWD.encrypt_val(?)";
+
+		return ds.getConnection();
+	}
+
 
 }
