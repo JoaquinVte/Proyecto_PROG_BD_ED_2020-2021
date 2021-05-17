@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -374,8 +375,9 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 		private static final long serialVersionUID = 1L;
 
 		public MyCustomerTableModel( List<Customer> data) {
-			super(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" }, data);
-			// TODO Auto-generated constructor stub
+			super(new ArrayList<String>(Arrays.asList(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Carnet" })), data);
+			
+			
 		}
 		
 		@Override

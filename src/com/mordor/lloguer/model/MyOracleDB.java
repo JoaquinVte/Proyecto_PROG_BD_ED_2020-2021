@@ -330,10 +330,10 @@ public class MyOracleDB implements Model {
 	public boolean addCustomer(Customer customer) throws SQLException {
 		boolean added = false;
 		DataSource ds = MyDataSource.getOracleDataSource();
-		//String query = "INSERT INTO CLIENTE (DNI,nombre,apellidos,domicilio,CP,email,fechaNac,carnet,foto,CHANGEDBY,CHANGEDTS) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		String query = "{ call GESTIONALQUILER.grabarCliente(?,?,?,?,?,?,?,?)}";
 
-		try (Connection con = ds.getConnection(); CallableStatement cstmt = con.prepareCall(query);) {
+		try (Connection con = ds.getConnection(); 
+				CallableStatement cstmt = con.prepareCall(query);) {
 
 			int pos = 0;
 						
@@ -345,13 +345,10 @@ public class MyOracleDB implements Model {
 			cstmt.setString(++pos, String.valueOf(customer.getCarnet()));
 			cstmt.setBytes(++pos, customer.getFoto());
 			cstmt.setString(++pos, customer.getDomicilio());
-			cstmt.setString(++pos, customer.getCP());		
-			
+			cstmt.setString(++pos, customer.getCP());			
 
 			added = (cstmt.executeUpdate() == 1) ? true : false;
-
-		}
-
+			}
 		return added;
 	}
 

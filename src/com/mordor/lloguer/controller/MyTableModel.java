@@ -19,28 +19,28 @@ public abstract class MyTableModel<T> extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String[] COLUMN_NAMES;
+	protected List<String> columnNames;
 	protected List<T> data;
 
 	/**
 	 * 
-	 * @param COLUMN_NAMES Nombres de las columnas de la tabla
+	 * @param columnNames Nombres de las columnas de la tabla
 	 * @param data Datos de la tabla
 	 */
-	public MyTableModel(String[] COLUMN_NAMES, List<T> data) {
+	public MyTableModel(List<String> columnNames, List<T> data) {
 		super();
-		this.COLUMN_NAMES = COLUMN_NAMES;
+		this.columnNames = columnNames;
 		this.data = data;
 
 	}
 
 	public String getColumnName(int col) {
-		return COLUMN_NAMES[col];
+		return columnNames.get(col);
 	}
 
 	@Override
 	public int getColumnCount() {
-		return COLUMN_NAMES.length;
+		return columnNames.size();
 	}
 
 	@Override

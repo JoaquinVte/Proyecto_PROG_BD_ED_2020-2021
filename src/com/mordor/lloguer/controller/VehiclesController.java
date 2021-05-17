@@ -3,7 +3,9 @@ package com.mordor.lloguer.controller;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,9 +169,18 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	private abstract class MyVehicleTableModel<T extends Vehicle> extends MyTableModel<T> {
 
-		public MyVehicleTableModel(String[] COLUMN_NAMES, List<T> data) {
-			super(COLUMN_NAMES, data);
-			// TODO Auto-generated constructor stub
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		private String[] h = {"Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet"};
+		
+		public MyVehicleTableModel(List<String> COLUMN_NAMES, List<T> data) {
+			super(new ArrayList<String>(), data);
+			
+			columnNames.addAll(Arrays.asList(h));
+			columnNames.addAll(COLUMN_NAMES);			
 		}
 
 		@Override
@@ -192,14 +203,12 @@ public class VehiclesController implements ActionListener, DocumentListener {
 			}
 			return null;
 		}
-
 	}
 
 	private class MyCarTableModel extends MyVehicleTableModel<Coche> {
 
 		public MyCarTableModel(List data) {
-			super(new String[] { "Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet", "Plazas",
-					"Puertas" }, data);
+			super(Arrays.asList("Plazas", "Puertas"), data);
 		}
 
 		@Override
@@ -219,8 +228,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	private class MyTruckTableModel extends MyVehicleTableModel<Camion> {
 
 		public MyTruckTableModel(List data) {
-			super(new String[] { "Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet", "MMA",
-					"NumRuedas" }, data);
+			super(Arrays.asList("MMA", "NumRuedas"), data);
 		}
 
 		@Override
@@ -240,7 +248,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	private class MyVanTableModel extends MyVehicleTableModel<Furgoneta> {
 
 		public MyVanTableModel(List data) {
-			super(new String[] { "Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet", "MMA" },
+			super(Arrays.asList("MMA" ),
 					data);
 		}
 
@@ -259,8 +267,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	private class MyMinibusTableModel extends MyVehicleTableModel<Microbus> {
 
 		public MyMinibusTableModel(List data) {
-			super(new String[] { "Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet", "Medida",
-					"NumPlazas" }, data);
+			super(Arrays.asList("Medida",	"NumPlazas"), data);
 		}
 
 		@Override

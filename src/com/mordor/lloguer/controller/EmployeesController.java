@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -96,9 +97,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 								
 				List<Employee> employees = model.getEmployees().stream()
 						.sorted((e1, e2) -> e1.getDNI().compareTo(e2.getDNI())).collect(Collectors.toList());
-				String[] header = new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" };
-
-				MyEmployeeTableModel metm = new MyEmployeeTableModel(header,employees);
+				
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
 
 				webtable.setModel(metm);
 
@@ -351,9 +351,8 @@ public class EmployeesController implements ActionListener, TableModelListener {
 						.compareToIgnoreCase("Ascending") == 0)) ? Model.ASCENDING : Model.DESCENDING;
 
 				List<Employee> employees = model.getEmployeesByField(field, direction);
-				String[] header = new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" };
 				
-				MyEmployeeTableModel metm = new MyEmployeeTableModel(header,employees);
+				MyEmployeeTableModel metm = new MyEmployeeTableModel(employees);
 
 				webtable.setModel(metm);
 
@@ -385,8 +384,9 @@ public class EmployeesController implements ActionListener, TableModelListener {
 		private static final long serialVersionUID = 1L;
 
 
-		public MyEmployeeTableModel(String[] HEADER, List<Employee> data) {
-			super(HEADER,data);
+		public MyEmployeeTableModel( List<Employee> data) {
+			super(new ArrayList<String>(),data);
+			columnNames.addAll(Arrays.asList(new String[]{ "DNI", "Nombre", "Apellidos", "Domicilio", "CP", "email", "fechaNac", "Cargo" }));
 		}
 
 		@Override
