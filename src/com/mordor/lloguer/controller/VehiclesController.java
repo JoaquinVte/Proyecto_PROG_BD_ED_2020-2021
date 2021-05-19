@@ -7,8 +7,10 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
@@ -128,7 +130,17 @@ public class VehiclesController implements ActionListener, DocumentListener {
 					mvtm.setNewData(vans);
 					mmtm.setNewData(minibus);
 					mttm.setNewData(trucks);
-
+					
+					setDataToCbxEngine(cars.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelCar());
+					setDataToCbxEngine(vans.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelVan());
+					setDataToCbxEngine(minibus.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelMinibus());
+					setDataToCbxEngine(trucks.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelTruck());
+					
+					setDataToLicense(cars.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelCar());
+					setDataToLicense(vans.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelVan());
+					setDataToLicense(minibus.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelMinibus());
+					setDataToLicense(trucks.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelTruck());
+															
 					MainController.addJInternalFrame(view);
 				}
 			}
@@ -137,6 +149,27 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 		task.execute();
 
+	}
+	private void setDataToLicense(Set<String> data, JPVehicle jp) {	
+		
+		DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>();
+		
+		dcbm.addElement("All");
+		for(String d : data)
+			dcbm.addElement(d);
+		
+		jp.getComboBoxLicense().setModel(dcbm);
+	}
+	
+	private void setDataToCbxEngine(Set<String> data, JPVehicle jp) {	
+		
+		DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>();
+		
+		dcbm.addElement("All");
+		for(String d : data)
+			dcbm.addElement(d);
+		
+		jp.getComboBoxEngine().setModel(dcbm);
 	}
 
 	@Override
@@ -283,74 +316,49 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		}
 
 	}
-
+	
 	private void update(Component component) {
 
 		// Recover the JTextField that trigger the document event
 		if (view.getPanelCar().contains(component)) {
-
-			mctm.setNewData(cars.stream()
-					.filter((c) -> c.getMatricula().toUpperCase()
-							.contains(view.getPanelCar().getTextFieldRegistration().getText().toUpperCase()))
-					.filter((c) -> c.getMarca().toUpperCase()
-							.contains(view.getPanelCar().getTextFieldModel().getText().toUpperCase()))
-					.filter((c) -> c.getMotor().toUpperCase()
-							.equals(view.getPanelCar().getComboBoxEngine().getSelectedItem().toString())
-							|| view.getPanelCar().getComboBoxEngine().getSelectedItem().toString().equals("All"))
-					.filter((c) -> c.getCarnet().toUpperCase()
-							.equals(view.getPanelCar().getComboBoxLicense().getSelectedItem().toString())
-							|| view.getPanelCar().getComboBoxLicense().getSelectedItem().toString().equals("All"))
-					.collect(Collectors.toList()));
-
+			
+			mctm.setNewData((List<Coche>)filter(cars,view.getPanelCar()));
+			
 		} else if (view.getPanelTruck().contains(component)) {
 
-			mttm.setNewData(trucks.stream()
-					.filter((c) -> c.getMatricula().toUpperCase()
-							.contains(view.getPanelTruck().getTextFieldRegistration().getText().toUpperCase()))
-					.filter((c) -> c.getMarca().toUpperCase()
-							.contains(view.getPanelTruck().getTextFieldModel().getText().toUpperCase()))
-					.filter((c) -> c.getMotor().toUpperCase()
-							.equals(view.getPanelTruck().getComboBoxEngine().getSelectedItem().toString())
-							|| view.getPanelTruck().getComboBoxEngine().getSelectedItem().toString().equals("All"))
-					.filter((c) -> c.getCarnet().toUpperCase()
-							.equals(view.getPanelTruck().getComboBoxLicense().getSelectedItem().toString())
-							|| view.getPanelTruck().getComboBoxLicense().getSelectedItem().toString().equals("All"))
-					.collect(Collectors.toList()));
+			mttm.setNewData((List<Camion>)filter(trucks,view.getPanelTruck()));
 
 		} else if (view.getPanelVan().contains(component)) {
 
-			mvtm.setNewData(vans.stream()
-					.filter((c) -> c.getMatricula().toUpperCase()
-							.contains(view.getPanelVan().getTextFieldRegistration().getText().toUpperCase()))
-					.filter((c) -> c.getMarca().toUpperCase()
-							.contains(view.getPanelVan().getTextFieldModel().getText().toUpperCase()))
-					.filter((c) -> c.getMotor().toUpperCase()
-							.equals(view.getPanelVan().getComboBoxEngine().getSelectedItem().toString())
-							|| view.getPanelVan().getComboBoxEngine().getSelectedItem().toString().equals("All"))
-					.filter((c) -> c.getCarnet().toUpperCase()
-							.equals(view.getPanelVan().getComboBoxLicense().getSelectedItem().toString())
-							|| view.getPanelVan().getComboBoxLicense().getSelectedItem().toString().equals("All"))
-					.collect(Collectors.toList()));
+			mvtm.setNewData((List<Furgoneta>)filter(vans,view.getPanelVan()));
 
 		} else if (view.getPanelMinibus().contains(component)) {
 
-			mmtm.setNewData(minibus.stream()
-					.filter((c) -> c.getMatricula().toUpperCase()
-							.contains(view.getPanelMinibus().getTextFieldRegistration().getText().toUpperCase()))
-					.filter((c) -> c.getMarca().toUpperCase()
-							.contains(view.getPanelMinibus().getTextFieldModel().getText().toUpperCase()))
-					.filter((c) -> c.getMotor().toUpperCase()
-							.equals(view.getPanelMinibus().getComboBoxEngine().getSelectedItem().toString())
-							|| view.getPanelMinibus().getComboBoxEngine().getSelectedItem().toString().equals("All"))
-					.filter((c) -> c.getCarnet().toUpperCase()
-							.equals(view.getPanelMinibus().getComboBoxLicense().getSelectedItem().toString())
-							|| view.getPanelMinibus().getComboBoxLicense().getSelectedItem().toString().equals("All"))
-					.collect(Collectors.toList()));
+			mmtm.setNewData((List<Microbus>)filter(minibus,view.getPanelMinibus()));
+				
 		}
 
-//		mctm.setNewData(cars.stream()
-//				.filter(null));
-
+	}
+	
+	public List<?> filter(List<? extends Vehicle> data, JPVehicle jp){
+		
+		List<?> newData = data.stream()
+				.filter((c) -> c.getMatricula().toUpperCase()
+						.contains(jp.getTextFieldRegistration().getText().toUpperCase()))
+				.filter((c) -> c.getMarca().toUpperCase()
+						.contains(jp.getTextFieldModel().getText().toUpperCase()))
+				.filter((c) -> c.getMotor().toUpperCase()
+						.equals(jp.getComboBoxEngine().getSelectedItem().toString().toUpperCase())
+						|| view.getPanelCar().getComboBoxEngine().getSelectedItem().toString().equals("All"))
+				.filter((c) -> c.getCarnet().toUpperCase()
+						.equals(jp.getComboBoxLicense().getSelectedItem().toString().toUpperCase())
+						|| jp.getComboBoxLicense().getSelectedItem().toString().equals("All"))
+				.collect(Collectors.toList());
+		
+		setDataToCbxEngine(((List<Vehicle>)newData).stream().map((e)->e.getMotor()).collect(Collectors.toSet()),jp);
+		setDataToLicense(((List<Vehicle>)newData).stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),jp);
+		
+		return newData;
 	}
 
 	@Override
