@@ -337,7 +337,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 			mmtm.setNewData((List<Microbus>)filter(minibus,view.getPanelMinibus()));
 				
 		}
-
 	}
 	
 	public List<?> filter(List<? extends Vehicle> data, JPVehicle jp){
