@@ -14,6 +14,7 @@ import com.alee.laf.table.WebTable;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.Dimension;
 
 public class JPVehicle extends JPanel {
 	/**
@@ -35,7 +36,7 @@ public class JPVehicle extends JPanel {
 		
 		panelSearch = new JPanel();
 		add(panelSearch, "cell 0 0,grow");
-		panelSearch.setLayout(new MigLayout("", "[][][][grow][][97.00][][51.00]", "[]"));
+		panelSearch.setLayout(new MigLayout("", "[][][][grow][][123.00][][51.00]", "[]"));
 		
 		JLabel lblNewLabel = new JLabel("Registration");
 		panelSearch.add(lblNewLabel, "cell 0 0,alignx trailing");
@@ -58,15 +59,16 @@ public class JPVehicle extends JPanel {
 		panelSearch.add(lblEngine, "cell 4 0,alignx trailing");
 		
 		comboBoxEngine = new JComboBox<String>();
+		comboBoxEngine.setPreferredSize(new Dimension(150, 24));
 		comboBoxEngine.setModel(new DefaultComboBoxModel(new String[] {"All"}));
-		panelSearch.add(comboBoxEngine, "cell 5 0,growx");
+		panelSearch.add(comboBoxEngine, "cell 5 0,alignx right");
 		
 		JLabel lblLicense = new JLabel("License");
 		panelSearch.add(lblLicense, "cell 6 0,alignx trailing");
 		
 		comboBoxLicense = new JComboBox<String>();
 		comboBoxLicense.setModel(new DefaultComboBoxModel(new String[] {"All", "A", "B", "C", "D", "E", "F", "Z"}));
-		panelSearch.add(comboBoxLicense, "cell 7 0,growx");
+		panelSearch.add(comboBoxLicense, "cell 7 0,alignx right");
 		
 		JPanel panelTable = new JPanel();
 		add(panelTable, "cell 0 1,grow");

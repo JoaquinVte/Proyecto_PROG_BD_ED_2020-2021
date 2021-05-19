@@ -342,6 +342,9 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	
 	public List<?> filter(List<? extends Vehicle> data, JPVehicle jp){
 		
+		String engineSelected = jp.getComboBoxEngine().getSelectedItem().toString();
+		String licenseSelected = jp.getComboBoxLicense().getSelectedItem().toString();
+		
 		List<?> newData = data.stream()
 				.filter((c) -> c.getMatricula().toUpperCase()
 						.contains(jp.getTextFieldRegistration().getText().toUpperCase()))
@@ -357,6 +360,9 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		
 		setDataToCbxEngine(((List<Vehicle>)newData).stream().map((e)->e.getMotor()).collect(Collectors.toSet()),jp);
 		setDataToLicense(((List<Vehicle>)newData).stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),jp);
+		
+		jp.getComboBoxEngine().setSelectedItem(engineSelected);
+		jp.getComboBoxLicense().setSelectedItem(licenseSelected);
 		
 		return newData;
 	}
