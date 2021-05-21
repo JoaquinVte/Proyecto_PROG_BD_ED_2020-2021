@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -35,8 +34,6 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.swing.JRViewer;
 
 import com.mordor.lloguer.view.JIFCustomer;
@@ -53,8 +50,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	private JLabel labelPhoto;
 	private MyCustomerTableModel mctm;
 	
-	private JasperReport report;
-	private JasperPrint reportFilled;
 	private JRViewer jrViewer;
 	
 	public CustomersController(JIFCustomers view, Model model) {
@@ -126,7 +121,7 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 			
 			// Compile the jrxml file
 			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
-			Map<String, Object> parametres = new HashMap<String, Object>();
+			new HashMap<String, Object>();
 
 			// Produce the report (fill the report with data)
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, model.getConnection());

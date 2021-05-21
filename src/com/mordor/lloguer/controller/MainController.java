@@ -20,6 +20,7 @@ import javax.swing.SwingWorker;
 import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
+import com.mordor.lloguer.view.JIFAlquiler;
 import com.mordor.lloguer.view.JIFCustomers;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
@@ -72,6 +73,7 @@ public class MainController implements ActionListener {
 		view.getBtnCustomers().addActionListener(this);
 		view.getBtnVehicle().addActionListener(this);
 		view.getMntmPreferences().addActionListener(this);
+		view.getBtnInvoice().addActionListener(this);
 		
 
 		// Añadimos ActionCommand
@@ -81,6 +83,7 @@ public class MainController implements ActionListener {
 		view.getBtnCustomers().setActionCommand("Open JIFCustomers");
 		view.getBtnVehicle().setActionCommand("Open JIFVehicle");
 		view.getMntmPreferences().setActionCommand("Open JIFPreferences");
+		view.getBtnInvoice().setActionCommand("Open JIFInvoice");
 
 	}
 
@@ -109,11 +112,15 @@ public class MainController implements ActionListener {
 			openJIFVehicles();
 		} else if (command.equals("Open JIFCustomers")) {
 			openJIFCustomers();
+		} else if (command.equals("Open JIFInvoice")) {
+			openJIFInvoice();
 		}
 
 	}
 
 	
+
+
 
 	private void savePreferences() {
 
@@ -213,6 +220,14 @@ public class MainController implements ActionListener {
 		JIFVehicles jifVehicles = new JIFVehicles();
 		VehiclesController vc = new VehiclesController(jifVehicles,model);
 		vc.go();
+		
+	}
+	
+	private void openJIFInvoice() {
+		
+		JIFAlquiler jifInvoice = new JIFAlquiler();
+		AlquilerController ac = new AlquilerController(jifInvoice,model);
+		ac.go();
 		
 	}
 

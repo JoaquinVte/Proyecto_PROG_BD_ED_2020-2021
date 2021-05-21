@@ -38,6 +38,7 @@ public class JFMain extends JFrame {
 	private JMenuItem mntmPreferences;
 	private JButton btnCustomers;
 	private JButton btnVehicle;
+	private JButton btnInvoice;
 
 	/**
 	 * Create the frame.
@@ -111,6 +112,12 @@ public class JFMain extends JFrame {
 		btnVehicle = new JButton("");
 		btnVehicle.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/vehicle.png")));
 		toolBar.add(btnVehicle);
+		
+		toolBar.addSeparator(new Dimension(20,10));
+		
+		btnInvoice = new JButton("");
+		btnInvoice.setIcon(new ImageIcon(JFMain.class.getResource("/com/mordor/lloguer/assets/invoice.png")));
+		toolBar.add(btnInvoice);
 	}
 	
 
@@ -137,5 +144,8 @@ public class JFMain extends JFrame {
 	}
 	public JButton getBtnVehicle() {
 		return btnVehicle;
+	}
+	public JButton getBtnInvoice() {
+		return btnInvoice;
 	}	
 }
