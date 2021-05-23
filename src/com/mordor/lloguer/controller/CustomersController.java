@@ -110,8 +110,6 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	
 	private void openJasperView() {
 		
-
-		
 		try {
 			
 			String reportJRXML = "/com/mordor/lloguer/reports/Clientes.jrxml"; // path of your report source.

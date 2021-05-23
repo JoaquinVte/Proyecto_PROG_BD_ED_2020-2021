@@ -6,6 +6,9 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
 
 public class JIFVehicles extends JInternalFrame {
 	/**
@@ -27,6 +30,7 @@ public class JIFVehicles extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public JIFVehicles() {
+		setFrameIcon(new ImageIcon(JIFVehicles.class.getResource("/com/mordor/lloguer/assets/vehicle.png")));
 		setResizable(true);
 		setClosable(true);
 		setTitle("Vehicle");
@@ -67,6 +71,11 @@ public class JIFVehicles extends JInternalFrame {
 		panelButtons.add(btnEdit);
 		
 		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
 		panelButtons.add(btnCancel);
 		
 	}

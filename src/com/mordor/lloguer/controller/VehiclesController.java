@@ -93,6 +93,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 			protected Void doInBackground() throws Exception {
 
 				MainController.addJInternalFrame(jifpi);
+				jifpi.getProgressBar().setIndeterminate(false);
 				jifpi.getProgressBar().setMaximum(4);
 
 				try {
@@ -200,19 +201,16 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		}
 	}
 
-	private abstract class MyVehicleTableModel<T extends Vehicle> extends MyTableModel<T> {
+	private class MyVehicleTableModel<T extends Vehicle> extends MyTableModel<T> {
 
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
-		
-		private String[] h = {"Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet"};
+		private static final long serialVersionUID = 1L;		
 		
 		public MyVehicleTableModel(List<String> COLUMN_NAMES, List<T> data) {
-			super(new ArrayList<String>(), data);
+			super(new ArrayList<String>(Arrays.asList(new String[]{"Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet"})), data);
 			
-			columnNames.addAll(Arrays.asList(h));
 			columnNames.addAll(COLUMN_NAMES);			
 		}
 
@@ -240,19 +238,16 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	private class MyCarTableModel extends MyVehicleTableModel<Coche> {
 
-		public MyCarTableModel(List data) {
+		public MyCarTableModel(List<Coche> data) {
 			super(Arrays.asList("Plazas", "Puertas"), data);
 		}
 
 		@Override
 		public Object getValueAt(int row, int col) {
 			switch (col) {
-			case 7:
-				return data.get(row).getNumPlazas();
-			case 8:
-				return data.get(row).getNumPuertas();
-			default:
-				return super.getValueAt(row, col);
+				case 7: return data.get(row).getNumPlazas();
+				case 8: return data.get(row).getNumPuertas();
+				default: return super.getValueAt(row, col);
 			}
 		}
 
@@ -260,7 +255,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	private class MyTruckTableModel extends MyVehicleTableModel<Camion> {
 
-		public MyTruckTableModel(List data) {
+		public MyTruckTableModel(List<Camion> data) {
 			super(Arrays.asList("MMA", "NumRuedas"), data);
 		}
 
@@ -280,7 +275,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	private class MyVanTableModel extends MyVehicleTableModel<Furgoneta> {
 
-		public MyVanTableModel(List data) {
+		public MyVanTableModel(List<Furgoneta> data) {
 			super(Arrays.asList("MMA" ),
 					data);
 		}
@@ -299,7 +294,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	private class MyMinibusTableModel extends MyVehicleTableModel<Microbus> {
 
-		public MyMinibusTableModel(List data) {
+		public MyMinibusTableModel(List<Microbus> data) {
 			super(Arrays.asList("Medida",	"NumPlazas"), data);
 		}
 

@@ -10,7 +10,7 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @author joaalsai
  *
- * @param <T> Tipo de dato que almacenara la tabla
+ * @param <T> Data type that store the table
  */
 public abstract class MyTableModel<T> extends AbstractTableModel {
 
@@ -24,8 +24,8 @@ public abstract class MyTableModel<T> extends AbstractTableModel {
 
 	/**
 	 * 
-	 * @param columnNames Nombres de las columnas de la tabla
-	 * @param data Datos de la tabla
+	 * @param columnNames Column names
+	 * @param data Table data
 	 */
 	public MyTableModel(List<String> columnNames, List<T> data) {
 		super();

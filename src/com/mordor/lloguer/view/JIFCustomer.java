@@ -219,23 +219,24 @@ public class JIFCustomer extends JInternalFrame {
 
 	public void setImage(byte[] image) {
 		this.image = image;
-			
+
 		if (image != null) {
-			
-			BufferedImage ima = null;
-			InputStream in = new ByteArrayInputStream(image);
 			try {
+				BufferedImage ima = null;
+				InputStream in = new ByteArrayInputStream(image);
+
 				ima = ImageIO.read(in);
+
+				ImageIcon icono = new ImageIcon(ima);
+				Image imageToResize = icono.getImage();
+				Image nuevaResized = imageToResize.getScaledInstance(410, 150, java.awt.Image.SCALE_SMOOTH);
+				
+				lblLicensePhoto.setIcon(new ImageIcon(nuevaResized));
+				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			ImageIcon icono = new ImageIcon(ima);
-			Image imageToResize = icono.getImage();
-			Image nuevaResized = imageToResize.getScaledInstance(410, 150,
-					java.awt.Image.SCALE_SMOOTH);
-			lblLicensePhoto.setIcon(new ImageIcon(nuevaResized));
 		} else {
 			lblLicensePhoto.setIcon(new ImageIcon(JIFCustomer.class.getResource("/com/mordor/lloguer/assets/default_license.png")));
 		}

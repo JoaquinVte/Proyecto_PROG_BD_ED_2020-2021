@@ -244,9 +244,8 @@ public class MyOracleDB implements Model {
 			String CP;
 			String email;
 			Date birthday;
-			char license;
-			Blob photo;
-			byte[] content = null;
+			char license;			
+			byte[] photo;
 
 			
 			while(rs.next()) {
@@ -259,12 +258,9 @@ public class MyOracleDB implements Model {
 				email = rs.getString("email");
 				birthday = rs.getDate("fechaNac"); 
 				license = rs.getString("carnet").charAt(0);
-				photo = rs.getBlob("foto");
-				
-				if (photo != null) {
-					content = photo.getBytes(1L, (int) photo.length());					
-				} 
-				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, content);
+				photo = rs.getBytes("foto");
+				 
+				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, photo);
 				customers.add(customer);
 			}
 		} finally {

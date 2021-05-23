@@ -20,7 +20,7 @@ import javax.swing.SwingWorker;
 import com.mordor.lloguer.config.MyConfig;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.view.JFMain;
-import com.mordor.lloguer.view.JIFAlquiler;
+import com.mordor.lloguer.view.JIFInvoice;
 import com.mordor.lloguer.view.JIFCustomers;
 import com.mordor.lloguer.view.JIFEmployees;
 import com.mordor.lloguer.view.JIFLogin;
@@ -225,7 +225,7 @@ public class MainController implements ActionListener {
 	
 	private void openJIFInvoice() {
 		
-		JIFAlquiler jifInvoice = new JIFAlquiler();
+		JIFInvoice jifInvoice = new JIFInvoice();
 		AlquilerController ac = new AlquilerController(jifInvoice,model);
 		ac.go();
 		

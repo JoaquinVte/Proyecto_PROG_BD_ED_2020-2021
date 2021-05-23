@@ -1,22 +1,25 @@
 package com.mordor.lloguer.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import com.mordor.lloguer.model.Alquiler;
 import com.mordor.lloguer.model.Factura;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.model.Vehicle;
-import com.mordor.lloguer.view.JIFAlquiler;
+import com.mordor.lloguer.view.JIFInvoice;
 import com.mordor.lloguer.view.JIFProgressInformation;
 
-public class AlquilerController {
+public class AlquilerController implements ActionListener {
 	
-	private JIFAlquiler view;
+	private JIFInvoice view;
 	private Model model;	
 	 
 	private ArrayList<Alquiler> alquileres;
@@ -26,7 +29,7 @@ public class AlquilerController {
 	private MyAquilerTableModel matm;
 	
 	
-	public AlquilerController(JIFAlquiler view, Model model) {
+	public AlquilerController(JIFInvoice view, Model model) {
 		super();
 		this.view = view;
 		this.model = model;
@@ -42,6 +45,9 @@ public class AlquilerController {
 		matm = new MyAquilerTableModel(alquileres,vehicles);
 		view.getTableDetalles().setModel(matm);
 		
+		view.getBtnNewInvoce().addActionListener(this);
+		view.getBtnNewInvoce().setActionCommand("New invoice");
+		
 	}
 	
 	public void go() {
@@ -50,6 +56,22 @@ public class AlquilerController {
 		
 	}
 	
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		String command = ae.getActionCommand();
+		if(command.equals("New invoice")) {
+			newInvoice();
+		}
+		
+	}
+	
+	private void newInvoice() {
+
+		String dni = JOptionPane.showInternalInputDialog(view, "Enter the customer's ID:");
+		
+	}
+
 	private void loadDataFromServer() {
 		SwingWorker<Void, Integer> task = new SwingWorker<Void, Integer>() {
 
@@ -127,5 +149,6 @@ public class AlquilerController {
 		}
 		
 	}
+
 
 }

@@ -21,19 +21,17 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JToolBar;
 import javax.swing.ImageIcon;
-import java.awt.Component;
 import java.awt.Dimension;
-
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 import com.alee.extended.date.WebDateField;
 import com.alee.laf.table.WebTable;
 
-import javax.swing.JSeparator;
+public class JIFInvoice extends JInternalFrame {
 
-public class JIFAlquiler extends JInternalFrame {
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField txtFieldNombre;
 	private JTextField txtFieldApellidos;
 	private JTextField txtFieldDNI;
@@ -47,7 +45,6 @@ public class JIFAlquiler extends JInternalFrame {
 	private JButton btnNextInvoice;
 	private JButton btnNewInvoce;
 	private JButton btnRemoveInvoice;
-	private JButton btnClient;
 	private JButton btnPrint;
 	private JButton btnPdf;
 	private JButton btnAddDetail;
@@ -58,9 +55,9 @@ public class JIFAlquiler extends JInternalFrame {
 	/**
 	 * Create the frame.
 	 */
-	public JIFAlquiler() {
-		setFrameIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/invoice.png")));
-		setTitle("Facturas");
+	public JIFInvoice() {
+		setFrameIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/invoice.png")));
+		setTitle("Invoice");
 		setMaximizable(true);
 		setClosable(true);
 		setBounds(100, 100, 810, 739);
@@ -95,7 +92,7 @@ public class JIFAlquiler extends JInternalFrame {
 
 		JPanel panelDetalles = new JPanel();
 		panelDetalles.setBorder(
-				new TitledBorder(null, "Detalle", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(59, 59, 59)));
+				new TitledBorder(null, "Details", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(59, 59, 59)));
 		GroupLayout gl_panelCentral = new GroupLayout(panelCentral);
 		gl_panelCentral.setHorizontalGroup(gl_panelCentral.createParallelGroup(Alignment.TRAILING)
 				.addComponent(panelDetalles, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE));
@@ -107,7 +104,7 @@ public class JIFAlquiler extends JInternalFrame {
 
 		JPanel panelTotal = new JPanel();
 		panelTotal.setBorder(
-				new TitledBorder(null, "Resumen", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(59, 59, 59)));
+				new TitledBorder(null, "Summary", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(59, 59, 59)));
 		panelTabla.setLayout(new BorderLayout(0, 0));
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -119,7 +116,7 @@ public class JIFAlquiler extends JInternalFrame {
 		scrollPane.setViewportView(tableDetalles);
 		panelTotal.setLayout(new MigLayout("", "[][]", "[][][]"));
 
-		JLabel lblTotal = new JLabel("Suma");
+		JLabel lblTotal = new JLabel("Sum");
 		lblTotal.setHorizontalAlignment(SwingConstants.LEFT);
 		panelTotal.add(lblTotal, "cell 0 0,alignx left");
 
@@ -129,7 +126,7 @@ public class JIFAlquiler extends JInternalFrame {
 		panelTotal.add(txtFieldSuma, "cell 1 0,growx");
 		txtFieldSuma.setColumns(10);
 
-		JLabel lblImpuestos = new JLabel("Impuestos");
+		JLabel lblImpuestos = new JLabel("Taxes");
 		lblImpuestos.setHorizontalAlignment(SwingConstants.LEFT);
 		panelTotal.add(lblImpuestos, "cell 0 1,alignx left");
 
@@ -139,7 +136,7 @@ public class JIFAlquiler extends JInternalFrame {
 		panelTotal.add(txtFieldImpuestos, "cell 1 1,growx");
 		txtFieldImpuestos.setColumns(10);
 
-		JLabel lblTotalImputestos = new JLabel("Total + Imputestos");
+		JLabel lblTotalImputestos = new JLabel("Total + Taxes");
 		lblTotalImputestos.setHorizontalAlignment(SwingConstants.LEFT);
 		panelTotal.add(lblTotalImputestos, "cell 0 2,alignx trailing");
 
@@ -160,36 +157,31 @@ public class JIFAlquiler extends JInternalFrame {
 
 		btnNewInvoce = new JButton("");
 		btnNewInvoce.setToolTipText("Añadir factura");
-		btnNewInvoce.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/invoiceAdd.png")));
+		btnNewInvoce.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/invoiceAdd.png")));
 		toolBar.add(btnNewInvoce);
 
 		btnRemoveInvoice = new JButton("");
 		btnRemoveInvoice.setToolTipText("Eliminar factura");
 		btnRemoveInvoice
-				.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/invoiceRemove.png")));
+				.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/invoiceRemove.png")));
 		toolBar.add(btnRemoveInvoice);
 
 		toolBar.addSeparator(new Dimension(20,10));
-
-		btnClient = new JButton("");
-		btnClient.setToolTipText("Cambiar cliente de la factura");
-		btnClient.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/usuarios.png")));
-		toolBar.add(btnClient);
 		
 		btnCheck = new JButton("");
 		btnCheck.setToolTipText("Confirm vehicle");
-		btnCheck.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/check.png")));
+		btnCheck.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/check.png")));
 		toolBar.add(btnCheck);
 		
 		toolBar.addSeparator(new Dimension(20,10));
 
 		btnAddDetail = new JButton("");
 		btnAddDetail.setToolTipText("Añadir detalle");
-		btnAddDetail.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/Add.png")));
+		btnAddDetail.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/Add.png")));
 		toolBar.add(btnAddDetail);
 
 		btnRemoveDetail = new JButton("");
-		btnRemoveDetail.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/Remove.png")));
+		btnRemoveDetail.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/Remove.png")));
 		btnRemoveDetail.setToolTipText("Eliminar detalle");
 		toolBar.add(btnRemoveDetail);
 		
@@ -197,12 +189,12 @@ public class JIFAlquiler extends JInternalFrame {
 
 		btnPrint = new JButton("");
 		btnPrint.setToolTipText("Abrir visor de report");
-		btnPrint.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/Printer.png")));
+		btnPrint.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/Printer.png")));
 		toolBar.add(btnPrint);
 
 		btnPdf = new JButton("");
 		btnPdf.setToolTipText("Exportar a pdf");
-		btnPdf.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/pdf.png")));
+		btnPdf.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/pdf.png")));
 		toolBar.add(btnPdf);
 		panelDetalles.add(panelTotal, "cell 0 1,alignx right,aligny top");
 		panelCentral.setLayout(gl_panelCentral);
@@ -215,10 +207,10 @@ public class JIFAlquiler extends JInternalFrame {
 
 		JPanel panelCliente = new JPanel();
 		panelSuperior.add(panelCliente);
-		panelCliente.setBorder(new TitledBorder(null, "Cliente", TitledBorder.LEFT, TitledBorder.TOP, null, null));
+		panelCliente.setBorder(new TitledBorder(null, "Customer", TitledBorder.LEFT, TitledBorder.TOP, null, null));
 		panelCliente.setLayout(new MigLayout("", "[][grow]", "[][][]"));
 
-		JLabel lblNombre = new JLabel("Nombre");
+		JLabel lblNombre = new JLabel("Name");
 		panelCliente.add(lblNombre, "cell 0 0,alignx trailing");
 
 		txtFieldNombre = new JTextField();
@@ -227,7 +219,7 @@ public class JIFAlquiler extends JInternalFrame {
 		panelCliente.add(txtFieldNombre, "cell 1 0,growx");
 		txtFieldNombre.setColumns(10);
 
-		JLabel lblApellidos = new JLabel("Apellidos");
+		JLabel lblApellidos = new JLabel("Surname");
 		panelCliente.add(lblApellidos, "cell 0 1,alignx trailing");
 
 		txtFieldApellidos = new JTextField();
@@ -246,11 +238,11 @@ public class JIFAlquiler extends JInternalFrame {
 		txtFieldDNI.setColumns(10);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Factura", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBorder(new TitledBorder(null, "Invoice", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelSuperior.add(panel);
 		panel.setLayout(new MigLayout("", "[][grow]", "[][][grow]"));
 
-		JLabel lblFacturaN = new JLabel("Factura Nº");
+		JLabel lblFacturaN = new JLabel("Invoice Nº");
 		panel.add(lblFacturaN, "cell 0 0,alignx trailing");
 
 		txtFieldNumeroFactura = new JTextField();
@@ -259,7 +251,7 @@ public class JIFAlquiler extends JInternalFrame {
 		panel.add(txtFieldNumeroFactura, "cell 1 0,growx");
 		txtFieldNumeroFactura.setColumns(10);
 
-		JLabel lblFecha = new JLabel("Fecha");
+		JLabel lblFecha = new JLabel("Date");
 		panel.add(lblFecha, "cell 0 1,alignx trailing");
 
 		webDateFieldFechaFactura = new WebDateField();
@@ -274,12 +266,12 @@ public class JIFAlquiler extends JInternalFrame {
 		btnPreviousInvoice = new JButton("");
 		panel_2.add(btnPreviousInvoice);
 		btnPreviousInvoice.setToolTipText("Factura anterior");
-		btnPreviousInvoice.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/leftArrow.png")));
+		btnPreviousInvoice.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/leftArrow.png")));
 
 		btnNextInvoice = new JButton("");
 		panel_2.add(btnNextInvoice);
 		btnNextInvoice.setToolTipText("Siguiente factura");
-		btnNextInvoice.setIcon(new ImageIcon(JIFAlquiler.class.getResource("/com/mordor/lloguer/assets/rightArrow.png")));
+		btnNextInvoice.setIcon(new ImageIcon(JIFInvoice.class.getResource("/com/mordor/lloguer/assets/rightArrow.png")));
 
 		JPanel panel_1 = new JPanel();
 		panel.add(panel_1, "cell 1 2,grow");
@@ -345,10 +337,6 @@ public class JIFAlquiler extends JInternalFrame {
 
 	public JButton getBtnRemoveInvoice() {
 		return btnRemoveInvoice;
-	}
-
-	public JButton getBtnClient() {
-		return btnClient;
 	}
 
 	public JButton getBtnPrint() {
