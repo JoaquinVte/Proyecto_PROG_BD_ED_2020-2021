@@ -10,26 +10,28 @@ import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import com.mordor.lloguer.model.Alquiler;
-import com.mordor.lloguer.model.Factura;
+import com.mordor.lloguer.model.Rent;
+import com.mordor.lloguer.model.Customer;
+import com.mordor.lloguer.model.Invoice;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.model.Vehicle;
 import com.mordor.lloguer.view.JIFInvoice;
 import com.mordor.lloguer.view.JIFProgressInformation;
 
-public class AlquilerController implements ActionListener {
+public class InvoiceController implements ActionListener {
 	
 	private JIFInvoice view;
 	private Model model;	
 	 
-	private ArrayList<Alquiler> alquileres;
+	private ArrayList<Rent> alquileres;
 	private ArrayList<Vehicle> vehicles;
-	private ArrayList<Factura> facturas;
+	private ArrayList<Invoice> facturas;
+	private ArrayList<Customer> clientes;
 	
 	private MyAquilerTableModel matm;
 	
 	
-	public AlquilerController(JIFInvoice view, Model model) {
+	public InvoiceController(JIFInvoice view, Model model) {
 		super();
 		this.view = view;
 		this.model = model;
@@ -39,7 +41,7 @@ public class AlquilerController implements ActionListener {
 
 	private void inicialize() {
 		
-		alquileres = new ArrayList<Alquiler>();
+		alquileres = new ArrayList<Rent>();
 		vehicles = new ArrayList<Vehicle>();
 		
 		matm = new MyAquilerTableModel(alquileres,vehicles);
@@ -70,6 +72,12 @@ public class AlquilerController implements ActionListener {
 
 		String dni = JOptionPane.showInternalInputDialog(view, "Enter the customer's ID:");
 		
+		if(dni!=null) {
+			String matricula = JOptionPane.showInternalInputDialog(view, "Enter the car registration:");
+			
+			//if(matricula)
+		}
+		
 	}
 
 	private void loadDataFromServer() {
@@ -81,25 +89,23 @@ public class AlquilerController implements ActionListener {
 			protected Void doInBackground() throws Exception {
 
 				MainController.addJInternalFrame(jifpi);
-				jifpi.getProgressBar().setMaximum(5);
+				jifpi.getProgressBar().setMaximum(7);
+				jifpi.getProgressBar().setIndeterminate(false);
 
-				try {
-					
-					
-//					vehicles.addAll(model.getCars());
-//					this.publish(1);
-//					vehicles.addAll(model.getTrucks());
-//					this.publish(2);
-//					vehicles.addAll(model.getVan());
-//					this.publish(3);
-//					vehicles.addAll(model.getMinibus());
-//					this.publish(4);
-					
-					
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				vehicles.addAll(model.getCars());
+				this.publish(1);
+				vehicles.addAll(model.getTrucks());
+				this.publish(2);
+				vehicles.addAll(model.getVan());
+				this.publish(3);
+				vehicles.addAll(model.getMinibus());
+				this.publish(4);
+				clientes.addAll(model.getCustomers());
+				this.publish(5);
+				facturas.addAll(model.getInvoices());
+				this.publish(6);
+				alquileres.addAll(model.getRents());
+				this.publish(7);
 
 				return null;
 			}
@@ -108,7 +114,7 @@ public class AlquilerController implements ActionListener {
 			protected void process(List<Integer> chunks) {
 				for (int number : chunks) {
 					jifpi.getProgressBar().setValue(number);
-					jifpi.getLblInformation().setText("Retrieving data from server..." + number + "/5");
+					jifpi.getLblInformation().setText("Retrieving data from server..." + number + "/7");
 				}
 			}
 
@@ -127,11 +133,11 @@ public class AlquilerController implements ActionListener {
 		task.execute();
 	}
 	
-	private class MyAquilerTableModel extends MyTableModel<Alquiler>{
+	private class MyAquilerTableModel extends MyTableModel<Rent>{
 		
 		private List<Vehicle> dataVehiculo;
 
-		public MyAquilerTableModel(List<Alquiler> dataAlquiler, List<Vehicle> dataVehiculo) {
+		public MyAquilerTableModel(List<Rent> dataAlquiler, List<Vehicle> dataVehiculo) {
 			super(Arrays.asList("Matricula","Modelo","Precio","F.Inicio","F.Fin"), dataAlquiler);
 			this.dataVehiculo = dataVehiculo;
 		}

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.swing.SwingWorker;
@@ -303,7 +304,18 @@ public class CustomersController implements ActionListener, DocumentListener, Mo
 	private void update() {
 
 		MyCustomerTableModel mctm = new MyCustomerTableModel(customers.stream()
-				.filter((c) -> c.getDNI().toUpperCase().contains(view.getTxtFSearchDNI().getText().toUpperCase()))
+				.filter(new Predicate<Customer>() {
+
+					@Override
+					public boolean test(Customer c) {
+						
+						if(c.getDNI()==null)
+							return false;
+						else
+						return c.getDNI().toUpperCase().contains(view.getTxtFSearchDNI().getText().toUpperCase());
+					}
+					
+				})
 				.filter((c) -> c.getNombre().toUpperCase().contains(view.getTextFSearchName().getText().toUpperCase()))
 				.filter((c) -> c.getApellidos().toUpperCase()
 						.contains(view.getTextFSearchSurname().getText().toUpperCase()))

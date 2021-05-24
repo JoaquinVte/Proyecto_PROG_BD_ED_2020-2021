@@ -3,6 +3,7 @@ package com.mordor.lloguer.model;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface Model {
@@ -36,4 +37,12 @@ public interface Model {
 	public ArrayList<Camion> getTrucks() throws Exception;
 	public ArrayList<Furgoneta> getVan() throws Exception;
 	public ArrayList<Microbus> getMinibus() throws Exception;
+	
+	// Rent
+	public ArrayList<Rent> getRents() throws Exception;
+	public ArrayList<Invoice> getInvoices() throws Exception;
+	public Invoice getInvoice(int id) throws Exception;
+
+		
+
 }

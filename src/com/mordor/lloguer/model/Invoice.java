@@ -2,7 +2,7 @@ package com.mordor.lloguer.model;
 
 import java.sql.Date;
 
-public class Factura {
+public class Invoice {
 	
 	private int id;
 	private Date fecha;
@@ -10,7 +10,7 @@ public class Factura {
 	private float importeIva;
 	private int clienteId;
 	
-	public Factura(int id, Date fecha, float importeBase, float importeIva, int clienteId) {
+	public Invoice(int id, Date fecha, float importeBase, float importeIva, int clienteId) {
 		super();
 		this.id = id;
 		this.fecha = fecha;

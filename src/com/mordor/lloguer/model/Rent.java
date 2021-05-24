@@ -2,28 +2,30 @@ package com.mordor.lloguer.model;
 
 import java.sql.Date;
 
-public class Alquiler {
+public class Rent {
 
-	private int facturaId;
+	private int idAlquiler;
+	private int idFactura;
 	private String vehiculoMatricula;
 	private Date fechaInicio;
 	private Date fechaFin;
-	private float precio;	
+	private float precio;
 	
-	public Alquiler(int facturaId, String vehiculoMatricula, Date fechaInicio, Date fechaFin, float precio) {
+	public Rent(int idAlquiler, int idFactura, String vehiculoMatricula, Date fechaInicio, Date fechaFin,
+			float precio) {
 		super();
-		this.facturaId = facturaId;
+		this.idAlquiler = idAlquiler;
+		this.idFactura = idFactura;
 		this.vehiculoMatricula = vehiculoMatricula;
 		this.fechaInicio = fechaInicio;
 		this.fechaFin = fechaFin;
 		this.precio = precio;
 	}
-	
 	public int getFacturaId() {
-		return facturaId;
+		return idFactura;
 	}
 	public void setFacturaId(int facturaId) {
-		this.facturaId = facturaId;
+		this.idFactura = facturaId;
 	}
 	public String getVehiculoMatricula() {
 		return vehiculoMatricula;
@@ -49,7 +51,16 @@ public class Alquiler {
 	public void setPrecio(float precio) {
 		this.precio = precio;
 	}
-	
-	
-	
+	public int getIdAlquiler() {
+		return idAlquiler;
+	}
+	public void setIdAlquiler(int idAlquiler) {
+		this.idAlquiler = idAlquiler;
+	}
+	public int getIdFactura() {
+		return idFactura;
+	}
+	public void setIdFactura(int idFactura) {
+		this.idFactura = idFactura;
+	}
 }

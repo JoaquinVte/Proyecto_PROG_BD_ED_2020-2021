@@ -75,7 +75,6 @@ public class MainController implements ActionListener {
 		view.getMntmPreferences().addActionListener(this);
 		view.getBtnInvoice().addActionListener(this);
 		
-
 		// Añadimos ActionCommand
 		view.getBtnLogin().setActionCommand("Open JIFLogin");
 		view.getBtnLogout().setActionCommand("Logout");
@@ -226,7 +225,7 @@ public class MainController implements ActionListener {
 	private void openJIFInvoice() {
 		
 		JIFInvoice jifInvoice = new JIFInvoice();
-		AlquilerController ac = new AlquilerController(jifInvoice,model);
+		InvoiceController ac = new InvoiceController(jifInvoice,model);
 		ac.go();
 		
 	}
