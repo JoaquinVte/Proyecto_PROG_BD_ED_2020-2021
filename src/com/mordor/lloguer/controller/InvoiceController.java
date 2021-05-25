@@ -87,7 +87,7 @@ public class InvoiceController implements ActionListener {
 			
 			if (index > 0) {
 				invoice = facturas.get(index - 1);
-				showInvoice(invoice);
+				showCurrentInvoice();
 			}
 		}
 	}
@@ -100,12 +100,12 @@ public class InvoiceController implements ActionListener {
 
 			if (index < facturas.size()-1) {
 				invoice = facturas.get(index + 1);
-				showInvoice(invoice);
+				showCurrentInvoice();
 			}
 		}
 	}
 
-	private void showInvoice(Invoice invoice) {
+	private void showCurrentInvoice() {
 
 		if (invoice != null) {
 
@@ -141,13 +141,16 @@ public class InvoiceController implements ActionListener {
 		}
 	}
 
-	private boolean existeVehiculo(String matricula) {
+	private Vehicle existeVehiculo(String matricula) {
 		if (matricula == null)
-			return false;
+			return null;
 		else {
 			Optional<Vehicle> optional = vehicles.stream()
 					.filter((v) -> v.getMatricula().compareToIgnoreCase(matricula) == 0).findFirst();
-			return optional.isPresent();
+			if(optional.isPresent())
+				return optional.get();
+			else
+				return null;
 		}
 	}
 
@@ -158,12 +161,19 @@ public class InvoiceController implements ActionListener {
 		if (existeCliente(dni)) {
 
 			String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:");
-
-			if (existeVehiculo(matricula)) {
+			Vehicle car;
+			
+			if ((car = existeVehiculo(matricula))!=null) {
 				Rent rent = new Rent(matricula, new Date(System.currentTimeMillis()),
-						new Date(System.currentTimeMillis()), 11);
+						new Date(System.currentTimeMillis()), car.getPrecioDia());
 				try {
-					model.addInvoice(dni, rent);
+					Invoice invoice = model.addInvoice(dni, rent);
+					if (invoice != null) {
+						facturas.add(invoice);
+						this.invoice = invoice;
+						this.showCurrentInvoice();
+					}
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -228,7 +238,7 @@ public class InvoiceController implements ActionListener {
 					} else
 						invoice = null;
 
-					showInvoice(invoice);
+					showCurrentInvoice();
 
 					MainController.addJInternalFrame(view);
 
