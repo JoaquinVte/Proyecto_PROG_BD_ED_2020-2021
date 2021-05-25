@@ -4,6 +4,7 @@ import java.sql.Date;
 
 public class Customer {
 	
+	private int idCliente;
 	private String DNI;
 	private String nombre;
 	private String apellidos;
@@ -14,7 +15,7 @@ public class Customer {
 	private char carnet;
 	private byte[] foto;
 		
-	public Customer( String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
+	public Customer(String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
 			Date fechaNac, char carnet, byte[] foto) {
 		super();
 
@@ -28,6 +29,12 @@ public class Customer {
 		this.carnet = carnet;
 		this.foto = foto;
 	}
+	public Customer(int idCliente,String dNI, String nombre, String apellidos, String domicilio, String cP, String email,
+			Date fechaNac, char carnet, byte[] foto) {
+		this(dNI, nombre, apellidos, domicilio, cP, email, fechaNac, carnet, foto);
+		this.idCliente = idCliente;
+	}
+	
 
 	public String getDNI() {
 		return DNI;
@@ -99,6 +106,14 @@ public class Customer {
 
 	public void setFoto(byte[] foto) {
 		this.foto = foto;
+	}
+
+	public int getIdCliente() {
+		return idCliente;
+	}
+	
+	public void setIdCliente(int idCliente) {
+		this.idCliente = idCliente;
 	}	
 	
 }

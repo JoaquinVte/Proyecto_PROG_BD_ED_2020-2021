@@ -57,6 +57,12 @@ public class Invoice {
 
 	public void setClienteId(int clienteId) {
 		this.clienteId = clienteId;
+	}
+
+	@Override
+	public String toString() {
+		return "Invoice [id=" + id + ", fecha=" + fecha + ", importeBase=" + importeBase + ", importeIva=" + importeIva
+				+ ", clienteId=" + clienteId + "]";
 	}	
 
 }

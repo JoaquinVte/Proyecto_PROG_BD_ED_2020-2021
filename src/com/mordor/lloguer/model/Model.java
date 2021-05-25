@@ -3,6 +3,7 @@ package com.mordor.lloguer.model;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public interface Model {
 	public ArrayList<Rent> getRents() throws Exception;
 	public ArrayList<Invoice> getInvoices() throws Exception;
 	public Invoice getInvoice(int id) throws Exception;
+	public Invoice addInvoice(String dni, Rent rent) throws Exception;
+	public boolean addRent(Invoice invoice,Customer customer, Rent rent) throws SQLException;
 
 		
 

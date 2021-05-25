@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -234,7 +235,8 @@ public class MyOracleDB implements Model {
 			rs = (ResultSet) cs.getObject(1);
 
 			Customer customer;
-
+			
+			int id;
 			String DNI;
 			String name;
 			String surname;
@@ -246,7 +248,7 @@ public class MyOracleDB implements Model {
 			byte[] photo;
 
 			while (rs.next()) {
-
+				id = rs.getInt("IDCLIENTE");
 				DNI = rs.getString("DNI");
 				name = rs.getString("nombre");
 				surname = rs.getString("apellidos");
@@ -257,7 +259,7 @@ public class MyOracleDB implements Model {
 				license = rs.getString("carnet").charAt(0);
 				photo = rs.getBytes("foto");
 
-				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, photo);
+				customer = new Customer(id,DNI, name, surname, address, CP, email, birthday, license, photo);
 				customers.add(customer);
 			}
 		} finally {
@@ -532,7 +534,7 @@ public class MyOracleDB implements Model {
 	}
 
 	
-	public Invoice crearFactura(String dni, Rent rent) throws Exception {
+	public Invoice addInvoice(String dni, Rent rent) throws Exception {
 		
 		DataSource ds = MyDataSource.getOracleDataSource();
 		String query = "{ call ?:=GESTIONALQUILER.insertaralquiler(?,?,?,?,?,?)}";
@@ -563,7 +565,8 @@ public class MyOracleDB implements Model {
 	}
 
 
-	public Integer addRent(Invoice invoice, Rent rent) {
+	public boolean addRent(Invoice invoice,Customer customer, Rent rent) throws SQLException {
+		
 		DataSource ds = MyDataSource.getOracleDataSource();
 		String query = "{ call ?:=GESTIONALQUILER.insertaralquiler(?,?,?,?,?,?)}";
 		
@@ -573,8 +576,8 @@ public class MyOracleDB implements Model {
 			int pos = 0;
 
 			cstmt.registerOutParameter(++pos, OracleTypes.INTEGER);
-			cstmt.setString(++pos, null);
-			cstmt.setString(++pos, dni);
+			cstmt.setInt(++pos, invoice.getId());
+			cstmt.setString(++pos, customer.getDNI());
 			cstmt.setString(++pos, rent.getVehiculoMatricula());
 			cstmt.setDate(++pos, rent.getFechaInicio());
 			cstmt.setDate(++pos, rent.getFechaFin());
@@ -582,17 +585,44 @@ public class MyOracleDB implements Model {
 
 			cstmt.execute();
 			
-			Integer idFactura = cstmt.getInt(1);
 			Integer idAlquiler = cstmt.getInt(7);
 						
 			rent.setIdAlquiler(idAlquiler);
-			rent.setIdFactura(idFactura);
-			
-			return this.getInvoice(idFactura);
+						
+			return true;
 		}
 
 	}
 
-	
+	@Override
+	public Invoice getInvoice(int idFactura) throws Exception {
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "SELECT * FROM FACTURA WHERE IDFACTURA=?";
 
+		try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(query)) {
+
+			int pos = 0;
+
+			pstmt.setInt(++pos, idFactura);
+
+			int id;
+			Date fecha;
+			float importeBase;
+			float importeIva;
+			int clienteId;
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+
+				rs.next();
+				
+				id = rs.getInt("IDFACTURA");
+				fecha = rs.getDate("FECHA");
+				importeBase = rs.getFloat("IMPORTEBASE");
+				importeIva = rs.getFloat("IMPORTEIVA");
+				clienteId = rs.getInt("CLIENTEID");
+
+				return new Invoice(id, fecha, importeBase, importeIva, clienteId);
+			}
+		}
+	}
 }

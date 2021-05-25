@@ -21,6 +21,15 @@ public class Rent {
 		this.fechaFin = fechaFin;
 		this.precio = precio;
 	}
+	public Rent(String vehiculoMatricula, Date fechaInicio, Date fechaFin,
+			float precio) {
+		super();
+
+		this.vehiculoMatricula = vehiculoMatricula;
+		this.fechaInicio = fechaInicio;
+		this.fechaFin = fechaFin;
+		this.precio = precio;
+	}
 	public int getFacturaId() {
 		return idFactura;
 	}
