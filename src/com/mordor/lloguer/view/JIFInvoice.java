@@ -25,6 +25,8 @@ import java.awt.Dimension;
 
 import com.alee.extended.date.WebDateField;
 import com.alee.laf.table.WebTable;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class JIFInvoice extends JInternalFrame {
 
@@ -121,6 +123,7 @@ public class JIFInvoice extends JInternalFrame {
 		panelTotal.add(lblTotal, "cell 0 0,alignx left");
 
 		txtFieldSuma = new JTextField();
+		txtFieldSuma.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtFieldSuma.setEnabled(false);
 		txtFieldSuma.setEditable(false);
 		panelTotal.add(txtFieldSuma, "cell 1 0,growx");
@@ -131,6 +134,7 @@ public class JIFInvoice extends JInternalFrame {
 		panelTotal.add(lblImpuestos, "cell 0 1,alignx left");
 
 		txtFieldImpuestos = new JTextField();
+		txtFieldImpuestos.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtFieldImpuestos.setEnabled(false);
 		txtFieldImpuestos.setEditable(false);
 		panelTotal.add(txtFieldImpuestos, "cell 1 1,growx");
@@ -141,6 +145,7 @@ public class JIFInvoice extends JInternalFrame {
 		panelTotal.add(lblTotalImputestos, "cell 0 2,alignx trailing");
 
 		txtFieldTotal = new JTextField();
+		txtFieldTotal.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtFieldTotal.setEnabled(false);
 		txtFieldTotal.setEditable(false);
 		panelTotal.add(txtFieldTotal, "cell 1 2,growx");
@@ -201,6 +206,11 @@ public class JIFInvoice extends JInternalFrame {
 		panelBotonesInferior.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 
 		btnCerrar = new JButton("Cerrar");
+		btnCerrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		btnCerrar.setToolTipText("Cerrar ventana");
 		panelBotonesInferior.add(btnCerrar);
 		panelSuperior.setLayout(new GridLayout(1, 2, 0, 0));

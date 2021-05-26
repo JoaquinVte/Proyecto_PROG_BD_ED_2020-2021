@@ -59,12 +59,14 @@ public class InvoiceController implements ActionListener, TableModelListener {
 		view.getTableDetalles().setDefaultEditor(Date.class, new WebDateEditor());
 
 		view.getBtnNewInvoce().addActionListener(this);
+		view.getBtnRemoveInvoice().addActionListener(this);
 		view.getBtnNextInvoice().addActionListener(this);
 		view.getBtnPreviousInvoice().addActionListener(this);
 		view.getBtnRemoveDetail().addActionListener(this);
 		view.getBtnAddDetail().addActionListener(this);
 
 		view.getBtnNewInvoce().setActionCommand("New invoice");
+		view.getBtnRemoveInvoice().setActionCommand("Remove invoice");
 		view.getBtnNextInvoice().setActionCommand("Next invoice");
 		view.getBtnPreviousInvoice().setActionCommand("Previous invoice");
 		view.getBtnRemoveDetail().setActionCommand("Remove rent");
@@ -83,6 +85,8 @@ public class InvoiceController implements ActionListener, TableModelListener {
 		String command = ae.getActionCommand();
 		if (command.equals("New invoice")) {
 			newInvoice();
+		} else if (command.equals("Remove invoice")) {
+			removeInvoice();
 		} else if (command.equals("Next invoice")) {
 			nextInvoice();
 		} else if (command.equals("Previous invoice")) {
@@ -95,8 +99,74 @@ public class InvoiceController implements ActionListener, TableModelListener {
 
 	}
 
+	private void removeInvoice() {
+
+		if (invoice == null) {
+			JOptionPane.showMessageDialog(view, "There are not any invoice to remove", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			int option = JOptionPane.showConfirmDialog(view, "Are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
+
+			if (option == JOptionPane.YES_OPTION) {
+
+				SwingWorker<Void, Integer> task = new SwingWorker<Void, Integer>() {
+
+					JIFProgressInformation jifProgress;
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						List<Rent> rents = alquileres.stream().filter((r) -> r.getFacturaId() == invoice.getId())
+								.collect(Collectors.toList());
+
+						jifProgress = new JIFProgressInformation(this, "Removing the invoice...");
+						jifProgress.getProgressBar().setIndeterminate(false);
+						jifProgress.getProgressBar().setMaximum(rents.size());
+
+						MainController.addJInternalFrame(jifProgress);
+
+						int i = 0;
+						for (Rent rent : rents) {
+							if (model.deleteRent(rent)) {
+								alquileres.remove(rent);
+								publish(i);
+							}
+						}
+
+						return null;
+					}
+
+					@Override
+					protected void process(List<Integer> chunks) {
+						for (int number : chunks) {
+							jifProgress.getProgressBar().setValue(number);
+							jifProgress.getLblInformation().setText("Removed " + number + " rents");
+							showCurrentInvoice();
+						}
+					}
+
+					@Override
+					protected void done() {
+
+						jifProgress.dispose();
+						if (!isCancelled()) {
+							facturas.remove(invoice);
+							invoice = facturas.get(0);
+							showCurrentInvoice();
+						} else {
+							loadDataFromServer();
+						}
+					}
+
+				};
+
+				task.execute();
+			}
+		}
+
+	}
+
 	private void addRent() {
-		
+
 		String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:");
 		Vehicle car;
 
@@ -117,17 +187,17 @@ public class InvoiceController implements ActionListener, TableModelListener {
 
 					Rent rent = new Rent(matricula, today, tomorrow, car.getPrecioDia());
 					try {
-						
-						Customer cliente = clientes.stream().filter((cli) -> cli.getIdCliente()==invoice.getClienteId())
-															.findFirst().get();						
 
-						if (model.addRent(invoice, cliente , rent)) {
+						Customer cliente = clientes.stream()
+								.filter((cli) -> cli.getIdCliente() == invoice.getClienteId()).findFirst().get();
+
+						if (model.addRent(invoice, cliente, rent)) {
 
 							Invoice i = model.getInvoice(invoice.getId());
 							invoice.setFecha(i.getFecha());
 							invoice.setImporteBase(i.getImporteBase());
 							invoice.setImporteIva(i.getImporteIva());
-							
+
 							alquileres.add(model.getRents().stream()
 									.filter((r) -> r.getIdAlquiler() == rent.getIdAlquiler()).findFirst().get());
 
@@ -147,45 +217,44 @@ public class InvoiceController implements ActionListener, TableModelListener {
 		} else if (matricula != null)
 			JOptionPane.showMessageDialog(view, "The vehicle with that registration does not exists.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-	
-		
+
 	}
 
 	private void removeRent() {
-		
-		if(view.getTableDetalles().getSelectedRow()==-1) {
-			JOptionPane.showMessageDialog(view, "You have to select a row before","Error",JOptionPane.ERROR_MESSAGE);
+
+		if (view.getTableDetalles().getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(view, "You have to select a row before", "Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			int option = JOptionPane.showConfirmDialog(view, "Are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
-			if(option==JOptionPane.YES_OPTION) {
-				SwingWorker<Void,Void> task = new SwingWorker<Void,Void>(){
+			if (option == JOptionPane.YES_OPTION) {
+				SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
-						
+
 						Rent rent = matm.getElementAtRow(view.getTableDetalles().getSelectedRow());
-						if(model.deleteRent(rent)) {
-							
+						if (model.deleteRent(rent)) {
+
 							alquileres.remove(rent);
 							facturas = model.getInvoices();
-							
-							if(!facturas.contains(invoice)) {
-								invoice=facturas.get(0);
+
+							if (!facturas.contains(invoice)) {
+								invoice = facturas.get(0);
 							} else {
 								invoice = facturas.get(facturas.indexOf(invoice));
 							}
-														
+
 							showCurrentInvoice();
 						}
-						
+
 						return null;
 					}
-					
+
 				};
 				task.execute();
 			}
 		}
-		
+
 	}
 
 	private void previousInvoice() {
@@ -231,6 +300,8 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			float impuestos = 0;
 			if (invoice.getImporteIva() != 0)
 				impuestos = invoice.getImporteIva() - invoice.getImporteBase();
+			
+			impuestos = ((int)(impuestos*100))/100f;
 			view.getTxtFieldImpuestos().setText("" + impuestos);
 			view.getTxtFieldTotal().setText("" + invoice.getImporteIva());
 
@@ -240,6 +311,20 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			matm.addTableModelListener(this);
 			view.getTableDetalles().setModel(matm);
 
+		} else {
+
+			view.getTxtFieldNombre().setText("");
+			view.getTxtFieldApellidos().setText("");
+			view.getTxtFieldDNI().setText("");
+
+			view.getTxtFieldNumeroFactura().setText("");
+			view.getWebDateFieldFechaFactura().setDate(null);
+			view.getTxtFieldSuma().setText("");
+			view.getTxtFieldImpuestos().setText("");
+			view.getTxtFieldTotal().setText("");
+
+			matm = new MyAquilerTableModel(new ArrayList<Rent>(), vehicles);
+			view.getTableDetalles().setModel(matm);
 		}
 	}
 
@@ -332,7 +417,9 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			@Override
 			protected Void doInBackground() throws Exception {
 
+				view.setVisible(false);
 				MainController.addJInternalFrame(jifpi);
+				
 				jifpi.getProgressBar().setMaximum(7);
 				jifpi.getProgressBar().setIndeterminate(false);
 
@@ -468,8 +555,9 @@ public class InvoiceController implements ActionListener, TableModelListener {
 						if (model.updateRent(rent)) {
 
 							Invoice i = model.getInvoice(rent.getFacturaId());
-							Rent re = model.getRents().stream().filter((r)->r.getIdAlquiler()==rent.getIdAlquiler()).findFirst().get();
-							
+							Rent re = model.getRents().stream().filter((r) -> r.getIdAlquiler() == rent.getIdAlquiler())
+									.findFirst().get();
+
 							if (i != null) {
 
 								invoice.setFecha(i.getFecha());
@@ -477,15 +565,15 @@ public class InvoiceController implements ActionListener, TableModelListener {
 								invoice.setImporteIva(i.getImporteIva());
 								showCurrentInvoice();
 							}
-							if(re !=null) {
+							if (re != null) {
 								rent.setPrecio(re.getPrecio());
 							}
-							
+
 							showCurrentInvoice();
 
 						}
 					} catch (Exception e) {
-						JOptionPane.showMessageDialog(view, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 						// Reload rent
 					}
 
