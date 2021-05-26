@@ -58,6 +58,13 @@ public class Invoice {
 	public void setClienteId(int clienteId) {
 		this.clienteId = clienteId;
 	}
+	
+	public boolean equals(Object o) {
+		if(o instanceof Invoice) {
+			return ((Invoice) o).getId() == this.getId();
+		}else 
+			return false;
+	}
 
 	@Override
 	public String toString() {

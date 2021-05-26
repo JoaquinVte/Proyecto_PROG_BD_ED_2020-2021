@@ -5,14 +5,19 @@ import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import com.mordor.lloguer.model.Rent;
+import com.alee.laf.table.editors.WebDateEditor;
 import com.mordor.lloguer.model.Customer;
 import com.mordor.lloguer.model.Invoice;
 import com.mordor.lloguer.model.Model;
@@ -20,7 +25,7 @@ import com.mordor.lloguer.model.Vehicle;
 import com.mordor.lloguer.view.JIFInvoice;
 import com.mordor.lloguer.view.JIFProgressInformation;
 
-public class InvoiceController implements ActionListener {
+public class InvoiceController implements ActionListener, TableModelListener {
 
 	private JIFInvoice view;
 	private Model model;
@@ -29,6 +34,8 @@ public class InvoiceController implements ActionListener {
 	private ArrayList<Vehicle> vehicles;
 	private ArrayList<Invoice> facturas;
 	private ArrayList<Customer> clientes;
+
+	private InvoiceController invoiceController;
 
 	private Invoice invoice;
 
@@ -39,6 +46,8 @@ public class InvoiceController implements ActionListener {
 		this.view = view;
 		this.model = model;
 
+		invoiceController = this;
+
 		inicialize();
 	}
 
@@ -47,16 +56,19 @@ public class InvoiceController implements ActionListener {
 		alquileres = new ArrayList<Rent>();
 		vehicles = new ArrayList<Vehicle>();
 
-		matm = new MyAquilerTableModel(alquileres, vehicles);
-		view.getTableDetalles().setModel(matm);
+		view.getTableDetalles().setDefaultEditor(Date.class, new WebDateEditor());
 
 		view.getBtnNewInvoce().addActionListener(this);
 		view.getBtnNextInvoice().addActionListener(this);
 		view.getBtnPreviousInvoice().addActionListener(this);
+		view.getBtnRemoveDetail().addActionListener(this);
+		view.getBtnAddDetail().addActionListener(this);
 
 		view.getBtnNewInvoce().setActionCommand("New invoice");
 		view.getBtnNextInvoice().setActionCommand("Next invoice");
 		view.getBtnPreviousInvoice().setActionCommand("Previous invoice");
+		view.getBtnRemoveDetail().setActionCommand("Remove rent");
+		view.getBtnAddDetail().setActionCommand("Add rent");
 
 	}
 
@@ -75,16 +87,113 @@ public class InvoiceController implements ActionListener {
 			nextInvoice();
 		} else if (command.equals("Previous invoice")) {
 			previousInvoice();
+		} else if (command.equals("Remove rent")) {
+			removeRent();
+		} else if (command.equals("Add rent")) {
+			addRent();
 		}
 
+	}
+
+	private void addRent() {
+		
+		String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:");
+		Vehicle car;
+
+		if ((car = existeVehiculo(matricula)) != null) {
+
+			SwingWorker<Invoice, Void> task = new SwingWorker<Invoice, Void>() {
+
+				@Override
+				protected Invoice doInBackground() throws Exception {
+
+					Date today = new Date(System.currentTimeMillis());
+					Date tomorrow;
+
+					Calendar c = Calendar.getInstance();
+					c.setTime(today);
+					c.add(Calendar.DATE, 1);
+					tomorrow = new Date(c.getTimeInMillis());
+
+					Rent rent = new Rent(matricula, today, tomorrow, car.getPrecioDia());
+					try {
+						
+						Customer cliente = clientes.stream().filter((cli) -> cli.getIdCliente()==invoice.getClienteId())
+															.findFirst().get();						
+
+						if (model.addRent(invoice, cliente , rent)) {
+
+							Invoice i = model.getInvoice(invoice.getId());
+							invoice.setFecha(i.getFecha());
+							invoice.setImporteBase(i.getImporteBase());
+							invoice.setImporteIva(i.getImporteIva());
+							
+							alquileres.add(model.getRents().stream()
+									.filter((r) -> r.getIdAlquiler() == rent.getIdAlquiler()).findFirst().get());
+
+							showCurrentInvoice();
+						}
+
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+
+					return invoice;
+				}
+
+			};
+			task.execute();
+
+		} else if (matricula != null)
+			JOptionPane.showMessageDialog(view, "The vehicle with that registration does not exists.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+	
+		
+	}
+
+	private void removeRent() {
+		
+		if(view.getTableDetalles().getSelectedRow()==-1) {
+			JOptionPane.showMessageDialog(view, "You have to select a row before","Error",JOptionPane.ERROR_MESSAGE);
+		} else {
+			int option = JOptionPane.showConfirmDialog(view, "Are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
+			if(option==JOptionPane.YES_OPTION) {
+				SwingWorker<Void,Void> task = new SwingWorker<Void,Void>(){
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						
+						Rent rent = matm.getElementAtRow(view.getTableDetalles().getSelectedRow());
+						if(model.deleteRent(rent)) {
+							
+							alquileres.remove(rent);
+							facturas = model.getInvoices();
+							
+							if(!facturas.contains(invoice)) {
+								invoice=facturas.get(0);
+							} else {
+								invoice = facturas.get(facturas.indexOf(invoice));
+							}
+														
+							showCurrentInvoice();
+						}
+						
+						return null;
+					}
+					
+				};
+				task.execute();
+			}
+		}
+		
 	}
 
 	private void previousInvoice() {
 
 		if (invoice != null) {
-			
+
 			int index = facturas.indexOf(invoice);
-			
+
 			if (index > 0) {
 				invoice = facturas.get(index - 1);
 				showCurrentInvoice();
@@ -93,12 +202,12 @@ public class InvoiceController implements ActionListener {
 	}
 
 	private void nextInvoice() {
-		
+
 		if (invoice != null) {
 
 			int index = facturas.indexOf(invoice);
 
-			if (index < facturas.size()-1) {
+			if (index < facturas.size() - 1) {
 				invoice = facturas.get(index + 1);
 				showCurrentInvoice();
 			}
@@ -120,13 +229,16 @@ public class InvoiceController implements ActionListener {
 			view.getWebDateFieldFechaFactura().setDate(invoice.getFecha());
 			view.getTxtFieldSuma().setText("" + invoice.getImporteBase());
 			float impuestos = 0;
-			if(invoice.getImporteIva()!=0)
-				impuestos =  invoice.getImporteIva()-invoice.getImporteBase();
-			view.getTxtFieldImpuestos().setText("" +impuestos);
+			if (invoice.getImporteIva() != 0)
+				impuestos = invoice.getImporteIva() - invoice.getImporteBase();
+			view.getTxtFieldImpuestos().setText("" + impuestos);
 			view.getTxtFieldTotal().setText("" + invoice.getImporteIva());
 
-			matm.setNewData(alquileres.stream().filter((a) -> a.getFacturaId() == invoice.getId())
-					.collect(Collectors.toList()));
+			matm = new MyAquilerTableModel(
+					alquileres.stream().filter((a) -> a.getFacturaId() == invoice.getId()).collect(Collectors.toList()),
+					vehicles);
+			matm.addTableModelListener(this);
+			view.getTableDetalles().setModel(matm);
 
 		}
 	}
@@ -147,7 +259,7 @@ public class InvoiceController implements ActionListener {
 		else {
 			Optional<Vehicle> optional = vehicles.stream()
 					.filter((v) -> v.getMatricula().compareToIgnoreCase(matricula) == 0).findFirst();
-			if(optional.isPresent())
+			if (optional.isPresent())
 				return optional.get();
 			else
 				return null;
@@ -162,26 +274,51 @@ public class InvoiceController implements ActionListener {
 
 			String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:");
 			Vehicle car;
-			
-			if ((car = existeVehiculo(matricula))!=null) {
-				Rent rent = new Rent(matricula, new Date(System.currentTimeMillis()),
-						new Date(System.currentTimeMillis()), car.getPrecioDia());
-				try {
-					Invoice invoice = model.addInvoice(dni, rent);
-					if (invoice != null) {
-						facturas.add(invoice);
-						this.invoice = invoice;
-						this.showCurrentInvoice();
+
+			if ((car = existeVehiculo(matricula)) != null) {
+
+				SwingWorker<Invoice, Void> task = new SwingWorker<Invoice, Void>() {
+
+					@Override
+					protected Invoice doInBackground() throws Exception {
+
+						Date today = new Date(System.currentTimeMillis());
+						Date tomorrow;
+
+						Calendar c = Calendar.getInstance();
+						c.setTime(today);
+						c.add(Calendar.DATE, 1);
+						tomorrow = new Date(c.getTimeInMillis());
+
+						Rent rent = new Rent(matricula, today, tomorrow, car.getPrecioDia());
+						try {
+							Invoice i = model.addInvoice(dni, rent);
+
+							if (i != null) {
+
+								facturas.add(i);
+								invoice = i;
+
+								alquileres.add(model.getRents().stream()
+										.filter((r) -> r.getIdAlquiler() == rent.getIdAlquiler()).findFirst().get());
+
+								showCurrentInvoice();
+							}
+
+						} catch (Exception e) {
+							JOptionPane.showMessageDialog(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+
+						return invoice;
 					}
 
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else
+				};
+				task.execute();
+
+			} else if (matricula != null)
 				JOptionPane.showMessageDialog(view, "The vehicle with that registration does not exists.", "Error",
 						JOptionPane.ERROR_MESSAGE);
-		} else
+		} else if (dni != null)
 			JOptionPane.showMessageDialog(view, "The client with that identifier does not exist.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 
@@ -260,6 +397,42 @@ public class InvoiceController implements ActionListener {
 		}
 
 		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			if (columnIndex <= 2)
+				return false;
+			else
+				return true;
+		}
+
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+
+			switch (columnIndex) {
+
+			case 3:
+				data.get(rowIndex).setFechaInicio(new Date(((java.util.Date) aValue).getTime()));
+				break;
+			case 4:
+				data.get(rowIndex).setFechaFin(new Date(((java.util.Date) aValue).getTime()));
+				break;
+			}
+
+			fireTableCellUpdated(rowIndex, columnIndex);
+		}
+
+		public Class<?> getColumnClass(int columnIndex) {
+			switch (columnIndex) {
+			case 0:
+			case 1:
+			case 2:
+				return String.class;
+			case 3:
+			case 4:
+				return Date.class;
+			default:
+				return String.class;
+			}
+		}
+
 		public Object getValueAt(int row, int col) {
 			switch (col) {
 			case 0:
@@ -276,6 +449,51 @@ public class InvoiceController implements ActionListener {
 				return data.get(row).getFechaFin();
 			}
 			return null;
+		}
+
+	}
+
+	@Override
+	public void tableChanged(TableModelEvent arg0) {
+
+		if (arg0.getType() == TableModelEvent.UPDATE) {
+			SwingWorker<Void, Void> task = new SwingWorker<Void, Void>() {
+
+				@Override
+				protected Void doInBackground() throws Exception {
+
+					try {
+						Rent rent = matm.getElementAtRow(arg0.getFirstRow());
+
+						if (model.updateRent(rent)) {
+
+							Invoice i = model.getInvoice(rent.getFacturaId());
+							Rent re = model.getRents().stream().filter((r)->r.getIdAlquiler()==rent.getIdAlquiler()).findFirst().get();
+							
+							if (i != null) {
+
+								invoice.setFecha(i.getFecha());
+								invoice.setImporteBase(i.getImporteBase());
+								invoice.setImporteIva(i.getImporteIva());
+								showCurrentInvoice();
+							}
+							if(re !=null) {
+								rent.setPrecio(re.getPrecio());
+							}
+							
+							showCurrentInvoice();
+
+						}
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(view, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+						// Reload rent
+					}
+
+					return null;
+				}
+			};
+			System.out.println("actualizando");
+			task.execute();
 		}
 
 	}

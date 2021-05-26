@@ -45,6 +45,8 @@ public interface Model {
 	public Invoice getInvoice(int id) throws Exception;
 	public Invoice addInvoice(String dni, Rent rent) throws Exception;
 	public boolean addRent(Invoice invoice,Customer customer, Rent rent) throws SQLException;
+	public boolean updateRent(Rent rent) throws SQLException;
+	public boolean deleteRent(Rent rent) throws SQLException;
 
 		
 

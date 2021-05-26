@@ -225,7 +225,9 @@ public class MyOracleDB implements Model {
 		String query = "{ call ?:=GESTIONALQUILER.listarClientes() }";
 		ResultSet rs = null;
 
-		try (Connection con = ds.getConnection(); CallableStatement cs = con.prepareCall(query);
+		try (
+				Connection con = ds.getConnection(); 
+				CallableStatement cs = con.prepareCall(query);
 
 		) {
 
@@ -269,56 +271,6 @@ public class MyOracleDB implements Model {
 
 		return customers;
 	}
-
-//	@Override
-//	public ArrayList<Customer> getCustomers() throws SQLException {
-//		
-//		ArrayList<Customer> customers = new ArrayList<Customer>();
-//		DataSource ds = MyDataSource.getOracleDataSource();
-//		String query = "SELECT * FROM CLIENTE";
-//		
-//		try(
-//				Connection con = ds.getConnection();
-//				Statement stmt = con.createStatement();
-//				ResultSet rs = stmt.executeQuery(query)
-//			){
-//			
-//			Customer customer;
-//
-//			String DNI;
-//			String name;
-//			String surname;
-//			String address;
-//			String CP;
-//			String email;
-//			Date birthday;
-//			char license;
-//			Blob photo;
-//			byte[] content = null;
-//
-//			
-//			while(rs.next()) {
-//				
-//				DNI = rs.getString("DNI");
-//				name = rs.getString("nombre");
-//				surname = rs.getString("apellidos");
-//				address= rs.getString("domicilio"); 
-//				CP = rs.getString("CP");
-//				email = rs.getString("email");
-//				birthday = rs.getDate("fechaNac"); 
-//				license = rs.getString("carnet").charAt(0);
-//				photo = rs.getBlob("foto");
-//				
-//				if (photo != null) {
-//					content = photo.getBytes(1L, (int) photo.length());					
-//				} 
-//				customer = new Customer(DNI, name, surname, address, CP, email, birthday, license, content);
-//				customers.add(customer);
-//			}
-//		} 	
-//		
-//		return customers;
-//	}
 
 	@Override
 	public boolean addCustomer(Customer customer) throws SQLException {
@@ -623,6 +575,42 @@ public class MyOracleDB implements Model {
 
 				return new Invoice(id, fecha, importeBase, importeIva, clienteId);
 			}
+		}
+	}
+
+	@Override
+	public boolean updateRent(Rent rent) throws SQLException {
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "{ call GESTIONALQUILER.modificarAlquiler(?,?,?)}";
+		
+		try (Connection con = ds.getConnection(); 
+				CallableStatement cstmt = con.prepareCall(query);) {
+
+			int pos = 0;
+			
+			cstmt.setInt(++pos, rent.getIdAlquiler());
+			cstmt.setDate(++pos, rent.getFechaInicio());
+			cstmt.setDate(++pos, rent.getFechaFin());
+
+			cstmt.execute();						
+			return true;
+		}
+	}
+
+	@Override
+	public boolean deleteRent(Rent rent) throws SQLException {
+		DataSource ds = MyDataSource.getOracleDataSource();
+		String query = "{ call GESTIONALQUILER.borrarAlquiler(?)}";
+		
+		try (Connection con = ds.getConnection(); 
+				CallableStatement cstmt = con.prepareCall(query);) {
+
+			int pos = 0;
+			
+			cstmt.setInt(++pos, rent.getIdAlquiler());
+
+			cstmt.execute();						
+			return true;
 		}
 	}
 }
