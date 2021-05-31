@@ -3,7 +3,6 @@ package com.mordor.lloguer.controller;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -181,7 +178,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		String command = e.getActionCommand();
 
 		if (command.equals("Update search")) {
-			update((JComboBox) e.getSource());
+			update(e.getSource());
 		} else if (command.equals("Open the vehicle form for add")) {
 			
 			int index = view.getTabbedPane().getSelectedIndex() ;
@@ -312,7 +309,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 
 	}
 	
-	private void update(Component component) {
+	private void update(Object component) {
 
 		// Recover the JTextField that trigger the document event
 		if (view.getPanelCar().contains(component)) {
@@ -322,15 +319,15 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		} else if (view.getPanelTruck().contains(component)) {
 
 			mttm.setNewData((List<Camion>)filter(trucks,view.getPanelTruck()));
-
+			
 		} else if (view.getPanelVan().contains(component)) {
 
 			mvtm.setNewData((List<Furgoneta>)filter(vans,view.getPanelVan()));
-
+			
 		} else if (view.getPanelMinibus().contains(component)) {
 
 			mmtm.setNewData((List<Microbus>)filter(minibus,view.getPanelMinibus()));
-				
+			
 		}
 	}
 	
