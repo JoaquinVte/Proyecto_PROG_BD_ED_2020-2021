@@ -1,11 +1,15 @@
 package com.mordor.lloguer.controller;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +27,15 @@ import com.mordor.lloguer.model.Invoice;
 import com.mordor.lloguer.model.Model;
 import com.mordor.lloguer.model.Vehicle;
 import com.mordor.lloguer.view.JIFInvoice;
+import com.mordor.lloguer.view.JIFJasper;
 import com.mordor.lloguer.view.JIFProgressInformation;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.swing.JRViewer;
 
 public class InvoiceController implements ActionListener, TableModelListener {
 
@@ -64,6 +76,8 @@ public class InvoiceController implements ActionListener, TableModelListener {
 		view.getBtnPreviousInvoice().addActionListener(this);
 		view.getBtnRemoveDetail().addActionListener(this);
 		view.getBtnAddDetail().addActionListener(this);
+		view.getBtnPrint().addActionListener(this);
+		view.getBtnPdf().addActionListener(this);
 
 		view.getBtnNewInvoce().setActionCommand("New invoice");
 		view.getBtnRemoveInvoice().setActionCommand("Remove invoice");
@@ -71,6 +85,8 @@ public class InvoiceController implements ActionListener, TableModelListener {
 		view.getBtnPreviousInvoice().setActionCommand("Previous invoice");
 		view.getBtnRemoveDetail().setActionCommand("Remove rent");
 		view.getBtnAddDetail().setActionCommand("Add rent");
+		view.getBtnPrint().setActionCommand("Open jasperviewer");
+		view.getBtnPdf().setActionCommand("Create pdf file");
 
 	}
 
@@ -95,8 +111,87 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			removeRent();
 		} else if (command.equals("Add rent")) {
 			addRent();
+		}else if (command.equals("Open jasperviewer")) {
+			openJasperViewer();
+		}else if (command.equals("Create pdf file")) {
+			createPdfFile();
 		}
 
+	}
+
+	private void createPdfFile() {	
+
+		
+		try {
+
+			// Path of your report source.
+			String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
+
+			InputStream reportFile = null;
+			reportFile = getClass().getResourceAsStream(reportJRXML);
+
+			// Compile the jrxml file
+			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+
+			// We pass the necessary parameters
+			HashMap<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put("paraWhere", "Factura.idfactura="+invoice.getId());
+
+			// Produce the report (fill the report with data)
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
+			
+
+
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	private void openJasperViewer() {
+		
+		JRViewer jrViewer;
+		
+		try {
+
+			// Path of your report source.
+			String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
+
+			InputStream reportFile = null;
+			reportFile = getClass().getResourceAsStream(reportJRXML);
+
+			// Compile the jrxml file
+			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+
+			// We pass the necessary parameters
+			HashMap<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put("paraWhere", "Factura.idfactura="+invoice.getId());
+
+			// Produce the report (fill the report with data)
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
+			jrViewer = new JRViewer(jasperPrint);
+			jrViewer.setSize(new Dimension(500, 400));
+
+			// Create the JInterFrame that contains the JRViewer
+			JIFJasper jifj = new JIFJasper();
+			jifj.add(jrViewer);
+
+			MainController.addJInternalFrame(jifj);
+
+			jrViewer.setVisible(true);
+
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void removeInvoice() {
