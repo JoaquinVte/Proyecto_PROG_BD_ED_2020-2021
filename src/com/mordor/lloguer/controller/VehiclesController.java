@@ -3,6 +3,8 @@ package com.mordor.lloguer.controller;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -72,10 +75,23 @@ public class VehiclesController implements ActionListener, DocumentListener {
 				JPVehicle jpv = (JPVehicle) c;
 				jpv.getTextFieldModel().getDocument().addDocumentListener(this);
 				jpv.getTextFieldRegistration().getDocument().addDocumentListener(this);
-				jpv.getComboBoxEngine().addActionListener(this);
-				jpv.getComboBoxLicense().addActionListener(this);
-				jpv.getComboBoxEngine().setActionCommand("Update search");
-				jpv.getComboBoxLicense().setActionCommand("Update search");
+
+				jpv.getComboBoxEngine().addItemListener(new ItemListener() {
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						if (e.getStateChange() == ItemEvent.SELECTED) {
+							update(jpv.getComboBoxEngine());
+						}
+					}
+				});
+				jpv.getComboBoxLicense().addItemListener(new ItemListener() {
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						if (e.getStateChange() == ItemEvent.SELECTED) {
+							update(jpv.getComboBoxLicense());
+						}
+					}
+				});
 			}
 
 	}
@@ -128,17 +144,25 @@ public class VehiclesController implements ActionListener, DocumentListener {
 					mvtm.setNewData(vans);
 					mmtm.setNewData(minibus);
 					mttm.setNewData(trucks);
-					
-					setDataToCbxEngine(cars.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelCar());
-					setDataToCbxEngine(vans.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelVan());
-					setDataToCbxEngine(minibus.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelMinibus());
-					setDataToCbxEngine(trucks.stream().map((e)->e.getMotor()).collect(Collectors.toSet()),view.getPanelTruck());
-					
-					setDataToLicense(cars.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelCar());
-					setDataToLicense(vans.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelVan());
-					setDataToLicense(minibus.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelMinibus());
-					setDataToLicense(trucks.stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),view.getPanelTruck());
-															
+
+					setDataToCbx(cars.stream().map((e) -> e.getMotor()).collect(Collectors.toSet()),
+							view.getPanelCar().getComboBoxEngine());
+					setDataToCbx(vans.stream().map((e) -> e.getMotor()).collect(Collectors.toSet()),
+							view.getPanelVan().getComboBoxEngine());
+					setDataToCbx(minibus.stream().map((e) -> e.getMotor()).collect(Collectors.toSet()),
+							view.getPanelMinibus().getComboBoxEngine());
+					setDataToCbx(trucks.stream().map((e) -> e.getMotor()).collect(Collectors.toSet()),
+							view.getPanelTruck().getComboBoxEngine());
+
+					setDataToCbx(cars.stream().map((e) -> e.getCarnet()).collect(Collectors.toSet()),
+							view.getPanelCar().getComboBoxLicense());
+					setDataToCbx(vans.stream().map((e) -> e.getCarnet()).collect(Collectors.toSet()),
+							view.getPanelVan().getComboBoxLicense());
+					setDataToCbx(minibus.stream().map((e) -> e.getCarnet()).collect(Collectors.toSet()),
+							view.getPanelMinibus().getComboBoxLicense());
+					setDataToCbx(trucks.stream().map((e) -> e.getCarnet()).collect(Collectors.toSet()),
+							view.getPanelTruck().getComboBoxLicense());
+
 					MainController.addJInternalFrame(view);
 				}
 			}
@@ -148,40 +172,28 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		task.execute();
 
 	}
-	private void setDataToLicense(Set<String> data, JPVehicle jp) {	
-		
+
+	private void setDataToCbx(Set<String> data, JComboBox jcb) {
 		DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>();
-		
+
 		dcbm.addElement("All");
-		for(String d : data)
+
+		for (String d : data)
 			dcbm.addElement(d);
-		
-		jp.getComboBoxLicense().setModel(dcbm);
-	}
-	
-	private void setDataToCbxEngine(Set<String> data, JPVehicle jp) {	
-		
-		DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>();
-		
-		dcbm.addElement("All");
-		for(String d : data)
-			dcbm.addElement(d);
-		
-		jp.getComboBoxEngine().setModel(dcbm);
+
+		jcb.setModel(dcbm);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		view.getBtnAdd().setActionCommand("Open the vehicle form for add");
-		view.getBtnDelete().setActionCommand("Delete vehicle");
-		view.getBtnEdit().setActionCommand("Open the vehicle form for edit");
+
 		String command = e.getActionCommand();
 
 		if (command.equals("Update search")) {
 			update(e.getSource());
 		} else if (command.equals("Open the vehicle form for add")) {
-			
-			int index = view.getTabbedPane().getSelectedIndex() ;
+
+			int index = view.getTabbedPane().getSelectedIndex();
 			if (index == 0) {
 				System.out.println("Car");
 			} else if (index == 1) {
@@ -191,9 +203,73 @@ public class VehiclesController implements ActionListener, DocumentListener {
 			} else if (index == 3) {
 				System.out.println("Minibus");
 			}
+
 		} else if (command.equals("Delete vehicle")) {
 
 		} else if (command.equals("Open the vehicle form for edit")) {
+
+		}
+	}
+
+	public List<?> filter(List<? extends Vehicle> data, JPVehicle jp) {
+
+		String engineSelected = jp.getComboBoxEngine().getSelectedItem().toString();
+		String licenseSelected = jp.getComboBoxLicense().getSelectedItem().toString();
+
+		List<Vehicle> newData = new ArrayList<Vehicle>(data.stream()
+				.filter((c) -> c.getMatricula().toUpperCase()
+						.contains(jp.getTextFieldRegistration().getText().toUpperCase()))
+				.filter((c) -> c.getMarca().toUpperCase().contains(jp.getTextFieldModel().getText().toUpperCase()))
+				.filter((c) -> c.getMotor().toUpperCase().equals(engineSelected.toUpperCase())
+						|| engineSelected.equals("All"))
+				.filter((c) -> c.getCarnet().toUpperCase().equals(licenseSelected.toUpperCase())
+						|| licenseSelected.equals("All"))
+				.collect(Collectors.toList()));
+
+		setDataToCbx(newData.stream().map((e) -> e.getMotor()).collect(Collectors.toSet()), jp.getComboBoxEngine());
+		setDataToCbx(newData.stream().map((e) -> e.getCarnet()).collect(Collectors.toSet()), jp.getComboBoxLicense());
+
+		ItemListener[] itemsCBXEngine = jp.getComboBoxEngine().getItemListeners();
+		ItemListener[] itemsCBXLicense = jp.getComboBoxLicense().getItemListeners();
+		
+		for (ItemListener i : itemsCBXEngine)
+			jp.getComboBoxEngine().removeItemListener(i);
+		for (ItemListener i : itemsCBXLicense)
+			jp.getComboBoxLicense().removeItemListener(i);
+		
+
+		jp.getComboBoxEngine().setSelectedItem(engineSelected);
+		jp.getComboBoxLicense().setSelectedItem(licenseSelected);
+
+		for (ItemListener i : itemsCBXEngine)
+			jp.getComboBoxEngine().addItemListener(i);
+		for (ItemListener i : itemsCBXLicense)
+			jp.getComboBoxLicense().addItemListener(i);
+
+		return newData;
+	}
+
+	private void update(Object component) {
+
+		// Recover the JTextField that trigger the document event
+		if (view.getPanelCar().contains(component)) {
+
+			mctm.setNewData(filter(cars, view.getPanelCar()).stream().map(v -> (Coche) v).collect(Collectors.toList()));
+
+		} else if (view.getPanelTruck().contains(component)) {
+
+			mttm.setNewData(
+					filter(trucks, view.getPanelTruck()).stream().map(v -> (Camion) v).collect(Collectors.toList()));
+
+		} else if (view.getPanelVan().contains(component)) {
+
+			mvtm.setNewData(
+					filter(vans, view.getPanelVan()).stream().map(v -> (Furgoneta) v).collect(Collectors.toList()));
+
+		} else if (view.getPanelMinibus().contains(component)) {
+
+			mmtm.setNewData(filter(minibus, view.getPanelMinibus()).stream().map(v -> (Microbus) v)
+					.collect(Collectors.toList()));
 
 		}
 	}
@@ -203,12 +279,14 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;		
-		
+		private static final long serialVersionUID = 1L;
+
 		public MyVehicleTableModel(List<String> COLUMN_NAMES, List<T> data) {
-			super(new ArrayList<String>(Arrays.asList(new String[]{"Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet"})), data);
-			
-			columnNames.addAll(COLUMN_NAMES);			
+			super(new ArrayList<String>(Arrays
+					.asList(new String[] { "Matricula", "Marca", "Color", "Motor", "Cilindrada", "Estado", "Carnet" })),
+					data);
+
+			columnNames.addAll(COLUMN_NAMES);
 		}
 
 		@Override
@@ -242,9 +320,12 @@ public class VehiclesController implements ActionListener, DocumentListener {
 		@Override
 		public Object getValueAt(int row, int col) {
 			switch (col) {
-				case 7: return data.get(row).getNumPlazas();
-				case 8: return data.get(row).getNumPuertas();
-				default: return super.getValueAt(row, col);
+			case 7:
+				return data.get(row).getNumPlazas();
+			case 8:
+				return data.get(row).getNumPuertas();
+			default:
+				return super.getValueAt(row, col);
 			}
 		}
 
@@ -273,8 +354,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	private class MyVanTableModel extends MyVehicleTableModel<Furgoneta> {
 
 		public MyVanTableModel(List<Furgoneta> data) {
-			super(Arrays.asList("MMA" ),
-					data);
+			super(Arrays.asList("MMA"), data);
 		}
 
 		@Override
@@ -292,7 +372,7 @@ public class VehiclesController implements ActionListener, DocumentListener {
 	private class MyMinibusTableModel extends MyVehicleTableModel<Microbus> {
 
 		public MyMinibusTableModel(List<Microbus> data) {
-			super(Arrays.asList("Medida",	"NumPlazas"), data);
+			super(Arrays.asList("Medida", "NumPlazas"), data);
 		}
 
 		@Override
@@ -307,55 +387,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 			}
 		}
 
-	}
-	
-	private void update(Object component) {
-
-		// Recover the JTextField that trigger the document event
-		if (view.getPanelCar().contains(component)) {
-			
-			mctm.setNewData((List<Coche>)filter(cars,view.getPanelCar()));
-			
-		} else if (view.getPanelTruck().contains(component)) {
-
-			mttm.setNewData((List<Camion>)filter(trucks,view.getPanelTruck()));
-			
-		} else if (view.getPanelVan().contains(component)) {
-
-			mvtm.setNewData((List<Furgoneta>)filter(vans,view.getPanelVan()));
-			
-		} else if (view.getPanelMinibus().contains(component)) {
-
-			mmtm.setNewData((List<Microbus>)filter(minibus,view.getPanelMinibus()));
-			
-		}
-	}
-	
-	public List<?> filter(List<? extends Vehicle> data, JPVehicle jp){
-		
-		String engineSelected = jp.getComboBoxEngine().getSelectedItem().toString();
-		String licenseSelected = jp.getComboBoxLicense().getSelectedItem().toString();
-		
-		List<?> newData = data.stream()
-				.filter((c) -> c.getMatricula().toUpperCase()
-						.contains(jp.getTextFieldRegistration().getText().toUpperCase()))
-				.filter((c) -> c.getMarca().toUpperCase()
-						.contains(jp.getTextFieldModel().getText().toUpperCase()))
-				.filter((c) -> c.getMotor().toUpperCase()
-						.equals(jp.getComboBoxEngine().getSelectedItem().toString().toUpperCase())
-						|| view.getPanelCar().getComboBoxEngine().getSelectedItem().toString().equals("All"))
-				.filter((c) -> c.getCarnet().toUpperCase()
-						.equals(jp.getComboBoxLicense().getSelectedItem().toString().toUpperCase())
-						|| jp.getComboBoxLicense().getSelectedItem().toString().equals("All"))
-				.collect(Collectors.toList());
-		
-		setDataToCbxEngine(((List<Vehicle>)newData).stream().map((e)->e.getMotor()).collect(Collectors.toSet()),jp);
-		setDataToLicense(((List<Vehicle>)newData).stream().map((e)->e.getCarnet()).collect(Collectors.toSet()),jp);
-		
-		jp.getComboBoxEngine().setSelectedItem(engineSelected);
-		jp.getComboBoxLicense().setSelectedItem(licenseSelected);
-		
-		return newData;
 	}
 
 	@Override

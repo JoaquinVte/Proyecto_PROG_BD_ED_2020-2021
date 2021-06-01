@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.TableModelEvent;
@@ -32,6 +33,7 @@ import com.mordor.lloguer.view.JIFProgressInformation;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -111,87 +113,101 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			removeRent();
 		} else if (command.equals("Add rent")) {
 			addRent();
-		}else if (command.equals("Open jasperviewer")) {
+		} else if (command.equals("Open jasperviewer")) {
 			openJasperViewer();
-		}else if (command.equals("Create pdf file")) {
+		} else if (command.equals("Create pdf file")) {
 			createPdfFile();
 		}
 
 	}
 
-	private void createPdfFile() {	
+	private void createPdfFile() {
 
-		
-		try {
+		JFileChooser jfc = new JFileChooser();
+		int option = jfc.showSaveDialog(jfc);
 
-			// Path of your report source.
-			String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
-
-			InputStream reportFile = null;
-			reportFile = getClass().getResourceAsStream(reportJRXML);
-
-			// Compile the jrxml file
-			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
-
-			// We pass the necessary parameters
-			HashMap<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("paraWhere", "Factura.idfactura="+invoice.getId());
-
-			// Produce the report (fill the report with data)
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
-			
-
-
-		} catch (JRException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (option == JFileChooser.APPROVE_OPTION) {
+			String file = jfc.getSelectedFile().getAbsolutePath();
+			if (!file.endsWith(".pdf")) {
+				file += ".pdf";
+			}
+			MyCustomTask myCustomTask = new MyCustomTask(file);			
+			myCustomTask.execute();
 		}
-		
-		
+
 	}
 
 	private void openJasperViewer() {
-		
-		JRViewer jrViewer;
-		
-		try {
 
-			// Path of your report source.
-			String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
+		SwingWorker<JasperPrint, Void> task = new SwingWorker<JasperPrint, Void>() {
 
-			InputStream reportFile = null;
-			reportFile = getClass().getResourceAsStream(reportJRXML);
+			JIFProgressInformation jifProgress;
 
-			// Compile the jrxml file
-			JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+			@Override
+			protected JasperPrint doInBackground() throws Exception {
 
-			// We pass the necessary parameters
-			HashMap<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("paraWhere", "Factura.idfactura="+invoice.getId());
+				jifProgress = new JIFProgressInformation(this, "Reading invoice from server.");
+				MainController.addJInternalFrame(jifProgress);
 
-			// Produce the report (fill the report with data)
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
-			jrViewer = new JRViewer(jasperPrint);
-			jrViewer.setSize(new Dimension(500, 400));
+				JasperPrint jasperPrint = null;
 
-			// Create the JInterFrame that contains the JRViewer
-			JIFJasper jifj = new JIFJasper();
-			jifj.add(jrViewer);
+				try {
 
-			MainController.addJInternalFrame(jifj);
+					// Path of your report source.
+					String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
 
-			jrViewer.setVisible(true);
+					InputStream reportFile = null;
+					reportFile = getClass().getResourceAsStream(reportJRXML);
 
-		} catch (JRException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+					// Compile the jrxml file
+					JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+
+					// We pass the necessary parameters
+					HashMap<String, Object> parameters = new HashMap<String, Object>();
+					parameters.put("paraWhere", "Factura.idfactura=" + invoice.getId());
+
+					// Produce the report (fill the report with data)
+					jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
+
+				} catch (JRException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return jasperPrint;
+			}
+
+			protected void done() {
+
+				jifProgress.dispose();
+
+				try {
+					if (!isCancelled()) {
+
+						JasperPrint jasperPrint = get();
+
+						JRViewer jrViewer = new JRViewer(jasperPrint);
+						jrViewer.setSize(new Dimension(500, 400));
+
+						// Create the JInterFrame that contains the JRViewer
+						JIFJasper jifj = new JIFJasper();
+						jifj.add(jrViewer);
+
+						MainController.addJInternalFrame(jifj);
+					}
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		};
+
+		task.execute();
+
 	}
 
 	private void removeInvoice() {
@@ -395,8 +411,8 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			float impuestos = 0;
 			if (invoice.getImporteIva() != 0)
 				impuestos = invoice.getImporteIva() - invoice.getImporteBase();
-			
-			impuestos = ((int)(impuestos*100))/100f;
+
+			impuestos = ((int) (impuestos * 100)) / 100f;
 			view.getTxtFieldImpuestos().setText("" + impuestos);
 			view.getTxtFieldTotal().setText("" + invoice.getImporteIva());
 
@@ -448,11 +464,11 @@ public class InvoiceController implements ActionListener, TableModelListener {
 
 	private void newInvoice() {
 
-		String dni = JOptionPane.showInternalInputDialog(view, "Enter the customer's ID:");
+		String dni = JOptionPane.showInternalInputDialog(view, "Enter the customer's ID:").toUpperCase();
 
 		if (existeCliente(dni)) {
 
-			String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:");
+			String matricula = JOptionPane.showInternalInputDialog(view, "Enter the vehicle registration:").toUpperCase();
 			Vehicle car;
 
 			if ((car = existeVehiculo(matricula)) != null) {
@@ -514,7 +530,7 @@ public class InvoiceController implements ActionListener, TableModelListener {
 
 				view.setVisible(false);
 				MainController.addJInternalFrame(jifpi);
-				
+
 				jifpi.getProgressBar().setMaximum(7);
 				jifpi.getProgressBar().setIndeterminate(false);
 
@@ -677,6 +693,75 @@ public class InvoiceController implements ActionListener, TableModelListener {
 			};
 			System.out.println("actualizando");
 			task.execute();
+		}
+
+	}
+
+	private class MyCustomTask extends SwingWorker<JasperPrint, Void> {
+
+		JIFProgressInformation jifProgress;
+		private String file;
+		
+		public MyCustomTask(String file) {			
+			this.file = file;
+		}
+
+		@Override
+		protected JasperPrint doInBackground() throws Exception {
+
+			jifProgress = new JIFProgressInformation(this, "Reading invoice from server.");
+			MainController.addJInternalFrame(jifProgress);
+			
+			JasperPrint jasperPrint = null;
+
+			try {
+
+				// Path of your report source.
+				String reportJRXML = "/com/mordor/lloguer/reports/reportFactura.jrxml";
+
+				InputStream reportFile = null;
+				reportFile = getClass().getResourceAsStream(reportJRXML);
+
+				// Compile the jrxml file
+				JasperReport jasperReport = JasperCompileManager.compileReport(reportFile);
+
+				// We pass the necessary parameters
+				HashMap<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put("paraWhere", "Factura.idfactura=" + invoice.getId());
+
+				// Produce the report (fill the report with data)
+				jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, model.getConnection());
+
+			} catch (JRException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(view, "Documento no se ha generado\n" + e.getMessage(), "Error",
+						JOptionPane.INFORMATION_MESSAGE, null);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return jasperPrint;
+		}
+
+		protected void done() {
+			jifProgress.dispose();
+
+			try {
+				if (!isCancelled()) {
+
+					JasperPrint jasperPrint = get();
+					// Export pdf file
+					JasperExportManager.exportReportToPdfFile(jasperPrint, file);
+					JOptionPane.showMessageDialog(view, "Documento generado correctamente", "Info",
+							JOptionPane.INFORMATION_MESSAGE, null);
+				}
+
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}

@@ -177,14 +177,14 @@ FROM  "FACTURA"
 				<reportElement x="470" y="0" width="82" height="15" uuid="5a476b07-b028-4fd9-a729-c02cae2ac00e">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2ed434b2-c8f9-43dc-9d77-93da2496c9d8"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="60" y="0" width="170" height="15" uuid="4b9d2fc5-480a-472d-ab15-cfe76a42d853">
+				<reportElement x="71" y="0" width="159" height="15" uuid="4b9d2fc5-480a-472d-ab15-cfe76a42d853">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4bddc587-30ac-4409-91a8-5c39f4544519"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
 				<text><![CDATA[Marca]]></text>
 			</staticText>
 			<staticText>
@@ -205,7 +205,7 @@ FROM  "FACTURA"
 				<reportElement x="420" y="0" width="50" height="15" uuid="d540d456-fe43-4202-8f03-35d38dd02c2a">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7c3f1627-6557-4833-b51f-01525a96583a"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[pvp]]></text>
 			</staticText>
 			<line>
@@ -226,7 +226,7 @@ FROM  "FACTURA"
 				<reportElement x="331" y="0" width="88" height="15" uuid="7fdfc4b7-963d-4ed5-ae63-67cf091cec2f">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c8d129f2-7a84-4efb-878f-4b9004b03129"/>
 				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{fechafin})]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -237,9 +237,10 @@ FROM  "FACTURA"
 				<textFieldExpression><![CDATA[$F{precio}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="60" y="0" width="170" height="15" uuid="04d0bcb7-4bfe-487b-ba7b-e821ea000ba6">
+				<reportElement x="71" y="0" width="159" height="15" uuid="04d0bcb7-4bfe-487b-ba7b-e821ea000ba6">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4bddc587-30ac-4409-91a8-5c39f4544519"/>
 				</reportElement>
+				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{marca}]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -260,7 +261,7 @@ FROM  "FACTURA"
 				<reportElement x="231" y="0" width="98" height="15" uuid="7d9189dc-9ecc-4863-8838-2f7a4cacee32">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c8d129f2-7a84-4efb-878f-4b9004b03129"/>
 				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{fechainicio})]]></textFieldExpression>
 			</textField>
 		</band>
