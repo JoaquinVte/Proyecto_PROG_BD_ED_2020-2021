@@ -93,7 +93,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 					}
 				});
 			}
-
 	}
 
 	public void go() {
@@ -166,11 +165,9 @@ public class VehiclesController implements ActionListener, DocumentListener {
 					MainController.addJInternalFrame(view);
 				}
 			}
-
 		};
 
 		task.execute();
-
 	}
 
 	private void setDataToCbx(Set<String> data, JComboBox jcb) {
@@ -348,7 +345,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 				return super.getValueAt(row, col);
 			}
 		}
-
 	}
 
 	private class MyVanTableModel extends MyVehicleTableModel<Furgoneta> {
@@ -366,7 +362,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 				return super.getValueAt(row, col);
 			}
 		}
-
 	}
 
 	private class MyMinibusTableModel extends MyVehicleTableModel<Microbus> {
@@ -386,7 +381,6 @@ public class VehiclesController implements ActionListener, DocumentListener {
 				return super.getValueAt(row, col);
 			}
 		}
-
 	}
 
 	@Override
